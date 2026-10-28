@@ -1,0 +1,26 @@
+-- Banco inicial de perguntas. Pode ser executado após schema.sql.
+-- As respostas corretas ficam no banco e não são retornadas ao navegador.
+insert into public.quiz_questions(subject_id,question_text,options,correct_option,explanation,sort_order) values
+('5s','Qual é o principal objetivo do Seiri (utilização)?','["Limpar máquinas","Separar o necessário do desnecessário","Criar auditorias","Padronizar documentos"]'::jsonb,1,'O Seiri identifica e separa o necessário do desnecessário.',1),
+('5s','Qual senso define locais e identificação para os itens?','["Seiton — Ordenação","Seiso — Limpeza","Seiketsu — Padronização","Shitsuke — Disciplina"]'::jsonb,0,'Seiton organiza os itens em locais definidos e identificados.',2),
+('5s','Durante a limpeza, além de limpar, a equipe deve:','["Ignorar pequenos defeitos","Esconder materiais","Inspecionar e identificar anomalias","Eliminar os padrões"]'::jsonb,2,'Seiso também ajuda a identificar anomalias.',3),
+('5s','O que melhor representa o Shitsuke?','["Uma faxina anual","Disciplina para manter os padrões","Comprar novas ferramentas","Separar materiais"]'::jsonb,1,'Shitsuke é a autodisciplina para sustentar os padrões.',4),
+('5s','Qual indicador pode ajudar a avaliar o 5S?','["Cor favorita da equipe","Número de anomalias e resultado das auditorias","Quantidade de reuniões sem pauta","Horas extras apenas"]'::jsonb,1,'Auditorias e anomalias são indicadores possíveis.',5),
+
+('lubrificacao','Qual é uma função fundamental do lubrificante?','["Aumentar o atrito","Reduzir atrito e desgaste","Substituir qualquer manutenção","Aumentar a contaminação"]'::jsonb,1,'A película lubrificante reduz contato direto e desgaste.',1),
+('lubrificacao','O que significa viscosidade?','["A cor do óleo","A resistência do fluido ao escoamento","A quantidade de aditivo","A temperatura ambiente"]'::jsonb,1,'Viscosidade descreve a resistência do fluido ao escoamento.',2),
+('lubrificacao','Qual prática é correta ao lubrificar?','["Misturar produtos sem verificar compatibilidade","Usar qualquer óleo disponível","Seguir especificação e quantidade do fabricante","Completar sempre até transbordar"]'::jsonb,2,'Produto e quantidade devem seguir a especificação aplicável.',3),
+('lubrificacao','O que pode causar contaminação do lubrificante?','["Água e partículas sólidas","Etiqueta de identificação","Registro da manutenção","Ferramenta limpa"]'::jsonb,0,'Água e partículas podem prejudicar o lubrificante e o componente.',4),
+('lubrificacao','Antes de intervir em equipamento com partes móveis, deve-se:','["Agir rapidamente sem parar","Seguir o procedimento de segurança e bloqueio aplicável","Apenas avisar um colega","Remover proteções"]'::jsonb,1,'Siga os procedimentos de isolamento e controle de energia da empresa.',5),
+
+('pneumatica','Qual componente transforma energia pneumática em movimento linear?','["Manômetro","Cilindro","Filtro","Compressor"]'::jsonb,1,'O cilindro converte energia do ar comprimido em movimento linear.',1),
+('pneumatica','Qual é a função de uma válvula direcional?','["Medir temperatura","Armazenar energia elétrica","Direcionar o fluxo de ar","Lubrificar rolamentos"]'::jsonb,2,'A válvula direcional comuta os caminhos do fluxo.',2),
+('pneumatica','Em um cilindro de dupla ação, o ar comprimido:','["Atua nos dois sentidos do movimento","Atua somente no retorno","Nunca movimenta a haste","É usado apenas para resfriar"]'::jsonb,0,'O ar atua alternadamente em ambos os lados do pistão.',3),
+('pneumatica','O regulador de pressão serve para:','["Controlar a pressão a jusante","Aumentar a sujeira do ar","Medir vazão elétrica","Bloquear toda manutenção"]'::jsonb,0,'O regulador controla a pressão de saída dentro da sua faixa de operação.',4),
+('pneumatica','Antes de desmontar uma linha pneumática, é necessário:','["Soltar a conexão lentamente sob pressão","Isolar a energia e aliviar a pressão conforme procedimento","Apenas desligar a tela do CLP","Segurar a mangueira com a mão"]'::jsonb,1,'Pressão armazenada pode provocar movimentos e lesões.',5),
+
+('eletrica','Qual é a unidade de medida da corrente elétrica?','["Volt (V)","Ampère (A)","Ohm (Ω)","Watt (W)"]'::jsonb,1,'Corrente elétrica é medida em ampères.',1),
+('eletrica','Pela Lei de Ohm, qual é a fórmula correta?','["V = R × I","R = V × I","I = V × R","P = R + I"]'::jsonb,0,'A Lei de Ohm relaciona tensão, resistência e corrente: V = R × I.',2),
+('eletrica','Qual componente é usado para manobra de cargas em circuitos de potência?','["Contator","Manômetro","Filtro pneumático","Engrenagem"]'::jsonb,0,'Contatores são usados para manobra de cargas conforme seu dimensionamento.',3),
+('eletrica','Um disjuntor corretamente especificado protege principalmente contra:','["Qualquer acidente em qualquer condição","Sobrecorrentes dentro de sua aplicação","Falha de lubrificação","Vazamento de ar"]'::jsonb,1,'Disjuntores têm funções e limites específicos de proteção.',4),
+('eletrica','Antes de manutenção elétrica, deve-se:','["Confiar apenas no interruptor desligado","Desenergizar, bloquear e verificar ausência de tensão conforme procedimento","Usar qualquer ferramenta metálica","Pular a análise de risco"]'::jsonb,1,'A manutenção exige medidas formais de controle de energia e verificação.',5);
