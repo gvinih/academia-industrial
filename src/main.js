@@ -31,7 +31,7 @@ function toast(message, isError=false) {
   window.setTimeout(() => el.classList.remove('show'), 3800);
 }
 function shell(content) {
-  app.innerHTML = `<header class="topbar"><a class="brand" href="#"><span class="brand-mark">⚙</span><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
+  app.innerHTML = `<header class="topbar"><a class="brand" href="#"><img class="brand-logo" src="/academia-industrial/progeral-logo.svg" alt="Progeral em Boas Mãos"><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
   if (session) document.querySelector('#header-actions').innerHTML = `<span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
   document.querySelector('#logout')?.addEventListener('click', logout);
 }
@@ -229,3 +229,4 @@ async function uploadVideo(e) {
 
 if (!configured) authView('login','Protótipo conectado à arquitetura Supabase: preencha src/config.js e aplique supabase/schema.sql para habilitar o acesso online.');
 else boot();
+\nif ('serviceWorker' in navigator && location.protocol === 'https:') { window.addEventListener('load', () => navigator.serviceWorker.register('/academia-industrial/sw.js').catch(err => console.warn('Falha ao registrar PWA:', err))); }\n
