@@ -117,29 +117,37 @@ language plpgsql security definer set search_path = public
 as $$
 declare
   v_user uuid := auth.uid();
-  v_total integer;
+  v_total integer := 10;
   v_score integer;
   v_answers_count integer;
   v_points integer;
   v_best integer;
   v_saved jsonb;
+  v_invalid_count integer;
 begin
   if v_user is null then raise exception 'Você precisa entrar para enviar respostas.'; end if;
   if p_answers is null or jsonb_typeof(p_answers) <> 'array' then raise exception 'Formato de respostas inválido.'; end if;
+  if jsonb_array_length(p_answers) <> v_total then raise exception 'Cada tentativa deve conter exatamente 10 perguntas.'; end if;
 
-  select count(*) into v_total
-  from public.quiz_questions q
+  select count(*) into v_answers_count
+  from (
+    select distinct a.question_id
+    from jsonb_to_recordset(p_answers) as a(question_id uuid, selected_option integer)
+  ) submitted
+  join public.quiz_questions q on q.id=submitted.question_id
   where q.subject_id=p_subject_id and q.is_active=true;
 
-  if v_total=0 then raise exception 'Este quiz ainda não possui perguntas ativas.'; end if;
-  if jsonb_array_length(p_answers) <> v_total then raise exception 'Responda todas as perguntas antes de enviar.'; end if;
+  if v_answers_count <> v_total then
+    raise exception 'As respostas devem corresponder a 10 perguntas ativas e diferentes desta matéria.';
+  end if;
 
-  select count(distinct a.question_id) into v_answers_count
+  select count(*) into v_invalid_count
   from jsonb_to_recordset(p_answers) as a(question_id uuid, selected_option integer)
   join public.quiz_questions q on q.id=a.question_id
-  where q.subject_id=p_subject_id and q.is_active=true;
+  where q.subject_id=p_subject_id and q.is_active=true
+    and (a.selected_option is null or a.selected_option < 0 or a.selected_option >= jsonb_array_length(q.options));
 
-  if v_answers_count <> v_total then raise exception 'As respostas não correspondem às perguntas atuais deste quiz.'; end if;
+  if v_invalid_count > 0 then raise exception 'Uma ou mais alternativas selecionadas são inválidas.'; end if;
 
   select count(*) filter (where q.correct_option=a.selected_option)
     into v_score
