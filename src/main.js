@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, APP_NAME } from './config.js';
 import './style.css';
-import { initAdminFiles } from './admin-files.js';
 
 const configured = SUPABASE_URL.startsWith('https://') &&
   !SUPABASE_URL.includes('COLE_AQUI') && !SUPABASE_ANON_KEY.includes('COLE_AQUI');
@@ -78,7 +77,6 @@ async function dashboard() {
   await refreshDashboard();
   document.querySelector('#upload-form')?.addEventListener('submit', uploadPdf);
   document.querySelector('#video-upload-form')?.addEventListener('submit', uploadVideo);
-  if (profile?.role === 'admin') initAdminFiles(supabase, subjects, toast);
 }
 async function refreshDashboard() {
   try {
@@ -125,7 +123,8 @@ async function renderSubjectTab() {
     if(error){box.innerHTML='<p class="muted">Não foi possível carregar os materiais.</p>';return;}
     if(!data?.length){box.innerHTML='<h2>Apostilas oficiais</h2><div class="empty-state">Nenhuma apostila foi publicada para esta matéria ainda.</div>';return;}
     const links=await Promise.all(data.map(async m=>{const {data: signed,error}=await supabase.storage.from('handouts').createSignedUrl(m.storage_path,300);return {...m,url:error?null:signed?.signedUrl}}));
-    box.innerHTML=`<h2>Apostilas oficiais</h2><div class="material-list">${links.map(m=>`<div class="material-row"><span class="pdf-icon">PDF</span><div><b>${esc(m.title)}</b><small>Arquivo oficial</small></div>${m.url?`<a class="btn btn-primary btn-small" href="${m.url}" target="_blank" rel="noopener">Abrir PDF</a>`:'<span class="muted">Indisponível</span>'}</div>`).join('')}</div>`;
+    box.innerHTML=`<h2>Apostilas oficiais</h2><p class="muted">${profile?.role==='admin'?'Como administrador, você pode excluir somente os arquivos desta matéria.':'Materiais oficiais desta matéria.'}</p><div class="material-list">${links.map(m=>`<div class="material-row"><span class="pdf-icon">PDF</span><div><b>${esc(m.title)}</b><small>Arquivo oficial</small></div>${m.url?`<a class="btn btn-primary btn-small" href="${m.url}" target="_blank" rel="noopener">Abrir PDF</a>`:'<span class="muted">Indisponível</span>'}${profile?.role==='admin'? `<button class="btn btn-small admin-delete-content" type="button" data-delete-material="${m.id}">Excluir</button>`:''}</div>`).join('')}</div>`;
+    if(profile?.role==='admin') box.querySelectorAll('[data-delete-material]').forEach(button=>button.addEventListener('click',()=>deleteSubjectFile('material',links.find(m=>m.id===button.dataset.deleteMaterial))));
     return;
   }
   if(activeTab==='video'){
@@ -134,11 +133,46 @@ async function renderSubjectTab() {
     if(error){console.error(error);box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Não foi possível carregar os vídeos. Confira se o SQL de configuração de vídeos foi aplicado no Supabase.</p>';return;}
     if(!data?.length){box.innerHTML='<h2>Vídeos de treinamento</h2><div class="empty-state">Nenhum vídeo foi publicado para esta matéria ainda.</div>';return;}
     const items=await Promise.all(data.map(async v=>{const {data:signed,error:urlError}=await supabase.storage.from('training-videos').createSignedUrl(v.storage_path,3600);return {...v,url:urlError?null:signed?.signedUrl}}));
-    box.innerHTML='<h2>Vídeos de treinamento</h2><div class="training-video-list">'+items.map(v=>`<article class="training-video"><h3>${esc(v.title)}</h3>${v.url?`<video class="training-video-player" controls playsinline preload="metadata"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`:'<p class="muted">Vídeo indisponível no momento.</p>'}</article>`).join('')+'</div>';
+    box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">'+(profile?.role==='admin'?'Como administrador, você pode excluir somente os vídeos desta matéria.':'Vídeos oficiais desta matéria.')+'</p><div class="training-video-list">'+items.map(v=>`<article class="training-video"><h3>${esc(v.title)}</h3>${v.url?`<video class="training-video-player" controls playsinline preload="metadata"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`:'<p class="muted">Vídeo indisponível no momento.</p>'}${profile?.role==='admin'? `<button class="btn btn-small admin-delete-content" type="button" data-delete-video="${v.id}">Excluir vídeo</button>`:''}</article>`).join('')+'</div>';
+    if(profile?.role==='admin') box.querySelectorAll('[data-delete-video]').forEach(button=>button.addEventListener('click',()=>deleteSubjectFile('video',items.find(v=>v.id===button.dataset.deleteVideo))));
     return;
   }
   if(activeTab==='quiz'){await renderQuiz(box);}
 }
+async function deleteSubjectFile(kind, file) {
+  if (profile?.role !== 'admin' || !file || file.subject_id !== activeSubject?.id) {
+    toast('A exclusão só está disponível para administradores dentro da matéria correspondente.', true);
+    return;
+  }
+  const label = kind === 'video' ? 'vídeo' : 'PDF';
+  const subjectName = activeSubject.name;
+  const confirmed = window.confirm(
+    `ATENÇÃO: você está na matéria "${subjectName}".\n\nDeseja excluir o ${label} "${file.title}"? O arquivo será removido permanentemente.`
+  );
+  if (!confirmed) return;
+  const typed = window.prompt('Para confirmar a exclusão permanente, digite EXCLUIR (em letras maiúsculas):');
+  if (typed !== 'EXCLUIR') {
+    toast('Exclusão cancelada. A confirmação não corresponde.', true);
+    return;
+  }
+  const button = document.querySelector(`[data-delete-${kind === 'video' ? 'video' : 'material'}="${file.id}"]`);
+  if (button) { button.disabled = true; button.textContent = 'Excluindo…'; }
+  const table = kind === 'video' ? 'videos' : 'materials';
+  const bucket = kind === 'video' ? 'training-videos' : 'handouts';
+  try {
+    const {error: storageError} = await supabase.storage.from(bucket).remove([file.storage_path]);
+    if (storageError) throw storageError;
+    const {error: dbError} = await supabase.from(table).delete().eq('id', file.id).eq('subject_id', activeSubject.id);
+    if (dbError) throw dbError;
+    toast(`${kind === 'video' ? 'Vídeo' : 'PDF'} excluído da matéria ${subjectName}.`);
+    await renderSubjectTab();
+  } catch (error) {
+    console.error(error);
+    toast(error.message || 'Não foi possível excluir o arquivo.', true);
+    if (button) { button.disabled = false; button.textContent = kind === 'video' ? 'Excluir vídeo' : 'Excluir'; }
+  }
+}
+
 async function renderQuiz(box) {
   box.innerHTML='<h2>Quiz</h2><p class="muted">Carregando perguntas…</p>';
   const {data:loadedQuestions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).order('sort_order');
@@ -171,7 +205,7 @@ async function uploadPdf(e) {
     if(upErr)throw upErr;
     const {error:dbErr}=await supabase.from('materials').insert({subject_id:subjectId,title,storage_path:path,uploaded_by:session.user.id,is_published:true});
     if(dbErr)throw dbErr;
-    toast('PDF enviado e publicado.');form.reset();window.dispatchEvent(new Event('admin-files-changed'));
+    toast('PDF enviado e publicado.');form.reset();
   } catch(err) {toast(err.message||'Não foi possível enviar o PDF.',true);}
   finally {btn.disabled=false;btn.textContent='Enviar PDF';}
 }
@@ -188,7 +222,7 @@ async function uploadVideo(e) {
     if(upErr)throw upErr;
     const {error:dbErr}=await supabase.from('videos').insert({subject_id:subjectId,title,storage_path:path,uploaded_by:session.user.id,is_published:true});
     if(dbErr)throw dbErr;
-    toast('Vídeo enviado e publicado.');form.reset();window.dispatchEvent(new Event('admin-files-changed'));
+    toast('Vídeo enviado e publicado.');form.reset();
   } catch(err) {toast(err.message||'Não foi possível enviar o vídeo.',true);}
   finally {btn.disabled=false;btn.textContent='Enviar vídeo';}
 }
