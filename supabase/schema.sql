@@ -225,3 +225,42 @@ for delete to authenticated using (bucket_id='handouts' and public.is_admin());
 
 -- IMPORTANTE: após criar a sua conta, promova-a a admin no SQL Editor:
 -- update public.profiles set role='admin' where id=(select id from auth.users where email='seu-email@empresa.com');
+
+
+-- Vídeos de treinamento (bucket privado; acesso por URL assinada).
+create table if not exists public.videos (
+  id uuid primary key default gen_random_uuid(),
+  subject_id text not null references public.subjects(id) on delete cascade,
+  title text not null,
+  storage_path text not null unique,
+  uploaded_by uuid not null references public.profiles(id),
+  is_published boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.videos enable row level security;
+drop policy if exists "published videos readable by authenticated users" on public.videos;
+create policy "published videos readable by authenticated users" on public.videos
+for select to authenticated using ((is_published and auth.uid() is not null) or public.is_admin());
+drop policy if exists "admin manages videos" on public.videos;
+create policy "admin manages videos" on public.videos
+for all to authenticated using (public.is_admin()) with check (public.is_admin());
+grant select,insert,update,delete on public.videos to authenticated;
+
+insert into storage.buckets (id,name,public,file_size_limit,allowed_mime_types)
+values ('training-videos','training-videos',false,104857600,array['video/mp4'])
+on conflict (id) do update set public=false,file_size_limit=104857600,allowed_mime_types=array['video/mp4'];
+
+drop policy if exists "authenticated read published training videos" on storage.objects;
+create policy "authenticated read published training videos" on storage.objects
+for select to authenticated using (bucket_id='training-videos' and (public.is_admin() or exists (
+  select 1 from public.videos v where v.storage_path=name and v.is_published=true
+)));
+drop policy if exists "admins upload training videos" on storage.objects;
+create policy "admins upload training videos" on storage.objects
+for insert to authenticated with check (bucket_id='training-videos' and public.is_admin());
+drop policy if exists "admins update training videos" on storage.objects;
+create policy "admins update training videos" on storage.objects
+for update to authenticated using (bucket_id='training-videos' and public.is_admin()) with check (bucket_id='training-videos' and public.is_admin());
+drop policy if exists "admins delete training videos" on storage.objects;
+create policy "admins delete training videos" on storage.objects
+for delete to authenticated using (bucket_id='training-videos' and public.is_admin());
