@@ -16,6 +16,14 @@ let session = null, profile = null, activeSubject = null, activeTab = 'resumo';
 
 function esc(s='') { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function initials(s='') { return s.trim().slice(0,1).toUpperCase() || '?'; }
+function shuffleArray(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 function toast(message, isError=false) {
   const el = document.querySelector('#toast');
   if (!el) return;
@@ -125,10 +133,11 @@ async function renderSubjectTab() {
 }
 async function renderQuiz(box) {
   box.innerHTML='<h2>Quiz</h2><p class="muted">Carregando perguntas…</p>';
-  const {data:questions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).order('sort_order');
+  const {data:loadedQuestions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).order('sort_order');
   if(error){box.innerHTML='<p class="muted">Não foi possível carregar o quiz. Confira a configuração do banco.</p>';return;}
-  if(!questions?.length){box.innerHTML='<h2>Quiz</h2><div class="empty-state">As perguntas deste módulo ainda não foram cadastradas.</div>';return;}
-  box.innerHTML=`<div class="quiz-heading"><div><h2>Teste seus conhecimentos</h2><p class="muted">${questions.length} perguntas · melhor resultado conta para o ranking</p></div><span class="points-pill">10 pts por acerto</span></div><form id="quiz-form">${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.question_text)}</legend>${q.options.map((op,j)=>`<label class="option"><input type="radio" name="${q.id}" value="${j}" required> ${esc(op)}</label>`).join('')}</fieldset>`).join('')}<button class="btn btn-primary" type="submit">Enviar respostas</button></form><div id="quiz-result"></div>`;
+  const questions = shuffleArray(loadedQuestions || []);
+  if(!questions.length){box.innerHTML='<h2>Quiz</h2><div class="empty-state">As perguntas deste módulo ainda não foram cadastradas.</div>';return;}
+  box.innerHTML=`<div class="quiz-heading"><div><h2>Teste seus conhecimentos</h2><p class="muted">${questions.length} perguntas · melhor resultado conta para o ranking</p></div><span class="points-pill">10 pts por acerto</span></div><form id="quiz-form">${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.question_text)}</legend>${shuffleArray(q.options.map((op,j)=>({text:op,index:j}))).map(op=>`<label class="option"><input type="radio" name="${q.id}" value="${op.index}" required> ${esc(op.text)}</label>`).join('')}</fieldset>`).join('')}<button class="btn btn-primary" type="submit">Enviar respostas</button></form><div id="quiz-result"></div>`;
   document.querySelector('#quiz-form').addEventListener('submit',async e=>{
     e.preventDefault();const btn=e.currentTarget.querySelector('button');btn.disabled=true;btn.textContent='Corrigindo…';
     const answers=questions.map(q=>({question_id:q.id,selected_option:Number(new FormData(e.currentTarget).get(q.id))}));
