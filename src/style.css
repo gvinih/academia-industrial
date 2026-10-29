@@ -437,3 +437,101 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .lubrificacao-theme .seiri-final-stats strong{color:#fbbf24}
 .lubrificacao-theme .seiri-controls .btn-primary{background:linear-gradient(110deg,#f59e0b,#ea580c)}
 @media(max-width:560px){.lubrificacao-theme .seiri-timer-row{justify-content:flex-end}}
+
+
+/* Vídeos de treinamento: lista cronológica com título clicável e cartões separados */
+.video-order-note{
+  margin: -3px 0 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.training-video-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-top:18px;
+}
+.training-video{
+  border:1px solid #d8e2e9;
+  border-radius:14px;
+  background:#fff;
+  padding:12px;
+  box-shadow:0 4px 14px #18364a0a;
+}
+.training-video-title{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  width:100%;
+  min-width:0;
+  padding:13px 14px;
+  border:1px solid #e1e9ee;
+  border-radius:10px;
+  background:#f7fafc;
+  color:#173b55;
+  text-align:left;
+  cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.training-video-title:hover,
+.training-video-title[aria-expanded="true"]{
+  background:#edf5fa;
+  border-color:#a9c7d9;
+}
+.training-video-number{
+  display:grid;
+  place-items:center;
+  flex:0 0 38px;
+  height:38px;
+  border-radius:10px;
+  background:#e2edf5;
+  color:#0E4596;
+  font-size:12px;
+  font-weight:850;
+}
+.training-video-title-text{
+  display:block;
+  flex:1;
+  min-width:0;
+}
+.training-video-title-text strong{
+  display:block;
+  font-size:14px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.training-video-title-text small{
+  display:block;
+  margin-top:4px;
+  color:#687d8c;
+  font-size:11px;
+  line-height:1.4;
+}
+.training-video-chevron{
+  flex:0 0 auto;
+  color:#0E4596;
+  font-size:22px;
+  line-height:1;
+  font-weight:700;
+}
+.training-video-panel{
+  padding:14px 2px 2px;
+}
+.training-video-panel[hidden]{
+  display:none!important;
+}
+.training-video-panel .training-video-player{
+  margin-top:0;
+}
+.training-video .admin-delete-content{
+  margin-left:2px;
+}
+@media(max-width:560px){
+  .training-video-list{gap:12px}
+  .training-video{padding:8px;border-radius:12px}
+  .training-video-title{gap:9px;padding:11px 9px}
+  .training-video-number{flex-basis:32px;height:32px;font-size:11px}
+  .training-video-title-text strong{font-size:13px}
+  .training-video-panel{padding:10px 0 2px}
+}
