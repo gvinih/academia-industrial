@@ -300,3 +300,62 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 /* Logo Progeral e suporte à instalação PWA */
 .brand-logo{width:54px;height:54px;object-fit:contain;border-radius:12px;background:#fff;flex-shrink:0}.brand{gap:12px}.auth-brand-logo{display:block;width:min(220px,70%);height:auto;object-fit:contain;margin:0 0 22px;border-radius:28px;box-shadow:0 12px 32px #102f491a}@media(max-width:560px){.brand-logo{width:46px;height:46px}.auth-brand-logo{width:160px;margin-bottom:15px}}
+
+
+/* Quiz interativo 5S — Seiri */
+.seiri-wrap{max-width:900px;margin:0 auto;color:#192033}
+.seiri-heading{margin-bottom:20px}
+.seiri-kicker{display:inline-block;color:#0E4596;font-size:10px;font-weight:850;letter-spacing:1.3px;margin-bottom:8px}
+.seiri-heading h2{font-size:clamp(23px,3vw,30px);line-height:1.2;margin:0 0 8px}
+.seiri-heading p{margin:0}
+.seiri-start,.seiri-game,.seiri-result{background:linear-gradient(145deg,#fff,#f7faff);border:1px solid #dce7f5;border-radius:20px;padding:clamp(18px,4vw,34px);box-shadow:0 12px 35px #0e459610}
+.seiri-start{text-align:center}
+.seiri-icon{display:grid;place-items:center;width:78px;height:78px;border-radius:22px;background:linear-gradient(145deg,#0E4596,#2878ce);color:white;font-size:38px;font-weight:800;margin:0 auto 20px;box-shadow:0 10px 25px #0e459630}
+.seiri-start h3{font-size:21px}
+.seiri-start>p{max-width:580px;margin:0 auto 20px;color:#59697d;line-height:1.7}
+.seiri-facts{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:18px 0 24px}
+.seiri-facts span{font-size:12px;font-weight:750;padding:8px 11px;border-radius:999px;background:#eaf2fc;color:#174c8d}
+.seiri-status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:750;color:#5e6b7c;margin-bottom:13px}
+.seiri-progress{height:6px;background:#e4eaf2;border-radius:99px;overflow:hidden;margin-bottom:22px}
+.seiri-progress>div{height:100%;width:100%;background:linear-gradient(90deg,#0E4596,#4c91df);transition:width .25s linear}
+.seiri-timer-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.seiri-timer-start{background:#fbbf24;color:#172033;min-height:40px}
+.seiri-timer{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:850;color:#174c8d;background:#eaf2fc;padding:10px 13px;border-radius:10px;min-width:58px;text-align:center}
+.seiri-timer.urgent{background:#fff1f2;color:#be123c}
+.seiri-game h3{font-size:clamp(17px,2.4vw,22px);line-height:1.55;margin:0 0 20px;white-space:pre-wrap}
+.seiri-options{display:grid;gap:10px}
+.seiri-option{display:flex;align-items:flex-start;gap:12px;text-align:left;width:100%;padding:14px;border:1px solid #dbe3ed;border-radius:13px;background:#fff;color:#253248;line-height:1.55;font-size:14px;transition:border-color .15s,background .15s}
+.seiri-option:hover:not(:disabled){border-color:#0E4596;background:#f2f7ff}
+.seiri-option:disabled{cursor:default}
+.seiri-letter{display:grid;place-items:center;flex:0 0 29px;height:29px;border-radius:9px;background:#eaf2fc;color:#174c8d;font-size:12px;font-weight:850}
+.seiri-option.is-correct{border:2px solid #16a34a;background:#f0fdf4;color:#166534}
+.seiri-option.is-wrong{border:2px solid #e11d48;background:#fff1f2;color:#9f1239}
+.seiri-feedback{margin-top:17px;padding:15px;border-radius:12px;font-size:13px;line-height:1.65}
+.feedback-correct{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.feedback-wrong{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239}
+.seiri-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:23px;padding-top:18px;border-top:1px solid #e4eaf2}
+.seiri-controls span{font-size:11px;color:#69788a;line-height:1.5}
+.seiri-result{text-align:center}
+.seiri-result-medal{font-size:45px;margin-bottom:8px}
+.seiri-result h2{font-size:27px;margin:4px 0 18px}
+.seiri-final-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:20px 0}
+.seiri-final-stats>div{padding:14px 8px;border-radius:13px;background:#edf4fd}
+.seiri-final-stats small{display:block;font-size:10px;color:#5e6b7c;font-weight:750;text-transform:uppercase;margin-bottom:6px}
+.seiri-final-stats strong{font-size:clamp(19px,3vw,27px);color:#0E4596}
+.seiri-result>p{line-height:1.65}
+.seiri-review{text-align:left;margin-top:25px;padding-top:20px;border-top:1px solid #e0e7ef}
+.seiri-review h3{margin-bottom:14px}
+.seiri-review-item{padding:14px 0;border-bottom:1px solid #e4eaf2}
+.seiri-review-item>strong{display:block;line-height:1.5;font-size:13px}
+.seiri-review-item p{font-size:12px;line-height:1.6;margin:7px 0 0;color:#59697d}
+.seiri-review-item .review-good{color:#15803d;font-weight:750}
+.seiri-review-item .review-bad{color:#be123c;font-weight:750}
+.seiri-result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+@media(max-width:560px){
+ .seiri-timer-row{justify-content:space-between}
+ .seiri-controls{align-items:stretch;flex-direction:column}
+ .seiri-controls .btn{width:100%}
+ .seiri-final-stats{gap:6px}
+ .seiri-final-stats>div{padding:12px 5px}
+ .seiri-final-stats small{font-size:9px}
+}
