@@ -94,8 +94,11 @@ async function refreshDashboard() {
     });
     document.querySelector('#leaderboard').innerHTML=board?.length?board.slice(0,10).map((r,i)=>`<div class="leader-row"><span class="medal">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="leader-avatar">${esc(initials(r.display_name))}</span><span class="leader-name"><b>${esc(r.display_name)}${r.user_id===session.user.id?' (você)':''}</b><small>${r.completed_subjects}/4 matérias</small></span><b class="leader-points">${r.total_points} pts</b></div>`).join(''):'<p class="muted">Ainda não há resultados. Seja o primeiro!</p>';
   } catch(err) {
-    console.error(err); toast('Não foi possível carregar o ranking. Confira se o SQL de configuração foi aplicado.',true);
-    document.querySelector('#leaderboard').innerHTML='<p class="muted">Ranking indisponível no momento.</p>';
+    console.error('Falha ao atualizar painel/ranking:', {message:err?.message,code:err?.code,details:err?.details,hint:err?.hint});
+    const detail = [err?.message, err?.code ? 'Código: '+err.code : '', err?.hint].filter(Boolean).join(' — ');
+    toast(detail ? 'Falha no ranking: '+detail : 'Não foi possível carregar o ranking. Confira o console do navegador.',true);
+    const board=document.querySelector('#leaderboard');
+    if(board) board.innerHTML='<p class="muted">Ranking indisponível. Abra o console do navegador (F12) para ver o erro técnico.</p>';
   }
 }
 async function openSubject(id) {
