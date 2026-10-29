@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, APP_NAME } from './config.js';
 import './style.css';
+import { initAdminFiles } from './admin-files.js';
 
 const configured = SUPABASE_URL.startsWith('https://') &&
   !SUPABASE_URL.includes('COLE_AQUI') && !SUPABASE_ANON_KEY.includes('COLE_AQUI');
@@ -77,6 +78,7 @@ async function dashboard() {
   await refreshDashboard();
   document.querySelector('#upload-form')?.addEventListener('submit', uploadPdf);
   document.querySelector('#video-upload-form')?.addEventListener('submit', uploadVideo);
+  if (profile?.role === 'admin') initAdminFiles(supabase, subjects, toast);
 }
 async function refreshDashboard() {
   try {
@@ -169,7 +171,7 @@ async function uploadPdf(e) {
     if(upErr)throw upErr;
     const {error:dbErr}=await supabase.from('materials').insert({subject_id:subjectId,title,storage_path:path,uploaded_by:session.user.id,is_published:true});
     if(dbErr)throw dbErr;
-    toast('PDF enviado e publicado.');form.reset();
+    toast('PDF enviado e publicado.');form.reset();window.dispatchEvent(new Event('admin-files-changed'));
   } catch(err) {toast(err.message||'Não foi possível enviar o PDF.',true);}
   finally {btn.disabled=false;btn.textContent='Enviar PDF';}
 }
@@ -186,7 +188,7 @@ async function uploadVideo(e) {
     if(upErr)throw upErr;
     const {error:dbErr}=await supabase.from('videos').insert({subject_id:subjectId,title,storage_path:path,uploaded_by:session.user.id,is_published:true});
     if(dbErr)throw dbErr;
-    toast('Vídeo enviado e publicado.');form.reset();
+    toast('Vídeo enviado e publicado.');form.reset();window.dispatchEvent(new Event('admin-files-changed'));
   } catch(err) {toast(err.message||'Não foi possível enviar o vídeo.',true);}
   finally {btn.disabled=false;btn.textContent='Enviar vídeo';}
 }
