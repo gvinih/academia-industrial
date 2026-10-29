@@ -85,7 +85,7 @@ async function refreshDashboard() {
       supabase.from('leaderboard').select('user_id,display_name,total_points,completed_subjects').order('total_points',{ascending:false}).order('display_name',{ascending:true}).limit(50)
     ]);
     if(sErr) throw sErr; if(bErr) throw bErr;
-    const mine=(scores||[]), points=mine.reduce((n,x)=>n+Number(x.best_score||0),0), completed=mine.filter(x=>x.best_score!==null).length;
+    const mine=(scores||[]), points=Number((board||[]).find(x=>x.user_id===session.user.id)?.total_points||0), completed=mine.filter(x=>x.best_score!==null).length;
     const position=(board||[]).findIndex(x=>x.user_id===session.user.id)+1;
     document.querySelector('#stats').innerHTML=`<div class="stat"><span>Pontos no ranking</span><strong>${points} <small>pts</small></strong></div><div class="stat"><span>Quizzes concluídos</span><strong>${completed}/4</strong></div><div class="stat"><span>Sua posição</span><strong>${position?'#'+position:'—'}</strong></div>`;
     document.querySelectorAll('.subject-card').forEach(card=>{
