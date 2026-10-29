@@ -90,7 +90,7 @@ async function refreshDashboard() {
     document.querySelector('#stats').innerHTML=`<div class="stat"><span>Pontos no ranking</span><strong>${points} <small>pts</small></strong></div><div class="stat"><span>Quizzes concluídos</span><strong>${completed}/4</strong></div><div class="stat"><span>Sua posição</span><strong>${position?'#'+position:'—'}</strong></div>`;
     document.querySelectorAll('.subject-card').forEach(card=>{
       const id=card.querySelector('button').dataset.id, s=mine.find(x=>x.subject_id===id);
-      card.querySelector('.subject-progress').innerHTML=s?`<span class="status-done">Melhor resultado: ${s.best_score}/50 pontos</span>`:'<span>Ainda não concluído</span>';
+      card.querySelector('.subject-progress').innerHTML=s?`<span class="status-done">Melhor resultado: ${s.best_score}/100 pontos</span>`:'<span>Ainda não concluído</span>';
     });
     document.querySelector('#leaderboard').innerHTML=board?.length?board.slice(0,10).map((r,i)=>`<div class="leader-row"><span class="medal">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="leader-avatar">${esc(initials(r.display_name))}</span><span class="leader-name"><b>${esc(r.display_name)}${r.user_id===session.user.id?' (você)':''}</b><small>${r.completed_subjects}/4 matérias</small></span><b class="leader-points">${r.total_points} pts</b></div>`).join(''):'<p class="muted">Ainda não há resultados. Seja o primeiro!</p>';
   } catch(err) {
@@ -141,16 +141,18 @@ async function renderQuiz(box) {
   box.innerHTML='<h2>Quiz</h2><p class="muted">Carregando perguntas…</p>';
   const {data:loadedQuestions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).order('sort_order');
   if(error){box.innerHTML='<p class="muted">Não foi possível carregar o quiz. Confira a configuração do banco.</p>';return;}
-  const questions = shuffleArray(loadedQuestions || []);
-  if(!questions.length){box.innerHTML='<h2>Quiz</h2><div class="empty-state">As perguntas deste módulo ainda não foram cadastradas.</div>';return;}
-  box.innerHTML=`<div class="quiz-heading"><div><h2>Teste seus conhecimentos</h2><p class="muted">${questions.length} perguntas · melhor resultado conta para o ranking</p></div><span class="points-pill">10 pts por acerto</span></div><form id="quiz-form">${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.question_text)}</legend>${shuffleArray(q.options.map((op,j)=>({text:op,index:j}))).map(op=>`<label class="option"><input type="radio" name="${q.id}" value="${op.index}" required> ${esc(op.text)}</label>`).join('')}</fieldset>`).join('')}<button class="btn btn-primary" type="submit">Enviar respostas</button></form><div id="quiz-result"></div>`;
+  const questionPool = loadedQuestions || [];
+  if(!questionPool.length){box.innerHTML='<h2>Quiz</h2><div class="empty-state">As perguntas deste módulo ainda não foram cadastradas.</div>';return;}
+  if(questionPool.length < 10){box.innerHTML=`<h2>Quiz</h2><div class="empty-state">Esta matéria precisa ter pelo menos 10 perguntas ativas. No momento, há ${questionPool.length}.</div>`;return;}
+  const questions = shuffleArray(questionPool).slice(0,10);
+  box.innerHTML=`<div class="quiz-heading"><div><h2>Teste seus conhecimentos</h2><p class="muted">10 perguntas sorteadas de ${questionPool.length} disponíveis · melhor resultado conta para o ranking</p></div><span class="points-pill">10 pts por acerto</span></div><form id="quiz-form">${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.question_text)}</legend>${shuffleArray(q.options.map((op,j)=>({text:op,index:j}))).map(op=>`<label class="option"><input type="radio" name="${q.id}" value="${op.index}" required> ${esc(op.text)}</label>`).join('')}</fieldset>`).join('')}<button class="btn btn-primary" type="submit">Enviar respostas</button></form><div id="quiz-result"></div>`;
   document.querySelector('#quiz-form').addEventListener('submit',async e=>{
     e.preventDefault();const btn=e.currentTarget.querySelector('button');btn.disabled=true;btn.textContent='Corrigindo…';
     const answers=questions.map(q=>({question_id:q.id,selected_option:Number(new FormData(e.currentTarget).get(q.id))}));
     const {data,error}=await supabase.rpc('submit_quiz',{p_subject_id:activeSubject.id,p_answers:answers});
     if(error){toast(error.message||'Falha ao enviar respostas.',true);btn.disabled=false;btn.textContent='Enviar respostas';return;}
     const result=Array.isArray(data)?data[0]:data;
-    document.querySelector('#quiz-result').innerHTML=`<div class="result-box"><div class="eyebrow">RESULTADO</div><h2>${result.score}/${questions.length} acertos</h2><p>Esta tentativa vale <b>${result.points_awarded} pontos</b>. Melhor pontuação registrada nesta matéria: <b>${result.best_score}/50</b>.</p><p class="muted">O ranking considera somente a melhor tentativa em cada matéria.</p><button class="btn btn-light" id="back-to-dashboard">Ver ranking atualizado</button></div>`;
+    document.querySelector('#quiz-result').innerHTML=`<div class="result-box"><div class="eyebrow">RESULTADO</div><h2>${result.score}/${questions.length} acertos</h2><p>Esta tentativa vale <b>${result.points_awarded} pontos</b>. Melhor pontuação registrada nesta matéria: <b>${result.best_score}/100 pontos</b>.</p><p class="muted">O ranking considera somente a melhor tentativa em cada matéria.</p><button class="btn btn-light" id="back-to-dashboard">Ver ranking atualizado</button></div>`;
     e.currentTarget.querySelectorAll('input,button').forEach(el=>el.disabled=true);
     document.querySelector('#back-to-dashboard').addEventListener('click',dashboard);
   });
