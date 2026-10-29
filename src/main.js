@@ -82,7 +82,7 @@ async function refreshDashboard() {
   try {
     const [{data: scores,error:sErr},{data: board,error:bErr}] = await Promise.all([
       supabase.from('best_scores').select('subject_id,best_score'),
-      supabase.from('leaderboard').select('user_id,display_name,total_points,completed_subjects').limit(50)
+      supabase.from('leaderboard').select('user_id,display_name,total_points,completed_subjects').order('total_points',{ascending:false}).order('display_name',{ascending:true}).limit(50)
     ]);
     if(sErr) throw sErr; if(bErr) throw bErr;
     const mine=(scores||[]), points=mine.reduce((n,x)=>n+Number(x.best_score||0),0), completed=mine.filter(x=>x.best_score!==null).length;
