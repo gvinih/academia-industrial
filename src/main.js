@@ -300,9 +300,9 @@ async function renderLubricationQuiz(box) {
   if(error){console.error(error);box.innerHTML='<h2>Quiz de Lubrificação</h2><div class="empty-state">Não foi possível carregar o quiz. O administrador precisa aplicar o arquivo supabase/quiz_lubrificacao.sql no Supabase.</div>';return;}
   if(!questions || questions.length!==5){box.innerHTML='<h2>Quiz Interativo — Lubrificação Básica</h2><div class="empty-state">Este quiz ainda não está configurado no banco. O administrador deve executar o arquivo supabase/quiz_lubrificacao.sql no Supabase.</div>';return;}
   box.innerHTML=`
-    <div class="seiri-wrap">
-      <div class="seiri-heading"><span class="seiri-kicker">MÓDULO 2 · LUBRIFICAÇÃO</span><h2>Quiz Interativo — Lubrificação Básica</h2><p class="muted">Teste seus conhecimentos sobre atrito, viscosidade, contaminação e boas práticas.</p></div>
-      <div id="lub-start" class="seiri-start"><div class="seiri-icon">⚙</div><h3>Pronto para começar?</h3><p>São cinco questões, com 35 segundos por questão. O cronômetro só começa quando você clicar em “Iniciar tempo”. Sua melhor pontuação nesta matéria vale para o ranking.</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" id="lub-begin">Começar quiz</button></div>
+    <div class="seiri-wrap lubrificacao-theme">
+      <div class="seiri-heading"><span class="seiri-kicker">MANUTENÇÃO INDUSTRIAL</span><h2>Quiz Lubrificação Básica</h2><p class="muted">Avaliação de conhecimentos sobre atrito, desgaste, funções dos lubrificantes, falhas no processo e quantidade correta de aplicação.</p></div>
+      <div id="lub-start" class="seiri-start"><div class="seiri-icon">💧</div><h3>Avaliação de Conhecimentos em Lubrificação</h3><p>Teste seus conhecimentos sobre atrito, desgaste, funções dos lubrificantes, falhas no processo e volume ideal de aplicação em componentes mecânicos.</p><div class="seiri-facts"><span>⏱ 35s por questão</span><span>🔊 Interativo</span><span>✦ Gabarito comentado</span></div><button class="btn btn-primary" id="lub-begin">Começar quiz</button></div>
       <div id="lub-game" class="seiri-game" hidden>
         <div class="seiri-status"><span id="lub-counter">Questão 1 de 5</span><span id="lub-points">0 pontos provisórios</span></div>
         <div class="seiri-progress"><div id="lub-progress-bar"></div></div>
@@ -332,13 +332,13 @@ async function renderLubricationQuiz(box) {
     document.querySelector('#lub-question').textContent=q.question_text;
     document.querySelector('#lub-timer').textContent='35s';document.querySelector('#lub-timer').classList.remove('urgent');
     document.querySelector('#lub-progress-bar').style.width='100%';
-    timerBtn.disabled=false;timerBtn.textContent='▶ Iniciar tempo';
+    timerBtn.disabled=false;timerBtn.textContent='⏱ Tempo em andamento';
     document.querySelector('#lub-hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
     document.querySelector('#lub-feedback').hidden=true;nextBtn.disabled=true;
     nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
     const options=document.querySelector('#lub-options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
-    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));\n    startTimer();
   }
   function choose(optionIndex,timedOut){
     if(selected!==null)return;
