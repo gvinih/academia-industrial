@@ -252,6 +252,7 @@ async function renderSeiriQuiz(box) {
     const options=document.querySelector('#seiri-options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
     options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    startTimer();
   }
   function choose(optionIndex,timedOut){
     if(selected!==null)return;
