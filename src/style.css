@@ -217,3 +217,32 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .subject-card .subject-description{min-height:0;margin-bottom:18px;font-size:13px}
   .subject-card .subject-progress{margin-bottom:12px}
 }
+
+
+/* Player de vídeo responsivo: mantém o MP4 dentro dos limites da página */
+.lesson-panel,
+#lesson-content,
+.training-video-list,
+.training-video {
+  min-width: 0;
+  max-width: 100%;
+}
+.training-video {
+  width: 100%;
+  overflow: hidden;
+}
+.training-video-player {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 70vh;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #101820;
+  border-radius: 10px;
+}
+@media (max-width: 560px) {
+  .lesson-panel { padding: 16px; }
+  .training-video-player { border-radius: 7px; }
+}
