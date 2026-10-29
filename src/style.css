@@ -416,3 +416,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
 .seiri-result-actions .btn-light{background:#ffffff12;color:#e2e8f0;border:1px solid #ffffff20}
 @media(max-width:560px){.seiri-wrap{padding:10px;border-radius:18px}.seiri-heading{padding:5px 3px 14px}.seiri-start,.seiri-game,.seiri-result{padding:17px 12px}.seiri-icon{width:80px;height:80px;font-size:36px}.seiri-facts{gap:6px}.seiri-facts span{padding:11px 4px;font-size:9px}.seiri-status{gap:5px;flex-wrap:wrap}.seiri-status span{font-size:9px}.seiri-option{padding:11px 9px;gap:9px;font-size:12px}.seiri-controls{align-items:flex-start}.seiri-controls span{max-width:52%;padding-top:4px}.seiri-controls .btn{padding:11px 13px}.seiri-final-stats{gap:2px;padding:6px}.seiri-final-stats>div{padding:7px 2px}.seiri-final-stats small{font-size:8px}}
+
+
+/* Quiz de Lubrificação — tema âmbar/laranja inspirado no HTML fornecido */
+.lubrificacao-theme{background:radial-gradient(circle at 50% 0%,#3b2814,#172033 58%,#0f172a 100%);border:1px solid #ffffff1c}
+.lubrificacao-theme:before{background:#d97706}
+.lubrificacao-theme:after{background:#ea580c}
+.lubrificacao-theme .seiri-kicker{color:#fcd34d;background:#451a0388;border-color:#92400e}
+.lubrificacao-theme .seiri-heading h2{background:linear-gradient(90deg,#fff,#fde68a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lubrificacao-theme .seiri-icon{background:linear-gradient(135deg,#d97706,#f97316,#f59e0b);box-shadow:0 16px 35px #f9731645}
+.lubrificacao-theme .seiri-facts span{color:#fed7aa}
+.lubrificacao-theme .seiri-start .btn,.lubrificacao-theme .seiri-controls .btn-primary,.lubrificacao-theme .seiri-result-actions .btn-primary{background:linear-gradient(110deg,#f59e0b,#ea580c);box-shadow:0 9px 25px #ea580c45;color:#fff}
+.lubrificacao-theme .seiri-status span{color:#fed7aa}
+.lubrificacao-theme .seiri-progress>div{background:linear-gradient(90deg,#f59e0b,#f97316)}
+.lubrificacao-theme .seiri-timer-start{display:none!important}
+.lubrificacao-theme .seiri-timer{color:#fde68a}
+.lubrificacao-theme .seiri-option:hover:not(:disabled){border-color:#f59e0b;background:#b453091c}
+.lubrificacao-theme .seiri-letter{color:#fcd34d;background:#ffffff0a}
+.lubrificacao-theme .seiri-result h2{color:#fff}
+.lubrificacao-theme .seiri-final-stats strong{color:#fbbf24}
+.lubrificacao-theme .seiri-controls .btn-primary{background:linear-gradient(110deg,#f59e0b,#ea580c)}
+@media(max-width:560px){.lubrificacao-theme .seiri-timer-row{justify-content:flex-end}}
