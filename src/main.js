@@ -92,7 +92,7 @@ async function refreshDashboard() {
       const id=card.querySelector('button').dataset.id, s=mine.find(x=>x.subject_id===id);
       card.querySelector('.subject-progress').innerHTML=s?`<span class="status-done">Melhor resultado: ${s.best_score}/100 pontos</span>`:'<span>Ainda não concluído</span>';
     });
-    document.querySelector('#leaderboard').innerHTML=board?.length?board.slice(0,10).map((r,i)=>`<div class="leader-row"><span class="medal">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="leader-avatar">${esc(initials(r.display_name))}</span><span class="leader-name"><b>${esc(r.display_name)}${r.user_id===session.user.id?' (você)':''}</b><small>${r.completed_subjects}/4 matérias</small></span><b class="leader-points">${r.total_points} pts</b></div>`).join(''):'<p class="muted">Ainda não há resultados. Seja o primeiro!</p>';
+    document.querySelector('#leaderboard').innerHTML=board?.length?board.slice(0,10).map((r,i)=>`<div class="leader-row"><span class="medal">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="leader-avatar">${esc(initials(r.display_name))}</span><span class="leader-name"><b>${esc(r.display_name)}${r.user_id===session.user.id?' (você)':''}</b></span><b class="leader-points">${r.total_points} pts</b></div>`).join(''):'<p class="muted">Ainda não há resultados. Seja o primeiro!</p>';
   } catch(err) {
     console.error('Falha ao atualizar painel/ranking:', {message:err?.message,code:err?.code,details:err?.details,hint:err?.hint});
     const detail = [err?.message, err?.code ? 'Código: '+err.code : '', err?.hint].filter(Boolean).join(' — ');
