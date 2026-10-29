@@ -135,11 +135,18 @@ async function renderSubjectTab() {
   }
   if(activeTab==='video'){
     box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Vídeos oficiais desta matéria.</p><div class="skeleton">Buscando vídeos…</div>';
-    const {data,error}=await supabase.from('videos').select('id,title,storage_path,created_at').eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:false});
+    const {data,error}=await supabase.from('videos').select('id,title,storage_path,created_at').eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true}).order('id',{ascending:true});
     if(error){console.error(error);box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Não foi possível carregar os vídeos. Confira se o SQL de configuração de vídeos foi aplicado no Supabase.</p>';return;}
     if(!data?.length){box.innerHTML='<h2>Vídeos de treinamento</h2><div class="empty-state">Nenhum vídeo foi publicado para esta matéria ainda.</div>';return;}
     const items=await Promise.all(data.map(async v=>{const {data:signed,error:urlError}=await supabase.storage.from('training-videos').createSignedUrl(v.storage_path,3600);return {...v,url:urlError?null:signed?.signedUrl}}));
-    box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">'+(profile?.role==='admin'?'Como administrador, você pode excluir somente os vídeos desta matéria.':'Vídeos oficiais desta matéria.')+'</p><div class="training-video-list">'+items.map(v=>`<article class="training-video"><h3>${esc(v.title)}</h3>${v.url?`<video class="training-video-player" controls playsinline preload="metadata"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`:'<p class="muted">Vídeo indisponível no momento.</p>'}${profile?.role==='admin'? `<button class="btn btn-small admin-delete-content" type="button" data-delete-video="${v.id}">Excluir vídeo</button>`:''}</article>`).join('')+'</div>';
+    box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">'+(profile?.role==='admin'?'Como administrador, você pode excluir somente os vídeos desta matéria.':'Vídeos oficiais desta matéria.')+'</p><p class="video-order-note">Organizados do vídeo mais antigo ao mais recente. Selecione um título para abrir o vídeo.</p><div class="training-video-list">'+items.map((v,i)=>`<article class="training-video"><button class="training-video-title" type="button" data-toggle-video="${v.id}" aria-expanded="false" aria-controls="video-panel-${v.id}"><span class="training-video-number">${String(i+1).padStart(2,'0')}</span><span class="training-video-title-text"><strong>${esc(v.title)}</strong><small>${v.created_at? 'Enviado em '+new Date(v.created_at).toLocaleDateString('pt-BR'):'Vídeo de treinamento'}</small></span><span class="training-video-chevron" aria-hidden="true">⌄</span></button><div class="training-video-panel" id="video-panel-${v.id}" hidden>${v.url?`<video class="training-video-player" controls playsinline preload="none"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`:'<p class="muted">Vídeo indisponível no momento.</p>'}</div>${profile?.role==='admin'? `<button class="btn btn-small admin-delete-content" type="button" data-delete-video="${v.id}">Excluir vídeo</button>`:''}</article>`).join('')+'</div>';
+    box.querySelectorAll('[data-toggle-video]').forEach(button=>button.addEventListener('click',()=>{
+      const panel=document.getElementById(button.getAttribute('aria-controls'));
+      const willOpen=button.getAttribute('aria-expanded')!=='true';
+      button.setAttribute('aria-expanded',String(willOpen));
+      if(panel) panel.hidden=!willOpen;
+      button.querySelector('.training-video-chevron').textContent=willOpen?'⌃':'⌄';
+    }));
     if(profile?.role==='admin') box.querySelectorAll('[data-delete-video]').forEach(button=>button.addEventListener('click',()=>deleteSubjectFile('video',items.find(v=>v.id===button.dataset.deleteVideo))));
     return;
   }
