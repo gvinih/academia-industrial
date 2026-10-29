@@ -280,3 +280,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   justify-self: start;
   max-width: 100%;
 }
+
+
+/* Exclusão administrativa deliberadamente discreta e destacada como ação destrutiva */
+.admin-delete-content {
+  margin-top: .75rem;
+  color: #9f1239;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+}
+.admin-delete-content:hover:not(:disabled) {
+  background: #ffe4e6;
+  border-color: #fda4af;
+}
+.admin-delete-content:disabled {
+  opacity: .65;
+  cursor: wait;
+}
