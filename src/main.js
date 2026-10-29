@@ -90,7 +90,7 @@ async function refreshDashboard() {
     document.querySelector('#stats').innerHTML=`<div class="stat"><span>Pontos no ranking</span><strong>${points} <small>pts</small></strong></div><div class="stat"><span>Quizzes concluídos</span><strong>${completed}</strong></div><div class="stat"><span>Sua posição</span><strong>${position?'#'+position:'—'}</strong></div>`;
     document.querySelectorAll('.subject-card').forEach(card=>{
       const id=card.querySelector('button').dataset.id, s=mine.find(x=>x.subject_id===id);
-      card.querySelector('.subject-progress').innerHTML=s?`<span class="status-done">Melhor resultado: ${s.best_score}/100 pontos</span>`:'<span>Ainda não concluído</span>';
+      card.querySelector('.subject-progress').innerHTML=s?`<span class="status-done">Pontos obtidos: ${s.best_score}/100 pontos</span>`:'<span>Ainda não concluído</span>';
     });
     document.querySelector('#leaderboard').innerHTML=board?.length?board.slice(0,10).map((r,i)=>`<div class="leader-row"><span class="medal">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</span><span class="leader-avatar">${esc(initials(r.display_name))}</span><span class="leader-name"><b>${esc(r.display_name)}${r.user_id===session.user.id?' (você)':''}</b></span><b class="leader-points">${r.total_points} pts</b></div>`).join(''):'<p class="muted">Ainda não há resultados. Seja o primeiro!</p>';
   } catch(err) {
