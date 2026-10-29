@@ -80,12 +80,19 @@ async function dashboard() {
 }
 async function refreshDashboard() {
   try {
-    const [{data: scores,error:sErr},{data: board,error:bErr}] = await Promise.all([
-      supabase.from('best_scores').select('user_id,subject_id,best_score').eq('user_id',session.user.id),
+    const [{data: attempts,error:aErr},{data: board,error:bErr}] = await Promise.all([
+      supabase.from('quiz_attempts').select('subject_id,points,quiz_key,submitted_at').eq('user_id',session.user.id),
       supabase.from('leaderboard').select('user_id,display_name,total_points,completed_subjects').order('total_points',{ascending:false}).order('display_name',{ascending:true}).limit(50)
     ]);
-    if(sErr) throw sErr; if(bErr) throw bErr;
-    const mine=(scores||[]), myRanking=(board||[]).find(x=>x.user_id===session.user.id), points=Number(myRanking?.total_points||0), completed=Number(myRanking?.completed_subjects||0);
+    if(aErr) throw aErr; if(bErr) throw bErr;
+    // A pontuação do card é a soma dos pontos concedidos em todos os quizzes da matéria.
+    // As tentativas repetidas recebem zero pontos pela RPC submit_quiz.
+    const mine=Object.values((attempts||[]).reduce((acc,a)=>{
+      const id=a.subject_id;
+      if(!acc[id]) acc[id]={subject_id:id,best_score:0};
+      acc[id].best_score+=Number(a.points||0);
+      return acc;
+    },{})), myRanking=(board||[]).find(x=>x.user_id===session.user.id), points=Number(myRanking?.total_points||0), completed=Number(myRanking?.completed_subjects||0);
     const position=(board||[]).findIndex(x=>x.user_id===session.user.id)+1;
     document.querySelector('#stats').innerHTML=`<div class="stat"><span>Pontos no ranking</span><strong>${points} <small>pts</small></strong></div><div class="stat"><span>Quizzes concluídos</span><strong>${completed}</strong></div><div class="stat"><span>Sua posição</span><strong>${position?'#'+position:'—'}</strong></div>`;
     document.querySelectorAll('.subject-card').forEach(card=>{
