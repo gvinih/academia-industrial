@@ -178,7 +178,7 @@ async function uploadVideo(e) {
   if(file.size>100*1024*1024){toast('O vídeo deve ter no máximo 100 MB.',true);return;}
   const btn=form.querySelector('button');btn.disabled=true;btn.textContent='Enviando vídeo…';
   try {
-    const safe=file.name.normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
+    const safe=file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
     const path=`${subjectId}/${crypto.randomUUID()}-${safe}`;
     const {error:upErr}=await supabase.storage.from('training-videos').upload(path,file,{contentType:'video/mp4',upsert:false});
     if(upErr)throw upErr;
