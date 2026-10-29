@@ -219,7 +219,7 @@ async function renderSeiriQuiz(box) {
         <div class="seiri-timer-row"><button class="btn seiri-timer-start" id="seiri-timer-start">▶ Iniciar tempo</button><span class="seiri-timer" id="seiri-timer">35s</span></div>
         <h3 id="seiri-question"></h3><div id="seiri-options" class="seiri-options"></div>
         <div id="seiri-feedback" class="seiri-feedback" hidden></div>
-        <div class="seiri-controls"><span id="seiri-hint">Leia as alternativas e inicie o cronômetro quando estiver pronto.</span><button class="btn btn-primary" id="seiri-next" disabled>Avançar →</button></div>
+        <div class="seiri-controls"><span id="seiri-hint">Selecione uma alternativa antes que o tempo termine.</span><button class="btn btn-primary" id="seiri-next" disabled>Avançar →</button></div>
       </div>
       <div id="seiri-result" class="seiri-result" hidden></div>
     </div>`;
@@ -231,7 +231,7 @@ async function renderSeiriQuiz(box) {
   function startTimer(){
     if(timerStarted||selected!==null)return;
     timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
-    document.querySelector('#seiri-hint').textContent='O tempo está correndo. Escolha uma alternativa.';
+    document.querySelector('#seiri-hint').textContent='O tempo está correndo automaticamente. Escolha uma alternativa.';
     timer=setInterval(()=>{
       timeLeft--;totalSeconds++;
       document.querySelector('#seiri-timer').textContent=timeLeft+'s';
@@ -338,7 +338,8 @@ async function renderLubricationQuiz(box) {
     nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
     const options=document.querySelector('#lub-options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
-    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));\n    startTimer();
+    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    startTimer();
   }
   function choose(optionIndex,timedOut){
     if(selected!==null)return;
