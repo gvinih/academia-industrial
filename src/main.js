@@ -108,7 +108,7 @@ async function openSubject(id) {
   renderSubjectTabs(); await renderSubjectTab();
 }
 function renderSubjectTabs() {
-  document.querySelector('#tabs').innerHTML=[['resumo','Resumo'],['apostila','Apostila PDF'],['video','Vídeo'],['quiz','Quiz']].map(([k,t])=>`<button class="tab ${activeTab===k?'active':''}" data-tab="${k}">${t}</button>`).join('');
+  document.querySelector('#tabs').innerHTML=[['resumo','Resumo'],['apostila','Apostila PDF'],['video','Vídeo'],['quiz','Quiz'],['seiri','Quiz Seiri']].map(([k,t])=>`<button class="tab ${activeTab===k?'active':''}" data-tab="${k}">${t}</button>`).join('');
   document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',async()=>{activeTab=b.dataset.tab;renderSubjectTabs();await renderSubjectTab()}));
 }
 const summaries = {
@@ -140,7 +140,8 @@ async function renderSubjectTab() {
     if(profile?.role==='admin') box.querySelectorAll('[data-delete-video]').forEach(button=>button.addEventListener('click',()=>deleteSubjectFile('video',items.find(v=>v.id===button.dataset.deleteVideo))));
     return;
   }
-  if(activeTab==='quiz'){await renderQuiz(box);}
+  if(activeTab==='quiz'){await renderQuiz(box);return;}
+  if(activeTab==='seiri'){await renderSeiriQuiz(box);}
 }
 async function deleteSubjectFile(kind, file) {
   if (profile?.role !== 'admin' || !file || file.subject_id !== activeSubject?.id) {
@@ -178,7 +179,7 @@ async function deleteSubjectFile(kind, file) {
 
 async function renderQuiz(box) {
   box.innerHTML='<h2>Quiz</h2><p class="muted">Carregando perguntas…</p>';
-  const {data:loadedQuestions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).order('sort_order');
+  const {data:loadedQuestions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).lt('sort_order',9001).order('sort_order');
   if(error){box.innerHTML='<p class="muted">Não foi possível carregar o quiz. Confira a configuração do banco.</p>';return;}
   const questionPool = loadedQuestions || [];
   if(!questionPool.length){box.innerHTML='<h2>Quiz</h2><div class="empty-state">As perguntas deste módulo ainda não foram cadastradas.</div>';return;}
@@ -196,6 +197,96 @@ async function renderQuiz(box) {
     document.querySelector('#back-to-dashboard').addEventListener('click',dashboard);
   });
 }
+
+async function renderSeiriQuiz(box) {
+  box.innerHTML='<h2>Encontro 1: Introdução ao 5S e Seiri</h2><p class="muted">Carregando as cinco questões…</p>';
+  const {data:questions,error}=await supabase.from('quiz_questions')
+    .select('id,question_text,options,correct_option,explanation,sort_order')
+    .eq('subject_id','5s').eq('is_active',true).gte('sort_order',9001).lte('sort_order',9005).order('sort_order');
+  if(error){console.error(error);box.innerHTML='<h2>Quiz Seiri</h2><div class="empty-state">Não foi possível carregar este quiz. O administrador precisa aplicar o arquivo supabase/quiz_5s_seiri.sql no Supabase.</div>';return;}
+  if(!questions || questions.length!==5){box.innerHTML='<h2>Encontro 1: Introdução ao 5S e Seiri</h2><div class="empty-state">Este quiz ainda não está configurado no banco. Peça ao administrador para aplicar o arquivo SQL de configuração.</div>';return;}
+  box.innerHTML=`
+    <div class="seiri-wrap">
+      <div class="seiri-heading"><span class="seiri-kicker">MÓDULO 1 · 5S</span><h2>Encontro 1: Introdução ao 5S &amp; Seiri</h2><p class="muted">Cinco questões sobre utilização, triagem e organização do posto de trabalho.</p></div>
+      <div id="seiri-start" class="seiri-start"><div class="seiri-icon">▦</div><h3>Pronto para testar seus conhecimentos?</h3><p>Você terá 35 segundos por questão, mas o cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" id="seiri-begin">Começar quiz</button></div>
+      <div id="seiri-game" class="seiri-game" hidden>
+        <div class="seiri-status"><span id="seiri-counter">Questão 1 de 5</span><span id="seiri-points">0 pontos provisórios</span></div>
+        <div class="seiri-progress"><div id="seiri-progress-bar"></div></div>
+        <div class="seiri-timer-row"><button class="btn seiri-timer-start" id="seiri-timer-start">▶ Iniciar tempo</button><span class="seiri-timer" id="seiri-timer">35s</span></div>
+        <h3 id="seiri-question"></h3><div id="seiri-options" class="seiri-options"></div>
+        <div id="seiri-feedback" class="seiri-feedback" hidden></div>
+        <div class="seiri-controls"><span id="seiri-hint">Leia as alternativas e inicie o cronômetro quando estiver pronto.</span><button class="btn btn-primary" id="seiri-next" disabled>Avançar →</button></div>
+      </div>
+      <div id="seiri-result" class="seiri-result" hidden></div>
+    </div>`;
+  let index=0, timer=null, timeLeft=35, timerStarted=false, selected=null, correctCount=0, totalSeconds=0;
+  const answers=[];
+  const start=document.querySelector('#seiri-start'), game=document.querySelector('#seiri-game'), resultBox=document.querySelector('#seiri-result');
+  const timerBtn=document.querySelector('#seiri-timer-start'), nextBtn=document.querySelector('#seiri-next');
+  function stopTimer(){if(timer){clearInterval(timer);timer=null;}timerStarted=false;}
+  function startTimer(){
+    if(timerStarted||selected!==null)return;
+    timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
+    document.querySelector('#seiri-hint').textContent='O tempo está correndo. Escolha uma alternativa.';
+    timer=setInterval(()=>{
+      timeLeft--;totalSeconds++;
+      document.querySelector('#seiri-timer').textContent=timeLeft+'s';
+      document.querySelector('#seiri-progress-bar').style.width=(timeLeft/35*100)+'%';
+      if(timeLeft<=5)document.querySelector('#seiri-timer').classList.add('urgent');
+      if(timeLeft<=0){stopTimer();const wrongIndex=questions[index].correct_option===0?1:0;choose(wrongIndex,true);}
+    },1000);
+  }
+  function loadQuestion(){
+    stopTimer();timeLeft=35;selected=null;
+    const q=questions[index];
+    document.querySelector('#seiri-counter').textContent='Questão '+(index+1)+' de '+questions.length;
+    document.querySelector('#seiri-points').textContent=(correctCount*20)+' pontos provisórios';
+    document.querySelector('#seiri-question').textContent=q.question_text;
+    document.querySelector('#seiri-timer').textContent='35s';
+    document.querySelector('#seiri-timer').classList.remove('urgent');
+    document.querySelector('#seiri-progress-bar').style.width='100%';
+    timerBtn.disabled=false;timerBtn.textContent='▶ Iniciar tempo';
+    document.querySelector('#seiri-hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
+    document.querySelector('#seiri-feedback').hidden=true;
+    nextBtn.disabled=true;nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
+    const options=document.querySelector('#seiri-options');
+    options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
+    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+  }
+  function choose(optionIndex,timedOut){
+    if(selected!==null)return;
+    selected=optionIndex;stopTimer();
+    const q=questions[index],isCorrect=optionIndex===q.correct_option;
+    if(isCorrect)correctCount++;
+    answers.push({question_id:q.id,selected_option:optionIndex});
+    document.querySelectorAll('#seiri-options button').forEach(b=>{
+      const n=Number(b.dataset.option);b.disabled=true;
+      if(n===q.correct_option)b.classList.add('is-correct');
+      else if(n===optionIndex)b.classList.add('is-wrong');
+    });
+    const feedback=document.querySelector('#seiri-feedback');
+    feedback.hidden=false;feedback.className='seiri-feedback '+(isCorrect?'feedback-correct':'feedback-wrong');
+    feedback.innerHTML='<strong>'+(timedOut?'Tempo esgotado. ':isCorrect?'Resposta correta! ':'Não foi dessa vez. ')+'</strong>'+esc(q.explanation);
+    document.querySelector('#seiri-points').textContent=(correctCount*20)+' pontos provisórios';
+    document.querySelector('#seiri-hint').textContent=timedOut?'A questão foi marcada como incorreta porque o tempo terminou.':'Confira a explicação antes de avançar.';
+    nextBtn.disabled=false;
+  }
+  async function finish(){
+    nextBtn.disabled=true;nextBtn.textContent='Registrando resultado…';
+    const {data,error}=await supabase.rpc('submit_quiz',{p_subject_id:'5s',p_answers:answers});
+    if(error){toast(error.message||'Não foi possível registrar a pontuação.',true);nextBtn.disabled=false;nextBtn.textContent='Tentar registrar novamente';return;}
+    const final=Array.isArray(data)?data[0]:data;
+    game.hidden=true;resultBox.hidden=false;
+    const percent=Math.round(final.score/questions.length*100);
+    resultBox.innerHTML=`<div class="seiri-result-medal">${percent===100?'🏆':percent>=60?'⭐':'📘'}</div><span class="seiri-kicker">RESULTADO DO ENCONTRO 1</span><h2>${percent===100?'Desempenho perfeito!':percent>=60?'Bom desempenho!':'Vamos revisar?'}</h2><div class="seiri-final-stats"><div><small>Acertos</small><strong>${final.score}/${questions.length}</strong></div><div><small>Aproveitamento</small><strong>${percent}%</strong></div><div><small>Tempo</small><strong>${totalSeconds}s</strong></div></div><p>Você ganhou <b>${final.points_awarded} pontos</b>. Sua melhor pontuação registrada em 5S agora é <b>${final.best_score}/100</b>.</p><p class="muted">O ranking usa sua melhor pontuação na matéria 5S. Seu resultado é salvo na sua conta e não altera o histórico de outros participantes.</p><div class="seiri-review"><h3>Revisão das respostas</h3>${questions.map((q,i)=>{const a=answers[i];return `<article class="seiri-review-item"><strong>${i+1}. ${esc(q.question_text)}</strong><p class="${a.selected_option===q.correct_option?'review-good':'review-bad'}">${a.selected_option===q.correct_option?'✓ Resposta correta':'✕ Resposta incorreta'} — ${esc(q.options[q.correct_option])}</p><p>${esc(q.explanation)}</p></article>`;}).join('')}</div><div class="seiri-result-actions"><button class="btn btn-primary" id="seiri-retry">Tentar novamente</button><button class="btn btn-light" id="seiri-dashboard">Ver ranking atualizado</button></div>`;
+    document.querySelector('#seiri-retry').addEventListener('click',()=>renderSeiriQuiz(box));
+    document.querySelector('#seiri-dashboard').addEventListener('click',dashboard);
+  }
+  document.querySelector('#seiri-begin').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
+  timerBtn.addEventListener('click',startTimer);
+  nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
+}
+
 async function uploadPdf(e) {
   e.preventDefault();const form=e.currentTarget,fd=new FormData(form),file=fd.get('file'),subjectId=fd.get('subject_id'),title=fd.get('title').toString().trim();
   if(!file||file.type!=='application/pdf'){toast('Selecione um arquivo PDF válido.',true);return;}
