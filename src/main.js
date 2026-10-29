@@ -81,7 +81,7 @@ async function dashboard() {
 async function refreshDashboard() {
   try {
     const [{data: scores,error:sErr},{data: board,error:bErr}] = await Promise.all([
-      supabase.from('best_scores').select('subject_id,best_score'),
+      supabase.from('best_scores').select('user_id,subject_id,best_score').eq('user_id',session.user.id),
       supabase.from('leaderboard').select('user_id,display_name,total_points,completed_subjects').order('total_points',{ascending:false}).order('display_name',{ascending:true}).limit(50)
     ]);
     if(sErr) throw sErr; if(bErr) throw bErr;
