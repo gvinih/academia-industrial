@@ -72,10 +72,11 @@ async function boot() {
   supabase.auth.onAuthStateChange((_event, next) => { session=next; if(!next){profile=null;authView();} });
 }
 async function dashboard() {
-  shell(`<section class="welcome"><div><div class="eyebrow">SUA TRILHA DE APRENDIZAGEM</div><h1>Olá, ${esc(profile?.display_name || session.user.email?.split('@')[0])}!</h1><p>Estude, responda aos quizzes e acompanhe sua evolução.</p></div><div class="welcome-badge">🏆 <span>O conhecimento vale pontos</span></div></section><section class="stats" id="stats"><div class="stat"><span>Pontos no ranking</span><strong>—</strong></div><div class="stat"><span>Quizzes concluídos</span><strong>—</strong></div><div class="stat"><span>Sua posição</span><strong>—</strong></div></section><div class="dashboard-grid"><section><div class="section-title"><h2>Matérias</h2><span class="muted">4 módulos</span></div><div class="subject-grid" id="subject-grid">${subjects.map((s,i)=>`<article class="subject-card"><div class="subject-body"><div class="subject-card-heading"><span class="subject-index">MÓDULO 0${i+1}</span><h3>${s.name}</h3></div><p class="subject-description">${s.description}</p><div class="subject-progress"><span>Carregando progresso…</span></div><button class="btn btn-primary subject-open" data-id="${s.id}">Abrir matéria <span aria-hidden="true">→</span></button></div></article>`).join('')}</div></section><aside class="panel ranking-panel"><div class="section-title"><h2>🏆 Ranking geral</h2><span class="top-three">TOP 3</span></div><p class="muted small">Conta a melhor pontuação de cada matéria.</p><div id="leaderboard" class="leaderboard"><div class="skeleton">Carregando ranking…</div></div><div class="ranking-note">Os três primeiros colocados serão os premiados conforme as regras definidas pela organização.</div></aside></div>${profile?.role==='admin'?'<section class="panel admin-panel"><div><div class="eyebrow">ADMINISTRAÇÃO</div><h2>Materiais oficiais</h2><p class="muted">Envie PDFs para uma matéria. Os arquivos ficam no armazenamento privado do projeto.</p></div><form id="upload-form" class="upload-form"><label class="field">Matéria<select name="subject_id" required>'+subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')+'</select></label><label class="field">Título do material<input name="title" required maxlength="120" placeholder="Ex.: Apostila oficial de 5S"></label><label class="field">Arquivo PDF<input name="file" type="file" accept="application/pdf,.pdf" required></label><button class="btn btn-primary" type="submit">Enviar PDF</button></form></section>':''}`);
+  shell(`<section class="welcome"><div><div class="eyebrow">SUA TRILHA DE APRENDIZAGEM</div><h1>Olá, ${esc(profile?.display_name || session.user.email?.split('@')[0])}!</h1><p>Estude, responda aos quizzes e acompanhe sua evolução.</p></div><div class="welcome-badge">🏆 <span>O conhecimento vale pontos</span></div></section><section class="stats" id="stats"><div class="stat"><span>Pontos no ranking</span><strong>—</strong></div><div class="stat"><span>Quizzes concluídos</span><strong>—</strong></div><div class="stat"><span>Sua posição</span><strong>—</strong></div></section><div class="dashboard-grid"><section><div class="section-title"><h2>Matérias</h2><span class="muted">4 módulos</span></div><div class="subject-grid" id="subject-grid">${subjects.map((s,i)=>`<article class="subject-card"><div class="subject-body"><div class="subject-card-heading"><span class="subject-index">MÓDULO 0${i+1}</span><h3>${s.name}</h3></div><p class="subject-description">${s.description}</p><div class="subject-progress"><span>Carregando progresso…</span></div><button class="btn btn-primary subject-open" data-id="${s.id}">Abrir matéria <span aria-hidden="true">→</span></button></div></article>`).join('')}</div></section><aside class="panel ranking-panel"><div class="section-title"><h2>🏆 Ranking geral</h2><span class="top-three">TOP 3</span></div><p class="muted small">Conta a melhor pontuação de cada matéria.</p><div id="leaderboard" class="leaderboard"><div class="skeleton">Carregando ranking…</div></div><div class="ranking-note">Os três primeiros colocados serão os premiados conforme as regras definidas pela organização.</div></aside></div>${profile?.role==='admin'?'<section class="panel admin-panel"><div><div class="eyebrow">ADMINISTRAÇÃO</div><h2>Materiais oficiais</h2><p class="muted">Envie PDFs para uma matéria. Os arquivos ficam no armazenamento privado do projeto.</p></div><form id="upload-form" class="upload-form"><label class="field">Matéria<select name="subject_id" required>'+subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')+'</select></label><label class="field">Título do material<input name="title" required maxlength="120" placeholder="Ex.: Apostila oficial de 5S"></label><label class="field">Arquivo PDF<input name="file" type="file" accept="application/pdf,.pdf" required></label><button class="btn btn-primary" type="submit">Enviar PDF</button></form><div><h3>Vídeos de treinamento</h3><p class="muted">Envie um vídeo MP4 de até 100 MB para a matéria escolhida.</p><form id="video-upload-form" class="upload-form"><label class="field">Matéria<select name="subject_id" required>'+subjects.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')+'</select></label><label class="field">Título do vídeo<input name="title" required maxlength="120" placeholder="Ex.: 5S na prática"></label><label class="field">Arquivo MP4<input name="file" type="file" accept="video/mp4,.mp4" required></label><button class="btn btn-primary" type="submit">Enviar vídeo</button></form></div></section>':''}`);
   document.querySelectorAll('.subject-open').forEach(b=>b.addEventListener('click',()=>openSubject(b.dataset.id)));
   await refreshDashboard();
   document.querySelector('#upload-form')?.addEventListener('submit', uploadPdf);
+  document.querySelector('#video-upload-form')?.addEventListener('submit', uploadVideo);
 }
 async function refreshDashboard() {
   try {
@@ -126,8 +127,13 @@ async function renderSubjectTab() {
     return;
   }
   if(activeTab==='video'){
-    const queries={'5s':'5S na prática operacional português','lubrificacao':'lubrificação industrial básica português','pneumatica':'pneumática básica industrial português','eletrica':'elétrica básica industrial português'};
-    box.innerHTML=`<h2>Vídeo de apoio</h2><p>O link abaixo abre uma busca por vídeos do assunto. O administrador poderá trocar por um vídeo específico aprovado pela empresa na próxima etapa.</p><a class="video-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(queries[activeSubject.id])}" target="_blank" rel="noopener">▶ Encontrar vídeo de ${activeSubject.name}</a>`;return;
+    box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Vídeos oficiais desta matéria.</p><div class="skeleton">Buscando vídeos…</div>';
+    const {data,error}=await supabase.from('videos').select('id,title,storage_path,created_at').eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:false});
+    if(error){console.error(error);box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Não foi possível carregar os vídeos. Confira se o SQL de configuração de vídeos foi aplicado no Supabase.</p>';return;}
+    if(!data?.length){box.innerHTML='<h2>Vídeos de treinamento</h2><div class="empty-state">Nenhum vídeo foi publicado para esta matéria ainda.</div>';return;}
+    const items=await Promise.all(data.map(async v=>{const {data:signed,error:urlError}=await supabase.storage.from('training-videos').createSignedUrl(v.storage_path,3600);return {...v,url:urlError?null:signed?.signedUrl}}));
+    box.innerHTML='<h2>Vídeos de treinamento</h2><div class="training-video-list">'+items.map(v=>`<article class="training-video"><h3>${esc(v.title)}</h3>${v.url?`<video class="training-video-player" controls playsinline preload="metadata"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`:'<p class="muted">Vídeo indisponível no momento.</p>'}</article>`).join('')+'</div>';
+    return;
   }
   if(activeTab==='quiz'){await renderQuiz(box);}
 }
@@ -165,5 +171,23 @@ async function uploadPdf(e) {
   } catch(err) {toast(err.message||'Não foi possível enviar o PDF.',true);}
   finally {btn.disabled=false;btn.textContent='Enviar PDF';}
 }
+async function uploadVideo(e) {
+  e.preventDefault();
+  const form=e.currentTarget,fd=new FormData(form),file=fd.get('file'),subjectId=fd.get('subject_id'),title=fd.get('title').toString().trim();
+  if(!file||(!['video/mp4','application/mp4'].includes(file.type)&&!file.name.toLowerCase().endsWith('.mp4'))){toast('Selecione um arquivo MP4 válido.',true);return;}
+  if(file.size>100*1024*1024){toast('O vídeo deve ter no máximo 100 MB.',true);return;}
+  const btn=form.querySelector('button');btn.disabled=true;btn.textContent='Enviando vídeo…';
+  try {
+    const safe=file.name.normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
+    const path=`${subjectId}/${crypto.randomUUID()}-${safe}`;
+    const {error:upErr}=await supabase.storage.from('training-videos').upload(path,file,{contentType:'video/mp4',upsert:false});
+    if(upErr)throw upErr;
+    const {error:dbErr}=await supabase.from('videos').insert({subject_id:subjectId,title,storage_path:path,uploaded_by:session.user.id,is_published:true});
+    if(dbErr)throw dbErr;
+    toast('Vídeo enviado e publicado.');form.reset();
+  } catch(err) {toast(err.message||'Não foi possível enviar o vídeo.',true);}
+  finally {btn.disabled=false;btn.textContent='Enviar vídeo';}
+}
+
 if (!configured) authView('login','Protótipo conectado à arquitetura Supabase: preencha src/config.js e aplique supabase/schema.sql para habilitar o acesso online.');
 else boot();
