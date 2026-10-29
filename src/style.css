@@ -297,4 +297,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   opacity: .65;
   cursor: wait;
 }
-\n/* Logo Progeral e suporte à instalação PWA */\n.brand-logo{width:54px;height:54px;object-fit:contain;border-radius:12px;background:#fff;flex-shrink:0}.brand{gap:12px}.auth-brand-logo{display:block;width:min(220px,70%);height:auto;object-fit:contain;margin:0 0 22px;border-radius:28px;box-shadow:0 12px 32px #102f491a}@media(max-width:560px){.brand-logo{width:46px;height:46px}.auth-brand-logo{width:160px;margin-bottom:15px}}\n
+
+/* Logo Progeral e suporte à instalação PWA */
+.brand-logo{width:54px;height:54px;object-fit:contain;border-radius:12px;background:#fff;flex-shrink:0}.brand{gap:12px}.auth-brand-logo{display:block;width:min(220px,70%);height:auto;object-fit:contain;margin:0 0 22px;border-radius:28px;box-shadow:0 12px 32px #102f491a}@media(max-width:560px){.brand-logo{width:46px;height:46px}.auth-brand-logo{width:160px;margin-bottom:15px}}
