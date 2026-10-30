@@ -119,7 +119,7 @@ async function openAdminMonitoring() {
         const points=history.reduce((sum,a)=>sum+Number(a.points||0),0);
         const best=history.length?Math.round(history.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/history.length):0;
         return `<button type="button" class="admin-student-row" data-student-id="${s.id}">
-          <span class="admin-student-main"><strong>${esc(s.display_name||'Sem nome')}</strong><small>${esc(s.department||'Setor não informado')} · ${esc(s.email||'')}</small></span>
+          <span class="admin-student-main"><strong>${esc(s.display_name||'Sem nome')}</strong><small>${esc(s.department||'Setor não informado')} · Cadastro: ${s.created_at?new Date(s.created_at).toLocaleDateString('pt-BR'):'—'}</small></span>
           <span class="admin-student-metric"><strong>${distinct}</strong><small>quizzes</small></span>
           <span class="admin-student-metric"><strong>${points}</strong><small>pontos</small></span>
           <span class="admin-student-metric"><strong>${best}%</strong><small>média</small></span>
@@ -142,7 +142,7 @@ async function openAdminStudent(studentId,students,byUser) {
   if(!student)return;
   const history=(byUser.get(studentId)||[]).slice().sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
   shell(`<button class="back-button" id="student-history-back">← Voltar aos alunos</button>
-    <section class="profile-heading"><div class="eyebrow">HISTÓRICO INDIVIDUAL</div><h1>${esc(student.display_name||'Aluno')}</h1><p class="muted">${esc(student.department||'Setor não informado')} · ${esc(student.email||'')}</p></section>
+    <section class="profile-heading"><div class="eyebrow">HISTÓRICO INDIVIDUAL</div><h1>${esc(student.display_name||'Aluno')}</h1><p class="muted">${esc(student.department||'Setor não informado')} · Cadastro: ${student.created_at?new Date(student.created_at).toLocaleDateString('pt-BR'):'—'}</p></section>
     <section class="admin-monitor-stats">
       <article class="admin-monitor-stat"><span>Quizzes respondidos</span><strong>${new Set(history.map(a=>a.subject_id+':'+(a.quiz_key||'normal'))).size}</strong></article>
       <article class="admin-monitor-stat"><span>Tentativas</span><strong>${history.length}</strong></article>
