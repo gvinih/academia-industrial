@@ -32,9 +32,10 @@ function toast(message, isError=false) {
 }
 function shell(content) {
   app.innerHTML = `<header class="topbar"><a class="brand" href="#"><img class="brand-logo" src="/academia-industrial/progeral-logo.svg" alt="Progeral em Boas Mãos"><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
-  if (session) document.querySelector('#header-actions').innerHTML = `<button class="btn btn-light btn-small" id="profile-button">Perfil</button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
+  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-monitoring-button">Acompanhamento</button>':''}<button class="btn btn-light btn-small" id="profile-button">Perfil</button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
   document.querySelector('#logout')?.addEventListener('click', logout);
   document.querySelector('#profile-button')?.addEventListener('click', openProfile);
+  document.querySelector('#admin-monitoring-button')?.addEventListener('click', openAdminMonitoring);
 }
 function authView(mode='login', message='') {
   const isLogin = mode === 'login';
@@ -78,6 +79,111 @@ async function dashboard() {
   await refreshDashboard();
   document.querySelector('#upload-form')?.addEventListener('submit', uploadPdf);
   document.querySelector('#video-upload-form')?.addEventListener('submit', uploadVideo);
+}
+async function openAdminMonitoring() {
+  if (profile?.role !== 'admin') { toast('Acesso restrito aos administradores.', true); return; }
+  shell(`<button class="back-button" id="admin-back">← Voltar ao painel</button>
+    <section class="profile-heading"><div class="eyebrow">PAINEL ADMINISTRATIVO</div><h1>Acompanhamento dos alunos</h1><p class="muted">Visão consolidada da participação e do desempenho de todos os alunos.</p></section>
+    <section class="admin-monitor-stats" id="admin-monitor-stats"><div class="skeleton">Carregando indicadores…</div></section>
+    <section class="panel admin-monitor-panel"><div class="section-title"><h2>Alunos cadastrados</h2><span class="muted" id="admin-student-count"></span></div>
+    <div class="admin-monitor-tools"><input id="admin-student-search" type="search" placeholder="Buscar por nome, e-mail ou setor…"></div>
+    <div class="admin-student-list" id="admin-student-list"><div class="skeleton">Carregando alunos…</div></div></section>`);
+  document.querySelector('#admin-back').addEventListener('click', dashboard);
+  try {
+    const [{data: students,error:studentError},{data: attempts,error:attemptError}] = await Promise.all([
+      supabase.from('profiles').select('id,display_name,department,role,created_at').order('display_name'),
+      supabase.from('quiz_attempts').select('id,user_id,subject_id,quiz_key,score,total_questions,points,answers,submitted_at').order('submitted_at',{ascending:false})
+    ]);
+    if(studentError) throw studentError;
+    if(attemptError) throw attemptError;
+    const learners=(students||[]).filter(s=>s.role!=='admin');
+    const rows=attempts||[];
+    const byUser=new Map();
+    rows.forEach(a=>{if(!byUser.has(a.user_id))byUser.set(a.user_id,[]);byUser.get(a.user_id).push(a);});
+    const active=learners.filter(s=>(byUser.get(s.id)||[]).length>0).length;
+    const quizCount=rows.length;
+    const avg=rows.length?Math.round(rows.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/rows.length):0;
+    document.querySelector('#admin-monitor-stats').innerHTML=`
+      <article class="admin-monitor-stat"><span>Alunos cadastrados</span><strong>${learners.length}</strong></article>
+      <article class="admin-monitor-stat"><span>Alunos que já responderam</span><strong>${active}</strong></article>
+      <article class="admin-monitor-stat"><span>Tentativas registradas</span><strong>${quizCount}</strong></article>
+      <article class="admin-monitor-stat"><span>Aproveitamento médio</span><strong>${avg}%</strong></article>`;
+    document.querySelector('#admin-student-count').textContent=learners.length+' aluno(s)';
+    const list=document.querySelector('#admin-student-list');
+    function renderStudents(filter='') {
+      const term=filter.trim().toLocaleLowerCase('pt-BR');
+      const filtered=learners.filter(s=>[s.display_name,s.department].join(' ').toLocaleLowerCase('pt-BR').includes(term));
+      list.innerHTML=filtered.length?filtered.map(s=>{
+        const history=byUser.get(s.id)||[];
+        const distinct=new Set(history.map(a=>a.subject_id+':'+(a.quiz_key||'normal'))).size;
+        const points=history.reduce((sum,a)=>sum+Number(a.points||0),0);
+        const best=history.length?Math.round(history.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/history.length):0;
+        return `<button type="button" class="admin-student-row" data-student-id="${s.id}">
+          <span class="admin-student-main"><strong>${esc(s.display_name||'Sem nome')}</strong><small>${esc(s.department||'Setor não informado')} · ${esc(s.email||'')}</small></span>
+          <span class="admin-student-metric"><strong>${distinct}</strong><small>quizzes</small></span>
+          <span class="admin-student-metric"><strong>${points}</strong><small>pontos</small></span>
+          <span class="admin-student-metric"><strong>${best}%</strong><small>média</small></span>
+          <span class="admin-student-arrow">Ver histórico →</span>
+        </button>`;
+      }).join(''):'<p class="muted">Nenhum aluno encontrado.</p>';
+      list.querySelectorAll('[data-student-id]').forEach(btn=>btn.addEventListener('click',()=>openAdminStudent(btn.dataset.studentId,learners,byUser)));
+    }
+    document.querySelector('#admin-student-search').addEventListener('input',e=>renderStudents(e.target.value));
+    renderStudents();
+  } catch(err) {
+    console.error('Falha no acompanhamento administrativo:',err);
+    toast(err.message||'Não foi possível carregar o acompanhamento.',true);
+    document.querySelector('#admin-student-list').innerHTML='<p class="muted">Falha ao carregar os dados. Verifique as permissões administrativas e a política de acesso às tentativas.</p>';
+  }
+}
+async function openAdminStudent(studentId,students,byUser) {
+  if(profile?.role!=='admin')return;
+  const student=students.find(s=>s.id===studentId);
+  if(!student)return;
+  const history=(byUser.get(studentId)||[]).slice().sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
+  shell(`<button class="back-button" id="student-history-back">← Voltar aos alunos</button>
+    <section class="profile-heading"><div class="eyebrow">HISTÓRICO INDIVIDUAL</div><h1>${esc(student.display_name||'Aluno')}</h1><p class="muted">${esc(student.department||'Setor não informado')} · ${esc(student.email||'')}</p></section>
+    <section class="admin-monitor-stats">
+      <article class="admin-monitor-stat"><span>Quizzes respondidos</span><strong>${new Set(history.map(a=>a.subject_id+':'+(a.quiz_key||'normal'))).size}</strong></article>
+      <article class="admin-monitor-stat"><span>Tentativas</span><strong>${history.length}</strong></article>
+      <article class="admin-monitor-stat"><span>Pontos registrados</span><strong>${history.reduce((sum,a)=>sum+Number(a.points||0),0)}</strong></article>
+      <article class="admin-monitor-stat"><span>Aproveitamento médio</span><strong>${history.length?Math.round(history.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/history.length):0}%</strong></article>
+    </section>
+    <section class="panel admin-monitor-panel"><div class="section-title"><h2>Histórico de quizzes</h2><span class="muted">${history.length} tentativa(s)</span></div><div id="admin-attempt-details" class="admin-attempt-list">${history.length?'<div class="skeleton">Carregando detalhes das respostas…</div>':'<p class="muted">Este aluno ainda não respondeu a nenhum quiz.</p>'}</div></section>`);
+  document.querySelector('#student-history-back').addEventListener('click',openAdminMonitoring);
+  if(!history.length)return;
+  try {
+    const {data:questions,error}=await supabase.from('quiz_questions').select('id,subject_id,question_text,options,correct_option,explanation');
+    if(error)throw error;
+    const questionMap=new Map((questions||[]).map(q=>[q.id,q]));
+    document.querySelector('#admin-attempt-details').innerHTML=history.map((attempt,index)=>{
+      const subject=subjects.find(s=>s.id===attempt.subject_id)?.name||attempt.subject_id;
+      const total=Number(attempt.total_questions)||0,score=Number(attempt.score)||0;
+      const percent=total?Math.round(score/total*100):0;
+      const date=attempt.submitted_at?new Date(attempt.submitted_at).toLocaleString('pt-BR'):'—';
+      const answers=Array.isArray(attempt.answers)?attempt.answers:[];
+      const quizLabel=(attempt.quiz_key||'normal')==='normal'?'Quiz geral':'Quiz especial';
+      return `<details class="admin-attempt-card" ${index===0?'open':''}>
+        <summary><span><strong>${esc(subject)} · ${quizLabel}</strong><small>${date}</small></span><span class="admin-attempt-grade">${score}/${total} · ${percent}%</span><span class="admin-attempt-points">${Number(attempt.points||0)} pts</span></summary>
+        <div class="admin-attempt-review">${answers.map((answer,i)=>{
+          const q=questionMap.get(answer.question_id);
+          if(!q)return `<article class="admin-answer"><strong>Questão ${i+1}</strong><p class="muted">O enunciado desta questão não está mais disponível.</p></article>`;
+          const options=Array.isArray(q.options)?q.options:[];
+          const selected=Number(answer.selected_option);
+          const correct=Number(q.correct_option);
+          const isCorrect=answer.correct===true || selected===correct;
+          return `<article class="admin-answer"><strong>${i+1}. ${esc(q.question_text)}</strong>
+            <p class="${isCorrect?'admin-answer-correct':'admin-answer-wrong'}">${isCorrect?'✓ Acertou':'✕ Errou'} · Resposta do aluno: ${esc(options[selected]??'Não informada')}</p>
+            <p class="admin-answer-key">Resposta correta: ${esc(options[correct]??'Não disponível')}</p>
+            ${q.explanation?'<p class="admin-answer-explanation">'+esc(q.explanation)+'</p>':''}
+          </article>`;
+        }).join('')}</div></details>`;
+    }).join('');
+  } catch(err) {
+    console.error('Falha ao carregar revisão dos quizzes:',err);
+    document.querySelector('#admin-attempt-details').innerHTML='<p class="muted">Não foi possível carregar a revisão das respostas.</p>';
+    toast(err.message||'Falha ao carregar detalhes dos quizzes.',true);
+  }
 }
 async function openProfile() {
   shell(`<button class="back-button" id="profile-back">← Voltar ao painel</button>
