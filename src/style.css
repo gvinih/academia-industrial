@@ -557,3 +557,38 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .profile-course-metrics strong{color:#173b55}
 @media(max-width:700px){.profile-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-progress{padding:15px}}
 @media(max-width:420px){.profile-summary{grid-template-columns:1fr}.profile-course-top{flex-direction:column}.profile-course-metrics{font-size:11px}}
+
+/* Acompanhamento administrativo */
+.admin-monitor-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 22px}
+.admin-monitor-stat{display:flex;flex-direction:column;gap:8px;padding:18px;border:1px solid #dce5eb;border-radius:14px;background:#fff}
+.admin-monitor-stat span{font-size:11px;color:#6b7f8d;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.admin-monitor-stat strong{font-size:25px;color:#173b55}
+.admin-monitor-panel{padding:22px}
+.admin-monitor-tools{margin:14px 0}
+.admin-monitor-tools input{width:100%;padding:12px 14px;border:1px solid #dce5eb;border-radius:10px;font:inherit}
+.admin-student-list{display:grid;gap:8px}
+.admin-student-row{display:grid;grid-template-columns:minmax(180px,1fr) 75px 75px 75px 115px;align-items:center;gap:12px;width:100%;padding:14px;text-align:left;background:#fff;border:1px solid #e0e8ed;border-radius:12px;cursor:pointer;color:#173b55}
+.admin-student-row:hover{border-color:#7452c8;background:#faf8ff}
+.admin-student-main{display:grid;gap:4px;min-width:0}
+.admin-student-main strong{overflow-wrap:anywhere}
+.admin-student-main small,.admin-student-metric small{font-size:11px;color:#718391}
+.admin-student-metric{display:grid;gap:3px;text-align:center}
+.admin-student-metric strong{font-size:16px}
+.admin-student-arrow{font-size:12px;font-weight:700;color:#6745b8;text-align:right}
+.admin-attempt-list{display:grid;gap:12px}
+.admin-attempt-card{border:1px solid #dfe7ec;border-radius:13px;background:#fff;overflow:hidden}
+.admin-attempt-card summary{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:14px;padding:16px;cursor:pointer;list-style:none}
+.admin-attempt-card summary::-webkit-details-marker{display:none}
+.admin-attempt-card summary>span:first-child{display:grid;gap:5px}
+.admin-attempt-card summary small{font-size:11px;color:#718391}
+.admin-attempt-grade{font-weight:800;color:#173b55}
+.admin-attempt-points{font-size:12px;font-weight:700;color:#6745b8}
+.admin-attempt-review{padding:0 16px 16px;display:grid;gap:10px}
+.admin-answer{padding:13px;border-radius:10px;background:#f7f9fb}
+.admin-answer p{margin:7px 0 0;font-size:13px;line-height:1.5}
+.admin-answer-correct{color:#16804a;font-weight:700}
+.admin-answer-wrong{color:#b42318;font-weight:700}
+.admin-answer-key{color:#173b55;font-weight:700}
+.admin-answer-explanation{color:#647887}
+@media(max-width:760px){.admin-monitor-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-student-row{grid-template-columns:minmax(0,1fr) repeat(3,55px)}.admin-student-arrow{grid-column:1/-1;text-align:left}.admin-student-metric strong{font-size:14px}}
+@media(max-width:480px){.admin-monitor-panel{padding:14px}.admin-attempt-card summary{grid-template-columns:minmax(0,1fr) auto;gap:8px}.admin-attempt-points{grid-column:2}.admin-student-row{gap:6px;padding:10px}.admin-student-main small{overflow-wrap:anywhere}}
