@@ -228,7 +228,7 @@ async function refreshDashboard() {
   try {
     const [{data: attempts,error:aErr},{data: board,error:bErr}] = await Promise.all([
       supabase.from('quiz_attempts').select('subject_id,points,quiz_key,submitted_at').eq('user_id',session.user.id),
-      supabase.from('leaderboard').select('user_id,display_name,total_points,completed_subjects').order('total_points',{ascending:false}).order('display_name',{ascending:true}).limit(50)
+      supabase.rpc('get_leaderboard')
     ]);
     if(aErr) throw aErr; if(bErr) throw bErr;
     // A pontuação do card é a soma dos pontos concedidos em todos os quizzes da matéria.
