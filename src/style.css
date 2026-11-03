@@ -722,3 +722,24 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .audit-image-viewer-content img{display:block;width:100%;height:auto;max-height:calc(100vh - 125px);object-fit:contain;border-radius:9px;background:#07131d}
 .audit-image-viewer-content p{margin:0;color:#c5d3df;font-size:11px;text-align:center}
 @media(max-width:560px){.audit-image-viewer{padding:8px}.audit-image-viewer-content{padding:10px;border-radius:12px}.audit-image-viewer-content img{max-height:calc(100dvh - 105px)}}
+
+
+/* Dashboard mobile — alinhar os três indicadores mesmo quando os títulos quebram linha */
+@media(max-width:560px){
+  .stats .stat{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .stats .stat span{
+    min-height:2.4em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    line-height:1.2;
+  }
+  .stats .stat strong{
+    margin-top:8px;
+  }
+}
