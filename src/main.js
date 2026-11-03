@@ -192,8 +192,8 @@ function renderAuditData() {
       return error?'':`<button type="button" class="audit-photo-open" data-image-url="${esc(data.signedUrl)}" data-image-number="${index+1}">Visualizar foto ${index+1}</button>`;
     }));
     el.innerHTML=links.filter(Boolean).join(' · ')||'Não foi possível carregar as fotos.';
+    el.querySelectorAll('.audit-photo-open').forEach(button=>button.addEventListener('click',()=>openAuditImageViewer(button.dataset.imageUrl,button.dataset.imageNumber)));
   });
-  history.querySelectorAll('.audit-photo-open').forEach(button=>button.addEventListener('click',()=>openAuditImageViewer(button.dataset.imageUrl,button.dataset.imageNumber)));
   history.querySelectorAll('.audit-history-detail').forEach(detail=>{
     detail.addEventListener('toggle',()=>{const label=detail.querySelector('.audit-detail-toggle');if(label)label.textContent=detail.open?'Ocultar detalhes −':'Ver detalhes +';});
   });
