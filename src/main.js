@@ -32,10 +32,11 @@ function toast(message, isError=false) {
 }
 function shell(content) {
   app.innerHTML = `<header class="topbar"><a class="brand" href="#"><img class="brand-logo" src="/academia-industrial/progeral-logo.svg" alt="Progeral em Boas Mãos"><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
-  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-monitoring-button">Acompanhamento</button>':''}<button class="btn btn-light btn-small" id="profile-button">Perfil</button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
+  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-monitoring-button">Acompanhamento</button><button class="btn btn-light btn-small" id="admin-audits-button">Auditorias</button>':''}<button class="btn btn-light btn-small" id="profile-button">Perfil</button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
   document.querySelector('#logout')?.addEventListener('click', logout);
   document.querySelector('#profile-button')?.addEventListener('click', openProfile);
   document.querySelector('#admin-monitoring-button')?.addEventListener('click', openAdminMonitoring);
+  document.querySelector('#admin-audits-button')?.addEventListener('click', openAudits);
 }
 function authView(mode='login', message='') {
   const isLogin = mode === 'login';
@@ -80,6 +81,92 @@ async function dashboard() {
   document.querySelector('#upload-form')?.addEventListener('submit', uploadPdf);
   document.querySelector('#video-upload-form')?.addEventListener('submit', uploadVideo);
 }
+
+const auditSectors = ['Bihler','Forno','Jato','Pintura','Seleção Visual','Acabamento','Ajan','Estampagem RSFI','Montagem Final RSFI','Estampagem Combinada','Montagem Final Combinada','Parafuso','Laminação','Automática','Montagem Final RSFC','Estampagem Tucho','Montagem Final Tucho','Mangote'];
+const auditTypes = [{id:'escalonada',label:'Auditoria escalonada'},{id:'manutencao_autonoma',label:'Manutenção autônoma'}];
+
+async function openAudits() {
+  if (profile?.role !== 'admin') { toast('Acesso restrito aos administradores.', true); return; }
+  const today = new Date();
+  const localDate = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  shell(`<button class="back-button" id="audits-back">← Voltar ao painel</button>
+    <section class="profile-heading"><div class="eyebrow">ÁREA EXCLUSIVA DE ADMINISTRAÇÃO</div><h1>Auditorias</h1><p class="muted">Registre a condição encontrada na verificação física dos checklists de cada setor.</p></section>
+    <section class="panel audit-entry-panel">
+      <div class="section-title"><h2>Registrar auditoria</h2><span class="muted">Auditor: ${esc(profile?.display_name||session.user.email)}</span></div>
+      <form id="audit-form" class="audit-form">
+        <label class="field">Data da auditoria<input name="audit_date" type="date" value="${localDate}" required></label>
+        <label class="field">Setor<select name="sector" required><option value="">Selecione o setor</option>${auditSectors.map(x=>`<option>${esc(x)}</option>`).join('')}</select></label>
+        <label class="field">Tipo de auditoria<select name="audit_type" required><option value="">Selecione</option>${auditTypes.map(x=>`<option value="${x.id}">${x.label}</option>`).join('')}</select></label>
+        <fieldset class="audit-status-field"><legend>Resultado encontrado</legend><label><input type="radio" name="status" value="OK" required> <span class="audit-status-ok">OK</span></label><label><input type="radio" name="status" value="NOK"> <span class="audit-status-nok">NOK</span></label></fieldset>
+        <label class="field audit-observations-field">Observações <textarea name="observations" rows="3" maxlength="2000" placeholder="Descreva o que foi encontrado. Obrigatório para NOK."></textarea></label>
+        <label class="field audit-evidence-field">Fotos da evidência <input name="evidence" type="file" accept="image/jpeg,image/png,image/webp" multiple><small>Até 10 MB por foto. Anexos são privados e visíveis somente aos administradores.</small></label>
+        <button class="btn btn-primary" type="submit">Salvar auditoria</button>
+      </form>
+    </section>
+    <section class="audit-kpis" id="audit-kpis"><div class="skeleton">Carregando indicadores…</div></section>
+    <section class="panel admin-monitor-panel"><div class="section-title"><h2>Divergências por setor</h2><span class="muted">Registros NOK</span></div><div id="audit-sector-chart" class="audit-sector-chart"></div></section>
+    <section class="panel admin-monitor-panel"><div class="section-title"><h2>Histórico de auditorias</h2></div><div class="audit-filters"><label class="field">De<input id="audit-from" type="date"></label><label class="field">Até<input id="audit-to" type="date" value="${localDate}"></label><label class="field">Setor<select id="audit-sector-filter"><option value="">Todos os setores</option>${auditSectors.map(x=>`<option>${esc(x)}</option>`).join('')}</select></label><label class="field">Tipo<select id="audit-type-filter"><option value="">Todos os tipos</option>${auditTypes.map(x=>`<option value="${x.id}">${x.label}</option>`).join('')}</select></label></div><div id="audit-history" class="audit-history"><div class="skeleton">Carregando histórico…</div></div></section>`);
+  document.querySelector('#audits-back').addEventListener('click',dashboard);
+  document.querySelector('#audit-form').addEventListener('submit',saveAudit);
+  try {
+    const {data,error}=await supabase.from('audit_records').select('*').order('audited_at',{ascending:false}).limit(1000);
+    if(error)throw error;
+    window.__auditRecords=data||[];
+    ['audit-from','audit-to','audit-sector-filter','audit-type-filter'].forEach(id=>document.getElementById(id).addEventListener('change',renderAuditData));
+    renderAuditData();
+  } catch(err) {
+    console.error('Falha ao carregar auditorias:',err);
+    toast(err.message||'Não foi possível carregar as auditorias. Execute a migração SQL.',true);
+    document.querySelector('#audit-history').innerHTML='<p class="muted">Não foi possível carregar. Verifique se o SQL supabase/auditorias.sql já foi executado no Supabase.</p>';
+  }
+}
+
+async function saveAudit(e) {
+  e.preventDefault();
+  if(profile?.role!=='admin')return;
+  const form=e.currentTarget,fd=new FormData(form),status=String(fd.get('status')||''),observations=String(fd.get('observations')||'').trim(),files=Array.from(fd.getAll('evidence')).filter(f=>f instanceof File&&f.size>0);
+  if(status==='NOK'&&!observations){toast('Descreva a divergência encontrada antes de salvar.',true);return;}
+  if(files.some(f=>!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>10*1024*1024)){toast('Use fotos JPG, PNG ou WEBP de até 10 MB cada.',true);return;}
+  const btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Salvando…';
+  const paths=[];
+  try {
+    for(const file of files){
+      const safe=file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
+      const path=`${fd.get('audit_date')}/${crypto.randomUUID()}-${safe}`;
+      const {error}=await supabase.storage.from('audit-evidence').upload(path,file,{contentType:file.type,upsert:false});
+      if(error)throw error;
+      paths.push(path);
+    }
+    const payload={sector:fd.get('sector'),audit_type:fd.get('audit_type'),status,observations,evidence_paths:paths,audited_by:session.user.id,audit_date:fd.get('audit_date')};
+    const {error}=await supabase.from('audit_records').insert(payload);
+    if(error)throw error;
+    toast('Auditoria registrada com sucesso.');
+    await openAudits();
+  } catch(err) {
+    if(paths.length)await supabase.storage.from('audit-evidence').remove(paths);
+    toast(err.message||'Não foi possível salvar a auditoria.',true);
+    btn.disabled=false;btn.textContent='Salvar auditoria';
+  }
+}
+
+function renderAuditData() {
+  const all=window.__auditRecords||[];
+  const from=document.querySelector('#audit-from')?.value||'',to=document.querySelector('#audit-to')?.value||'',sector=document.querySelector('#audit-sector-filter')?.value||'',type=document.querySelector('#audit-type-filter')?.value||'';
+  const rows=all.filter(r=>(!from||r.audit_date>=from)&&(!to||r.audit_date<=to)&&(!sector||r.sector===sector)&&(!type||r.audit_type===type));
+  const nok=rows.filter(r=>r.status==='NOK'),ok=rows.filter(r=>r.status==='OK');
+  document.querySelector('#audit-kpis').innerHTML=`<article class="audit-kpi"><span>Auditorias no período</span><strong>${rows.length}</strong></article><article class="audit-kpi"><span>Registros NOK</span><strong class="audit-status-nok">${nok.length}</strong></article><article class="audit-kpi"><span>Registros OK</span><strong class="audit-status-ok">${ok.length}</strong></article><article class="audit-kpi"><span>Setores com NOK</span><strong>${new Set(nok.map(r=>r.sector)).size}</strong></article>`;
+  const counts=auditSectors.map(name=>({name,count:nok.filter(r=>r.sector===name).length})).sort((a,b)=>b.count-a.count);
+  const max=Math.max(1,...counts.map(x=>x.count));
+  document.querySelector('#audit-sector-chart').innerHTML=counts.map(x=>`<div class="audit-bar-row"><span>${esc(x.name)}</span><div class="audit-bar-track"><i style="width:${x.count/max*100}%"></i></div><strong>${x.count}</strong></div>`).join('');
+  const history=document.querySelector('#audit-history');
+  history.innerHTML=rows.length?rows.map(r=>`<article class="audit-history-card"><div class="audit-history-top"><div><strong>${esc(r.sector)}</strong><small>${r.audit_date?new Date(r.audit_date+'T12:00:00').toLocaleDateString('pt-BR'):'—'} · ${auditTypes.find(t=>t.id===r.audit_type)?.label||r.audit_type}</small></div><span class="audit-pill ${r.status==='NOK'?'is-nok':'is-ok'}">${r.status}</span></div>${r.observations?'<p>'+esc(r.observations)+'</p>':''}<div class="audit-evidence" data-paths="${esc(JSON.stringify(r.evidence_paths||[]))}">${(r.evidence_paths||[]).length?'Carregando evidências…':''}</div></article>`).join(''):'<p class="muted">Nenhuma auditoria encontrada para os filtros selecionados.</p>';
+  history.querySelectorAll('.audit-evidence[data-paths]').forEach(async el=>{
+    const paths=JSON.parse(el.dataset.paths||'[]');if(!paths.length){el.remove();return;}
+    const links=await Promise.all(paths.map(async path=>{const {data,error}=await supabase.storage.from('audit-evidence').createSignedUrl(path,3600);return error?'':`<a href="${esc(data.signedUrl)}" target="_blank" rel="noopener">Ver foto</a>`;}));
+    el.innerHTML=links.filter(Boolean).join(' · ');
+  });
+}
+
 async function openAdminMonitoring() {
   if (profile?.role !== 'admin') { toast('Acesso restrito aos administradores.', true); return; }
   shell(`<button class="back-button" id="admin-back">← Voltar ao painel</button>
