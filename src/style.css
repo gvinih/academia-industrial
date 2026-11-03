@@ -39,7 +39,7 @@ main{max-width:1220px}
 footer{color:#788996}
 .eyebrow{color:#0E4596}
 h1,h2,h3{color:#172f43}
-.welcome-badge{background:#E5EEF9;color:#0E4596;border:1px solid #C6D9F0;border-radius:9px}
+.welcome-badge{background:#E5EEF9;color:#0E4596;border:1px solid #C6D9F0;border-radius:9px}.welcome-trophy{width:44px;height:44px;object-fit:contain;flex:0 0 auto}
 .stat,.panel{background:#fff;border:1px solid #dce4e9;border-radius:12px;box-shadow:0 5px 18px #173b5410}
 .stat{border-top:3px solid #0E4596}
 .stat:nth-child(2){border-top-color:#0E4596}
