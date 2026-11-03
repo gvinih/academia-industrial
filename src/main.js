@@ -149,6 +149,24 @@ async function saveAudit(e) {
   }
 }
 
+function openAuditImageViewer(url,number) {
+  if(!url)return;
+  document.querySelector('.audit-image-viewer')?.remove();
+  const viewer=document.createElement('div');
+  viewer.className='audit-image-viewer';
+  viewer.setAttribute('role','dialog');
+  viewer.setAttribute('aria-modal','true');
+  viewer.setAttribute('aria-label',`Visualização da foto ${number}`);
+  viewer.innerHTML=`<div class="audit-image-viewer-backdrop" data-close-viewer></div><section class="audit-image-viewer-content"><div class="audit-image-viewer-toolbar"><strong>Foto ${number}</strong><button type="button" class="audit-image-viewer-close" aria-label="Fechar visualização">×</button></div><img src="${esc(url)}" alt="Evidência da auditoria — foto ${number}"><p>Toque fora da imagem ou em × para fechar.</p></section>`;
+  document.body.appendChild(viewer);
+  const close=()=>{viewer.remove();document.removeEventListener('keydown',onKey);};
+  const onKey=e=>{if(e.key==='Escape')close();};
+  viewer.querySelector('.audit-image-viewer-close').addEventListener('click',close);
+  viewer.querySelector('[data-close-viewer]').addEventListener('click',close);
+  document.addEventListener('keydown',onKey);
+  viewer.querySelector('.audit-image-viewer-close').focus();
+}
+
 function renderAuditData() {
   const all=window.__auditRecords||[];
   const from=document.querySelector('#audit-from')?.value||'',to=document.querySelector('#audit-to')?.value||'',sector=document.querySelector('#audit-sector-filter')?.value||'',type=document.querySelector('#audit-type-filter')?.value||'';
@@ -171,10 +189,11 @@ function renderAuditData() {
     if(!paths.length)return;
     const links=await Promise.all(paths.map(async (path,index)=>{
       const {data,error}=await supabase.storage.from('audit-evidence').createSignedUrl(path,3600);
-      return error?'':`<a href="${esc(data.signedUrl)}" target="_blank" rel="noopener">Abrir foto ${index+1}</a>`;
+      return error?'':`<button type="button" class="audit-photo-open" data-image-url="${esc(data.signedUrl)}" data-image-number="${index+1}">Visualizar foto ${index+1}</button>`;
     }));
     el.innerHTML=links.filter(Boolean).join(' · ')||'Não foi possível carregar as fotos.';
   });
+  history.querySelectorAll('.audit-photo-open').forEach(button=>button.addEventListener('click',()=>openAuditImageViewer(button.dataset.imageUrl,button.dataset.imageNumber)));
   history.querySelectorAll('.audit-history-detail').forEach(detail=>{
     detail.addEventListener('toggle',()=>{const label=detail.querySelector('.audit-detail-toggle');if(label)label.textContent=detail.open?'Ocultar detalhes −':'Ver detalhes +';});
   });
