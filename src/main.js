@@ -231,6 +231,8 @@ async function refreshDashboard() {
       supabase.rpc('get_leaderboard')
     ]);
     if(aErr) throw aErr; if(bErr) throw bErr;
+    // A RPC retorna os registros sem garantia de ordenação; ordenar antes de calcular posições e renderizar.
+    board?.sort((a,b)=>Number(b.total_points||0)-Number(a.total_points||0)||String(a.display_name||'').localeCompare(String(b.display_name||''),'pt-BR'));
     // A pontuação do card é a soma dos pontos concedidos em todos os quizzes da matéria.
     // As tentativas repetidas recebem zero pontos pela RPC submit_quiz.
     const mine=Object.values((attempts||[]).reduce((acc,a)=>{
