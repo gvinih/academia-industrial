@@ -631,3 +631,54 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .audit-evidence a{color:#0e4596;text-decoration:underline;margin-right:8px}
 @media(max-width:760px){.audit-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.audit-entry-panel{padding:15px}.audit-form{grid-template-columns:1fr}.audit-observations-field,.audit-evidence-field{grid-column:1}.audit-bar-row{grid-template-columns:105px minmax(35px,1fr) 22px;gap:8px;font-size:11px}.audit-filters{grid-template-columns:1fr 1fr}}
+
+
+/* Auditorias — alinhamento dos controles OK/NOK em telas pequenas */
+.audit-status-field{
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  margin:0;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:12px 22px;
+}
+.audit-status-field legend{max-width:100%}
+.audit-status-field label{
+  min-width:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  margin:0;
+  white-space:nowrap;
+}
+.audit-status-field input[type="radio"]{
+  flex:0 0 auto;
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color:#0E4596;
+}
+@media(max-width:520px){
+  .audit-status-field{
+    grid-column:1;
+    padding:12px 10px;
+    gap:12px;
+  }
+  .audit-status-field label{
+    flex:1 1 0;
+    justify-content:center;
+    min-height:38px;
+    border:1px solid #dce5eb;
+    border-radius:8px;
+    background:#f7fafc;
+  }
+  .audit-status-field label:has(input:checked){
+    border-color:#0E4596;
+    background:#eaf3f8;
+  }
+}
