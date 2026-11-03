@@ -159,11 +159,24 @@ function renderAuditData() {
   const max=Math.max(1,...counts.map(x=>x.count));
   document.querySelector('#audit-sector-chart').innerHTML=counts.map(x=>`<div class="audit-bar-row"><span>${esc(x.name)}</span><div class="audit-bar-track"><i style="width:${x.count/max*100}%"></i></div><strong>${x.count}</strong></div>`).join('');
   const history=document.querySelector('#audit-history');
-  history.innerHTML=rows.length?rows.map(r=>`<article class="audit-history-card"><div class="audit-history-top"><div><strong>${esc(r.sector)}</strong><small>${r.audit_date?new Date(r.audit_date+'T12:00:00').toLocaleDateString('pt-BR'):'—'} · ${auditTypes.find(t=>t.id===r.audit_type)?.label||r.audit_type}</small></div><span class="audit-pill ${r.status==='NOK'?'is-nok':'is-ok'}">${r.status}</span></div>${r.observations?'<p>'+esc(r.observations)+'</p>':''}<div class="audit-evidence" data-paths="${esc(JSON.stringify(r.evidence_paths||[]))}">${(r.evidence_paths||[]).length?'Carregando evidências…':''}</div></article>`).join(''):'<p class="muted">Nenhuma auditoria encontrada para os filtros selecionados.</p>';
+  history.innerHTML=rows.length?rows.map(r=>{
+    const dateLabel=r.audit_date?new Date(r.audit_date+'T12:00:00').toLocaleDateString('pt-BR'):'—';
+    const timeLabel=r.audited_at?new Date(r.audited_at).toLocaleString('pt-BR'):'Horário não disponível';
+    const typeLabel=auditTypes.find(t=>t.id===r.audit_type)?.label||r.audit_type;
+    const paths=r.evidence_paths||[];
+    return `<details class="audit-history-card audit-history-detail"><summary class="audit-history-top"><div><strong>${esc(r.sector)}</strong><small>${dateLabel} · ${esc(typeLabel)}</small></div><span class="audit-history-summary-end"><span class="audit-pill ${r.status==='NOK'?'is-nok':'is-ok'}">${r.status}</span><span class="audit-detail-toggle">Ver detalhes +</span></span></summary><div class="audit-history-detail-body"><div class="audit-detail-grid"><div><small>Data da auditoria</small><strong>${dateLabel}</strong></div><div><small>Data e horário do registro</small><strong>${esc(timeLabel)}</strong></div><div><small>Setor</small><strong>${esc(r.sector)}</strong></div><div><small>Modalidade</small><strong>${esc(typeLabel)}</strong></div><div><small>Resultado</small><strong class="${r.status==='NOK'?'audit-status-nok':'audit-status-ok'}">${r.status}</strong></div></div><div class="audit-detail-observations"><small>Observações</small><p>${r.observations?esc(r.observations):'Nenhuma observação registrada.'}</p></div><div class="audit-evidence" data-paths="${esc(JSON.stringify(paths))}">${paths.length?'Carregando fotos da evidência…':'Nenhuma foto anexada.'}</div></div></details>`;
+  }).join(''):'<p class="muted">Nenhuma auditoria encontrada para os filtros selecionados.</p>';
   history.querySelectorAll('.audit-evidence[data-paths]').forEach(async el=>{
-    const paths=JSON.parse(el.dataset.paths||'[]');if(!paths.length){el.remove();return;}
-    const links=await Promise.all(paths.map(async path=>{const {data,error}=await supabase.storage.from('audit-evidence').createSignedUrl(path,3600);return error?'':`<a href="${esc(data.signedUrl)}" target="_blank" rel="noopener">Ver foto</a>`;}));
-    el.innerHTML=links.filter(Boolean).join(' · ');
+    const paths=JSON.parse(el.dataset.paths||'[]');
+    if(!paths.length)return;
+    const links=await Promise.all(paths.map(async (path,index)=>{
+      const {data,error}=await supabase.storage.from('audit-evidence').createSignedUrl(path,3600);
+      return error?'':`<a href="${esc(data.signedUrl)}" target="_blank" rel="noopener">Abrir foto ${index+1}</a>`;
+    }));
+    el.innerHTML=links.filter(Boolean).join(' · ')||'Não foi possível carregar as fotos.';
+  });
+  history.querySelectorAll('.audit-history-detail').forEach(detail=>{
+    detail.addEventListener('toggle',()=>{const label=detail.querySelector('.audit-detail-toggle');if(label)label.textContent=detail.open?'Ocultar detalhes −':'Ver detalhes +';});
   });
 }
 
