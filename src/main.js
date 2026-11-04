@@ -806,7 +806,6 @@ async function renderElectricalQuiz2(box) {
 
   const onMessage=async(event)=>{
     if(event.source!==frame.contentWindow || event.data?.type!=='academia-quiz2-submit')return;
-    window.removeEventListener('message',onMessage);
     const {data,error:submitError}=await supabase.rpc('submit_quiz',{p_subject_id:'eletrica',p_answers:event.data.answers});
     if(submitError){
       toast(submitError.message||'Não foi possível registrar a pontuação.',true);
