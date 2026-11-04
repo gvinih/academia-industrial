@@ -793,11 +793,11 @@ async function renderElectricalQuiz2(box) {
   const {data:questions,error}=await supabase.from('quiz_questions')
     .select('id,question_text,options,correct_option,explanation,sort_order')
     .eq('subject_id','eletrica').eq('is_active',true).gte('sort_order',9211).lte('sort_order',9215).order('sort_order');
-  if(error){console.error(error);box.innerHTML='<h2>Quiz NR-10</h2><div class="empty-state">Não foi possível carregar o quiz. O administrador precisa aplicar o arquivo supabase/quiz_eletrica_nr10.sql no Supabase.</div>';return;}
-  if(!questions || questions.length!==5){box.innerHTML='<h2>Quiz Interativo — Tensão, Corrente e Energia</h2><div class="empty-state">Este quiz ainda não está configurado no banco. O administrador deve executar o arquivo supabase/quiz_eletrica_nr10.sql no Supabase.</div>';return;}
+  if(error){console.error(error);box.innerHTML='<h2>Quiz Tensão e Corrente</h2><div class="empty-state">Não foi possível carregar o quiz. O administrador precisa aplicar o arquivo supabase/quiz_eletrica_tensao_corrente.sql no Supabase.</div>';return;}
+  if(!questions || questions.length!==5){box.innerHTML='<h2>Quiz Interativo — Tensão, Corrente e Energia</h2><div class="empty-state">Este quiz ainda não está configurado no banco. O administrador deve executar o arquivo supabase/quiz_eletrica_tensao_corrente.sql no Supabase.</div>';return;}
   box.innerHTML=`
     <div class="seiri-wrap eletrica-theme">
-      <div class="seiri-heading"><span class="seiri-kicker">MÓDULO 4 · ELÉTRICA BÁSICA</span><h2>Tensão, Corrente e Energia &amp; NR-10</h2><p class="muted">Cinco questões sobre medição de corrente, circuitos de comando de 24 V, neutro e terra, sensores industriais e anomalias térmicas.</p></div>
+      <div class="seiri-heading"><span class="seiri-kicker">MÓDULO 4 · ELÉTRICA BÁSICA</span><h2>Tensão, Corrente e Tipos de Energia</h2><p class="muted">Cinco questões sobre medição de corrente, circuitos de comando de 24 V, neutro e terra, sensores industriais e anomalias térmicas.</p></div>
       <div id="ele2-start" class="seiri-start"><div class="seiri-icon">⚡</div><h3>Pronto para testar seus conhecimentos?</h3><p>Você terá 35 segundos por questão. O cronômetro começa quando clicar em “Iniciar tempo”. Ao final, seu resultado será registrado no ranking.</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Gabarito comentado</span></div><button class="btn btn-primary" id="ele2-begin">Começar quiz</button></div>
       <div id="ele2-game" class="seiri-game" hidden>
         <div class="seiri-status"><span id="ele2-counter">Questão 1 de 5</span><span id="ele2-points">0 pontos provisórios</span></div>
