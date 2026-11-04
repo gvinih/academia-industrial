@@ -416,6 +416,7 @@ function renderSubjectTabs() {
   const tabs=[['resumo','Resumo'],['apostila','Apostila PDF'],['video','Vídeo'],['quiz','Quiz']];
   if(activeSubject?.id==='5s') tabs.push(['seiri','Quiz Seiri']);
   if(activeSubject?.id==='lubrificacao') tabs.push(['lubrificacao-quiz','Quiz Interativo']);
+  if(activeSubject?.id==='eletrica') tabs.push(['eletrica-quiz','Quiz NR-10']);
   document.querySelector('#tabs').innerHTML=tabs.map(([k,t])=>`<button class="tab ${activeTab===k?'active':''}" data-tab="${k}">${t}</button>`).join('');
   document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',async()=>{activeTab=b.dataset.tab;renderSubjectTabs();await renderSubjectTab()}));
 }
@@ -458,6 +459,7 @@ async function renderSubjectTab() {
   if(activeTab==='quiz'){await renderQuiz(box);return;}
   if(activeTab==='seiri'){await renderSeiriQuiz(box);return;}
   if(activeTab==='lubrificacao-quiz'){await renderLubricationQuiz(box);}
+  if(activeTab==='eletrica-quiz'){await renderElectricalQuiz(box);}
 }
 async function deleteSubjectFile(kind, file) {
   if (profile?.role !== 'admin' || !file || file.subject_id !== activeSubject?.id) {
@@ -677,6 +679,84 @@ async function renderLubricationQuiz(box) {
     document.querySelector('#lub-dashboard').addEventListener('click',dashboard);
   }
   document.querySelector('#lub-begin').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
+  timerBtn.addEventListener('click',startTimer);
+  nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
+}
+
+
+async function renderElectricalQuiz(box) {
+  box.innerHTML='<h2>Quiz Interativo — Segurança em Eletricidade</h2><p class="muted">Carregando as cinco questões…</p>';
+  const {data:questions,error}=await supabase.from('quiz_questions')
+    .select('id,question_text,options,correct_option,explanation,sort_order')
+    .eq('subject_id','eletrica').eq('is_active',true).gte('sort_order',9201).lte('sort_order',9205).order('sort_order');
+  if(error){console.error(error);box.innerHTML='<h2>Quiz NR-10</h2><div class="empty-state">Não foi possível carregar o quiz. O administrador precisa aplicar o arquivo supabase/quiz_eletrica_nr10.sql no Supabase.</div>';return;}
+  if(!questions || questions.length!==5){box.innerHTML='<h2>Quiz Interativo — Segurança em Eletricidade</h2><div class="empty-state">Este quiz ainda não está configurado no banco. O administrador deve executar o arquivo supabase/quiz_eletrica_nr10.sql no Supabase.</div>';return;}
+  box.innerHTML=`
+    <div class="seiri-wrap eletrica-theme">
+      <div class="seiri-heading"><span class="seiri-kicker">MÓDULO 4 · ELÉTRICA BÁSICA</span><h2>Segurança em Eletricidade &amp; NR-10</h2><p class="muted">Cinco questões sobre segurança elétrica, bloqueio e etiquetagem, desenergização e dispositivos de proteção.</p></div>
+      <div id="ele-start" class="seiri-start"><div class="seiri-icon">⚡</div><h3>Pronto para testar seus conhecimentos?</h3><p>Você terá 35 segundos por questão. O cronômetro começa quando clicar em “Iniciar tempo”. Ao final, seu resultado será registrado no ranking.</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Gabarito comentado</span></div><button class="btn btn-primary" id="ele-begin">Começar quiz</button></div>
+      <div id="ele-game" class="seiri-game" hidden>
+        <div class="seiri-status"><span id="ele-counter">Questão 1 de 5</span><span id="ele-points">0 pontos provisórios</span></div>
+        <div class="seiri-progress"><div id="ele-progress-bar"></div></div>
+        <div class="seiri-timer-row"><button class="btn seiri-timer-start" id="ele-timer-start">▶ Iniciar tempo</button><span class="seiri-timer" id="ele-timer">35s</span></div>
+        <h3 id="ele-question"></h3><div id="ele-options" class="seiri-options"></div>
+        <div id="ele-feedback" class="seiri-feedback" hidden></div>
+        <div class="seiri-controls"><span id="ele-hint">Leia as alternativas e inicie o cronômetro quando estiver pronto.</span><button class="btn btn-primary" id="ele-next" disabled>Avançar →</button></div>
+      </div>
+      <div id="ele-result" class="seiri-result" hidden></div>
+    </div>`;
+  let index=0,timer=null,timeLeft=35,timerStarted=false,selected=null,correctCount=0,totalSeconds=0;
+  const answers=[];
+  const start=document.querySelector('#ele-start'),game=document.querySelector('#ele-game'),resultBox=document.querySelector('#ele-result');
+  const timerBtn=document.querySelector('#ele-timer-start'),nextBtn=document.querySelector('#ele-next');
+  function stopTimer(){if(timer){clearInterval(timer);timer=null;}timerStarted=false;}
+  function startTimer(){
+    if(timerStarted||selected!==null)return;
+    timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
+    document.querySelector('#ele-hint').textContent='O tempo está correndo. Escolha uma alternativa.';
+    timer=setInterval(()=>{timeLeft--;totalSeconds++;document.querySelector('#ele-timer').textContent=timeLeft+'s';document.querySelector('#ele-progress-bar').style.width=(timeLeft/35*100)+'%';if(timeLeft<=5)document.querySelector('#ele-timer').classList.add('urgent');if(timeLeft<=0){stopTimer();choose(questions[index].correct_option===0?1:0,true);}},1000);
+  }
+  function loadQuestion(){
+    stopTimer();timeLeft=35;selected=null;
+    const q=questions[index];
+    document.querySelector('#ele-counter').textContent='Questão '+(index+1)+' de '+questions.length;
+    document.querySelector('#ele-points').textContent=(correctCount*20)+' pontos provisórios';
+    document.querySelector('#ele-question').textContent=q.question_text;
+    document.querySelector('#ele-timer').textContent='35s';document.querySelector('#ele-timer').classList.remove('urgent');
+    document.querySelector('#ele-progress-bar').style.width='100%';
+    timerBtn.disabled=false;timerBtn.textContent='▶ Iniciar tempo';
+    document.querySelector('#ele-hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
+    document.querySelector('#ele-feedback').hidden=true;nextBtn.disabled=true;
+    nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
+    const options=document.querySelector('#ele-options');
+    options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>'<button type="button" class="seiri-option" data-option="'+op.originalIndex+'"><span class="seiri-letter">'+String.fromCharCode(65+i)+'</span><span>'+esc(op.label)+'</span></button>').join('');
+    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    startTimer();
+  }
+  function choose(optionIndex,timedOut){
+    if(selected!==null)return;
+    selected=optionIndex;stopTimer();
+    const q=questions[index],isCorrect=optionIndex===q.correct_option;
+    if(isCorrect)correctCount++;
+    answers.push({question_id:q.id,selected_option:optionIndex});
+    document.querySelectorAll('#ele-options button').forEach(b=>{const n=Number(b.dataset.option);b.disabled=true;if(n===q.correct_option)b.classList.add('is-correct');else if(n===optionIndex)b.classList.add('is-wrong');});
+    const feedback=document.querySelector('#ele-feedback');feedback.hidden=false;feedback.className='seiri-feedback '+(isCorrect?'feedback-correct':'feedback-wrong');
+    feedback.innerHTML='<strong>'+(timedOut?'Tempo esgotado. ':isCorrect?'Resposta correta! ':'Resposta incorreta. ')+'</strong>'+esc(q.explanation);
+    document.querySelector('#ele-points').textContent=(correctCount*20)+' pontos provisórios';
+    document.querySelector('#ele-hint').textContent=timedOut?'A questão foi marcada como incorreta porque o tempo terminou.':'Confira a explicação antes de avançar.';
+    nextBtn.disabled=false;
+  }
+  async function finish(){
+    nextBtn.disabled=true;nextBtn.textContent='Registrando resultado…';
+    const {data,error}=await supabase.rpc('submit_quiz',{p_subject_id:'eletrica',p_answers:answers});
+    if(error){toast(error.message||'Não foi possível registrar a pontuação.',true);nextBtn.disabled=false;nextBtn.textContent='Tentar registrar novamente';return;}
+    const final=Array.isArray(data)?data[0]:data;game.hidden=true;resultBox.hidden=false;
+    const percent=Math.round(final.score/questions.length*100);
+    resultBox.innerHTML='<div class="seiri-result-medal">'+(percent===100?'🏆':percent>=60?'⭐':'📘')+'</div><span class="seiri-kicker">RESULTADO · SEGURANÇA EM ELETRICIDADE</span><h2>'+(percent===100?'Desempenho perfeito!':percent>=60?'Bom desempenho!':'Vamos revisar?')+'</h2><div class="seiri-final-stats"><div><small>Acertos</small><strong>'+final.score+'/'+questions.length+'</strong></div><div><small>Aproveitamento</small><strong>'+percent+'%</strong></div><div><small>Tempo</small><strong>'+totalSeconds+'s</strong></div></div><p>'+(final.is_first_attempt?'Você ganhou <b>'+final.points_awarded+' pontos</b> nesta primeira tentativa.':'Este quiz já foi concluído anteriormente; você ganhou <b>0 pontos adicionais</b>, pois somente a primeira tentativa conta.')+' Pontos acumulados em Elétrica: <b>'+final.best_score+'</b>.</p><p class="muted">Cada quiz soma pontos uma única vez. Refazer este quiz não aumenta o ranking.</p><div class="seiri-review"><h3>Revisão das respostas</h3>'+questions.map((q,i)=>{const a=answers[i];return '<article class="seiri-review-item"><strong>'+(i+1)+'. '+esc(q.question_text)+'</strong><p class="'+(a.selected_option===q.correct_option?'review-good':'review-bad')+'">'+(a.selected_option===q.correct_option?'✓ Resposta correta':'✕ Resposta incorreta')+' — '+esc(q.options[q.correct_option])+'</p><p>'+esc(q.explanation)+'</p></article>';}).join('')+'</div><div class="seiri-result-actions"><button class="btn btn-primary" id="ele-retry">Tentar novamente</button><button class="btn btn-light" id="ele-dashboard">Ver ranking atualizado</button></div>';
+    document.querySelector('#ele-retry').addEventListener('click',()=>renderElectricalQuiz(box));
+    document.querySelector('#ele-dashboard').addEventListener('click',dashboard);
+  }
+  document.querySelector('#ele-begin').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
   timerBtn.addEventListener('click',startTimer);
   nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
 }
