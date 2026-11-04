@@ -636,13 +636,13 @@ async function renderSeiriQuiz(box) {
 
 
 async function renderStandardInteractiveQuiz(box, config) {
-  const {subjectId,minSort,maxSort,title,kicker,description,startTitle,startDescription,sqlPath,resultLabel}=config;
+  const {subjectId,minSort,maxSort,title,kicker,description,startTitle,startDescription,sqlPath,resultLabel,themeClass=''}=config;
   box.innerHTML='<h2>'+esc(title)+'</h2><p class="muted">Carregando as cinco questões…</p>';
   const {data:questions,error}=await supabase.from('quiz_questions').select('id,question_text,options,correct_option,explanation,sort_order')
     .eq('subject_id',subjectId).eq('is_active',true).gte('sort_order',minSort).lte('sort_order',maxSort).order('sort_order');
   if(error){console.error(error);box.innerHTML='<h2>'+esc(title)+'</h2><div class="empty-state">Não foi possível carregar este quiz. Verifique se o arquivo '+esc(sqlPath)+' foi executado no Supabase.</div>';return;}
   if(!questions||questions.length!==5){box.innerHTML='<h2>'+esc(title)+'</h2><div class="empty-state">Este quiz ainda não está configurado no banco. Execute '+esc(sqlPath)+' no Supabase.</div>';return;}
-  box.innerHTML='<div class="seiri-wrap"><div class="seiri-heading"><span class="seiri-kicker">'+esc(kicker)+'</span><h2>'+esc(title)+'</h2><p class="muted">'+esc(description)+'</p></div>'+
+  box.innerHTML='<div class="seiri-wrap '+esc(themeClass)+'"><div class="seiri-heading"><span class="seiri-kicker">'+esc(kicker)+'</span><h2>'+esc(title)+'</h2><p class="muted">'+esc(description)+'</p></div>'+
     '<div class="seiri-start"><div class="seiri-icon">▦</div><h3>'+esc(startTitle)+'</h3><p>'+esc(startDescription)+'</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" data-action="begin">Começar quiz</button></div>'+
     '<div class="seiri-game" hidden><div class="seiri-status"><span data-role="counter">Questão 1 de 5</span><span data-role="points">0 pontos provisórios</span></div><div class="seiri-progress"><div data-role="progress"></div></div>'+
     '<div class="seiri-timer-row"><button class="btn seiri-timer-start" data-action="timer">▶ Iniciar tempo</button><span class="seiri-timer" data-role="timer">35s</span></div>'+
@@ -801,7 +801,7 @@ async function renderElectricalQuiz(box) {
     kicker:'MÓDULO 1 · ELÉTRICA',description:'Cinco questões sobre NR-10, segurança em eletricidade, regras de ouro, bloqueio e etiquetagem e dispositivos de proteção.',
     startTitle:'Pronto para testar seus conhecimentos?',
     startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
-    sqlPath:'supabase/quiz_eletrica_nr10.sql',resultLabel:'ELÉTRICA · NR-10'
+    sqlPath:'supabase/quiz_eletrica_nr10.sql',resultLabel:'ELÉTRICA · NR-10',themeClass:'eletrica-theme'
   });
 }
 
@@ -811,7 +811,7 @@ async function renderElectricalQuiz2(box) {
     kicker:'MÓDULO 2 · ELÉTRICA',description:'Cinco questões sobre medição de corrente, circuitos de comando de 24 V, diferença entre Neutro e Terra, fiação de sensores e anomalias térmicas.',
     startTitle:'Pronto para testar seus conhecimentos?',
     startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
-    sqlPath:'supabase/quiz_eletrica_tensao_corrente.sql',resultLabel:'ELÉTRICA · TENSÃO E CORRENTE'
+    sqlPath:'supabase/quiz_eletrica_tensao_corrente.sql',resultLabel:'ELÉTRICA · TENSÃO E CORRENTE',themeClass:'eletrica-theme'
   });
 }
 
