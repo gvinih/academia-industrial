@@ -635,36 +635,87 @@ async function renderSeiriQuiz(box) {
 }
 
 
-async function renderSeitonSeisoQuiz(box) {
-  box.innerHTML='<h2>Encontro 2: Seiton & Seiso</h2><p class="muted">Carregando as cinco questões…</p>';
-  const {data:questions,error}=await supabase.from('quiz_questions')
-    .select('id,question_text,options,correct_option,explanation,sort_order')
-    .eq('subject_id','5s').eq('is_active',true).gte('sort_order',9006).lte('sort_order',9010).order('sort_order');
-  if(error){console.error(error);box.innerHTML='<h2>Quiz Seiton & Seiso</h2><div class="empty-state">Não foi possível carregar este quiz. Execute o arquivo supabase/quiz_5s_seiton_seiso.sql no Supabase.</div>';return;}
-  if(!questions || questions.length!==5){box.innerHTML='<h2>Encontro 2: Seiton & Seiso</h2><div class="empty-state">Este quiz ainda não está configurado no banco. Execute o arquivo supabase/quiz_5s_seiton_seiso.sql no Supabase.</div>';return;}
-
-  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz 5S — Seiton e Seiso" src="/academia-industrial/quiz5s-encontro2.html" style="display:block;width:100%;max-width:900px;height:700px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
-  const frame=box.querySelector('iframe');
-  const mapped=questions.map(q=>({
-    id:q.id, question:q.question_text, options:q.options,
-    correct:q.correct_option, explanation:q.explanation
-  }));
-  frame.addEventListener('load',()=>frame.contentWindow.postMessage({type:'academia-5s-encontro2-questions',questions:mapped},'*'),{once:true});
-
-  const onMessage=async(event)=>{
-    if(event.source!==frame.contentWindow || event.data?.type!=='academia-5s-encontro2-submit')return;
-    const {data,error:submitError}=await supabase.rpc('submit_quiz',{p_subject_id:'5s',p_answers:event.data.answers});
-    if(submitError){
-      toast(submitError.message||'Não foi possível registrar a pontuação.',true);
-      frame.contentWindow.postMessage({type:'academia-5s-encontro2-submit-result',error:submitError.message||'Erro ao registrar resultado.'},'*');
-      return;
-    }
-    const result=Array.isArray(data)?data[0]:data;
-    frame.contentWindow.postMessage({type:'academia-5s-encontro2-submit-result',result},'*');
-    toast('Resultado do Quiz Seiton & Seiso registrado.');
-  };
-  window.addEventListener('message',onMessage);
+async function renderStandardInteractiveQuiz(box, config) {
+  const {subjectId,minSort,maxSort,title,kicker,description,startTitle,startDescription,sqlPath,resultLabel}=config;
+  box.innerHTML='<h2>'+esc(title)+'</h2><p class="muted">Carregando as cinco questões…</p>';
+  const {data:questions,error}=await supabase.from('quiz_questions').select('id,question_text,options,correct_option,explanation,sort_order')
+    .eq('subject_id',subjectId).eq('is_active',true).gte('sort_order',minSort).lte('sort_order',maxSort).order('sort_order');
+  if(error){console.error(error);box.innerHTML='<h2>'+esc(title)+'</h2><div class="empty-state">Não foi possível carregar este quiz. Verifique se o arquivo '+esc(sqlPath)+' foi executado no Supabase.</div>';return;}
+  if(!questions||questions.length!==5){box.innerHTML='<h2>'+esc(title)+'</h2><div class="empty-state">Este quiz ainda não está configurado no banco. Execute '+esc(sqlPath)+' no Supabase.</div>';return;}
+  box.innerHTML='<div class="seiri-wrap"><div class="seiri-heading"><span class="seiri-kicker">'+esc(kicker)+'</span><h2>'+esc(title)+'</h2><p class="muted">'+esc(description)+'</p></div>'+
+    '<div class="seiri-start"><div class="seiri-icon">▦</div><h3>'+esc(startTitle)+'</h3><p>'+esc(startDescription)+'</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" data-action="begin">Começar quiz</button></div>'+
+    '<div class="seiri-game" hidden><div class="seiri-status"><span data-role="counter">Questão 1 de 5</span><span data-role="points">0 pontos provisórios</span></div><div class="seiri-progress"><div data-role="progress"></div></div>'+
+    '<div class="seiri-timer-row"><button class="btn seiri-timer-start" data-action="timer">▶ Iniciar tempo</button><span class="seiri-timer" data-role="timer">35s</span></div>'+
+    '<h3 data-role="question"></h3><div class="seiri-options" data-role="options"></div><div class="seiri-feedback" data-role="feedback" hidden></div>'+
+    '<div class="seiri-controls"><span data-role="hint">Selecione uma alternativa antes que o tempo termine.</span><button class="btn btn-primary" data-action="next" disabled>Avançar →</button></div></div><div class="seiri-result" hidden></div></div>';
+  const root=box.querySelector('.seiri-wrap'),start=root.querySelector('.seiri-start'),game=root.querySelector('.seiri-game'),resultBox=root.querySelector('.seiri-result');
+  const timerBtn=root.querySelector('[data-action="timer"]'),nextBtn=root.querySelector('[data-action="next"]');
+  const role=name=>root.querySelector('[data-role="'+name+'"]');
+  let index=0,timer=null,timeLeft=35,timerStarted=false,selected=null,correctCount=0,totalSeconds=0;
+  const answers=[];
+  function stopTimer(){if(timer){clearInterval(timer);timer=null;}timerStarted=false;}
+  function startTimer(){
+    if(timerStarted||selected!==null)return;
+    timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
+    role('hint').textContent='O tempo está correndo automaticamente. Escolha uma alternativa.';
+    timer=setInterval(()=>{timeLeft--;totalSeconds++;role('timer').textContent=timeLeft+'s';role('progress').style.width=(timeLeft/35*100)+'%';
+      if(timeLeft<=5)role('timer').classList.add('urgent');
+      if(timeLeft<=0){stopTimer();choose(questions[index].correct_option===0?1:0,true);}
+    },1000);
+  }
+  function loadQuestion(){
+    stopTimer();timeLeft=35;selected=null;const q=questions[index];
+    role('counter').textContent='Questão '+(index+1)+' de '+questions.length;
+    role('points').textContent=(correctCount*20)+' pontos provisórios';role('question').textContent=q.question_text;
+    role('timer').textContent='35s';role('timer').classList.remove('urgent');role('progress').style.width='100%';
+    timerBtn.disabled=false;timerBtn.textContent='▶ Iniciar tempo';
+    role('hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
+    role('feedback').hidden=true;nextBtn.disabled=true;nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
+    const options=role('options');
+    options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>
+      '<button type="button" class="seiri-option" data-option="'+op.originalIndex+'"><span class="seiri-letter">'+String.fromCharCode(65+i)+'</span><span>'+esc(op.label)+'</span></button>').join('');
+    options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+  }
+  function choose(optionIndex,timedOut){
+    if(selected!==null)return;selected=optionIndex;stopTimer();const q=questions[index],isCorrect=optionIndex===q.correct_option;
+    if(isCorrect)correctCount++;answers.push({question_id:q.id,selected_option:optionIndex});
+    role('options').querySelectorAll('button').forEach(b=>{const n=Number(b.dataset.option);b.disabled=true;if(n===q.correct_option)b.classList.add('is-correct');else if(n===optionIndex)b.classList.add('is-wrong');});
+    const feedback=role('feedback');feedback.hidden=false;feedback.className='seiri-feedback '+(isCorrect?'feedback-correct':'feedback-wrong');
+    feedback.innerHTML='<strong>'+(timedOut?'Tempo esgotado. ':isCorrect?'Resposta correta! ':'Não foi dessa vez. ')+'</strong>'+esc(q.explanation);
+    role('points').textContent=(correctCount*20)+' pontos provisórios';
+    role('hint').textContent=timedOut?'A questão foi marcada como incorreta porque o tempo terminou.':'Confira a explicação antes de avançar.';
+    nextBtn.disabled=false;
+  }
+  async function finish(){
+    nextBtn.disabled=true;nextBtn.textContent='Registrando resultado…';
+    const {data,error}=await supabase.rpc('submit_quiz',{p_subject_id:subjectId,p_answers:answers});
+    if(error){toast(error.message||'Não foi possível registrar a pontuação.',true);nextBtn.disabled=false;nextBtn.textContent='Tentar registrar novamente';return;}
+    const final=Array.isArray(data)?data[0]:data;game.hidden=true;resultBox.hidden=false;
+    const percent=Math.round(final.score/questions.length*100);
+    resultBox.innerHTML='<div class="seiri-result-medal">'+(percent===100?'🏆':percent>=60?'⭐':'📘')+'</div><span class="seiri-kicker">RESULTADO · '+esc(resultLabel)+'</span><h2>'+(percent===100?'Desempenho perfeito!':percent>=60?'Bom desempenho!':'Vamos revisar?')+'</h2>'+
+      '<div class="seiri-final-stats"><div><small>Acertos</small><strong>'+final.score+'/'+questions.length+'</strong></div><div><small>Aproveitamento</small><strong>'+percent+'%</strong></div><div><small>Tempo</small><strong>'+totalSeconds+'s</strong></div></div>'+
+      '<p>'+(final.is_first_attempt?'Você ganhou <b>'+final.points_awarded+' pontos</b> nesta primeira tentativa.':'Este quiz já foi concluído anteriormente; você ganhou <b>0 pontos adicionais</b>, pois somente a primeira tentativa conta.')+' Pontos acumulados: <b>'+final.best_score+'</b>.</p>'+
+      '<p class="muted">Cada quiz soma pontos uma única vez. Refazer este quiz não aumenta o ranking.</p><div class="seiri-review"><h3>Revisão das respostas</h3>'+
+      questions.map((q,i)=>{const a=answers[i];return '<article class="seiri-review-item"><strong>'+(i+1)+'. '+esc(q.question_text)+'</strong><p class="'+(a.selected_option===q.correct_option?'review-good':'review-bad')+'">'+(a.selected_option===q.correct_option?'✓ Resposta correta':'✕ Resposta incorreta')+' — '+esc(q.options[q.correct_option])+'</p><p>'+esc(q.explanation)+'</p></article>';}).join('')+
+      '</div><div class="seiri-result-actions"><button class="btn btn-primary" data-action="retry">Tentar novamente</button><button class="btn btn-light" data-action="dashboard">Ver ranking atualizado</button></div>';
+    resultBox.querySelector('[data-action="retry"]').addEventListener('click',()=>renderStandardInteractiveQuiz(box,config));
+    resultBox.querySelector('[data-action="dashboard"]').addEventListener('click',dashboard);
+  }
+  start.querySelector('[data-action="begin"]').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
+  timerBtn.addEventListener('click',startTimer);
+  nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
 }
+
+async function renderSeitonSeisoQuiz(box) {
+  return renderStandardInteractiveQuiz(box,{
+    subjectId:'5s',minSort:9006,maxSort:9010,title:'Encontro 2: Seiton & Seiso',
+    kicker:'MÓDULO 2 · 5S',description:'Cinco questões sobre senso de ordenação, senso de limpeza e aplicação prática no ambiente de trabalho.',
+    startTitle:'Pronto para testar seus conhecimentos?',
+    startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
+    sqlPath:'supabase/quiz_5s_seiton_seiso.sql',resultLabel:'5S · SEITON & SEISO'
+  });
+}
+
 
 async function renderLubricationQuiz(box) {
   box.innerHTML='<h2>Quiz Interativo — Lubrificação Básica</h2><p class="muted">Carregando as cinco questões…</p>';
@@ -745,66 +796,25 @@ async function renderLubricationQuiz(box) {
 
 
 async function renderElectricalQuiz(box) {
-  box.innerHTML='<div class="empty-state">Carregando o Quiz NR-10…</div>';
-  const {data:questions,error}=await supabase.from('quiz_questions')
-    .select('id,question_text,options,correct_option,explanation,sort_order')
-    .eq('subject_id','eletrica').eq('is_active',true).gte('sort_order',9201).lte('sort_order',9205).order('sort_order');
-  if(error){console.error(error);box.innerHTML='<div class="empty-state">Não foi possível carregar o quiz. Verifique se o SQL supabase/quiz_eletrica_nr10.sql foi executado no Supabase.</div>';return;}
-  if(!questions || questions.length!==5){box.innerHTML='<div class="empty-state">Este quiz ainda não está configurado no banco. Execute supabase/quiz_eletrica_nr10.sql no Supabase.</div>';return;}
-
-  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz Interativo - Elétrica Básica e NR-10" src="/academia-industrial/quiz1.html" style="display:block;width:100%;max-width:900px;height:700px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
-  const frame=box.querySelector('iframe');
-  const mapped=questions.map(q=>({
-    id:q.id, question:q.question_text, options:q.options,
-    correct:q.correct_option, explanation:q.explanation
-  }));
-  frame.addEventListener('load',()=>frame.contentWindow.postMessage({type:'academia-quiz1-questions',questions:mapped},'*'),{once:true});
-
-  const onMessage=async(event)=>{
-    if(event.source!==frame.contentWindow || event.data?.type!=='academia-quiz1-submit')return;
-    const {data,error:submitError}=await supabase.rpc('submit_quiz',{p_subject_id:'eletrica',p_answers:event.data.answers});
-    if(submitError){
-      toast(submitError.message||'Não foi possível registrar a pontuação.',true);
-      frame.contentWindow.postMessage({type:'academia-quiz1-submit-result',error:submitError.message||'Erro ao registrar resultado.'},'*');
-      return;
-    }
-    const result=Array.isArray(data)?data[0]:data;
-    frame.contentWindow.postMessage({type:'academia-quiz1-submit-result',result},'*');
-    toast('Resultado do Quiz NR-10 registrado.');
-  };
-  window.addEventListener('message',onMessage);
+  return renderStandardInteractiveQuiz(box,{
+    subjectId:'eletrica',minSort:9201,maxSort:9205,title:'Módulo 1: Segurança em Eletricidade',
+    kicker:'MÓDULO 1 · ELÉTRICA',description:'Cinco questões sobre NR-10, segurança em eletricidade, regras de ouro, bloqueio e etiquetagem e dispositivos de proteção.',
+    startTitle:'Pronto para testar seus conhecimentos?',
+    startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
+    sqlPath:'supabase/quiz_eletrica_nr10.sql',resultLabel:'ELÉTRICA · NR-10'
+  });
 }
 
 async function renderElectricalQuiz2(box) {
-  box.innerHTML='<div class="empty-state">Carregando o Quiz 2 de Elétrica…</div>';
-  const {data:questions,error}=await supabase.from('quiz_questions')
-    .select('id,question_text,options,correct_option,explanation,sort_order')
-    .eq('subject_id','eletrica').eq('is_active',true).gte('sort_order',9211).lte('sort_order',9215).order('sort_order');
-  if(error){console.error(error);box.innerHTML='<div class="empty-state">Não foi possível carregar o quiz. Verifique se o SQL supabase/quiz_eletrica_tensao_corrente.sql foi executado no Supabase.</div>';return;}
-  if(!questions || questions.length!==5){box.innerHTML='<div class="empty-state">Este quiz ainda não está configurado no banco. Execute supabase/quiz_eletrica_tensao_corrente.sql no Supabase.</div>';return;}
-
-  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz Tensão, Corrente e Tipos de Energia" src="/academia-industrial/quiz2.html" style="display:block;width:100%;max-width:900px;height:700px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
-  const frame=box.querySelector('iframe');
-  const mapped=questions.map(q=>({
-    id:q.id, question:q.question_text, options:q.options,
-    correct:q.correct_option, explanation:q.explanation
-  }));
-  frame.addEventListener('load',()=>frame.contentWindow.postMessage({type:'academia-quiz2-questions',questions:mapped},'*'),{once:true});
-
-  const onMessage=async(event)=>{
-    if(event.source!==frame.contentWindow || event.data?.type!=='academia-quiz2-submit')return;
-    const {data,error:submitError}=await supabase.rpc('submit_quiz',{p_subject_id:'eletrica',p_answers:event.data.answers});
-    if(submitError){
-      toast(submitError.message||'Não foi possível registrar a pontuação.',true);
-      frame.contentWindow.postMessage({type:'academia-quiz2-submit-result',error:submitError.message||'Erro ao registrar resultado.'},'*');
-      return;
-    }
-    const result=Array.isArray(data)?data[0]:data;
-    frame.contentWindow.postMessage({type:'academia-quiz2-submit-result',result},'*');
-    toast('Resultado do Quiz 2 registrado.');
-  };
-  window.addEventListener('message',onMessage);
+  return renderStandardInteractiveQuiz(box,{
+    subjectId:'eletrica',minSort:9211,maxSort:9215,title:'Quiz: Tensão, Corrente e Tipos de Energia',
+    kicker:'MÓDULO 2 · ELÉTRICA',description:'Cinco questões sobre medição de corrente, circuitos de comando de 24 V, diferença entre Neutro e Terra, fiação de sensores e anomalias térmicas.',
+    startTitle:'Pronto para testar seus conhecimentos?',
+    startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
+    sqlPath:'supabase/quiz_eletrica_tensao_corrente.sql',resultLabel:'ELÉTRICA · TENSÃO E CORRENTE'
+  });
 }
+
 
 async function uploadPdf(e) {
   e.preventDefault();const form=e.currentTarget,fd=new FormData(form),file=fd.get('file'),subjectId=fd.get('subject_id'),title=fd.get('title').toString().trim();
