@@ -99,7 +99,7 @@ async function openAudits() {
         <label class="field">Tipo de auditoria<select name="audit_type" required><option value="">Selecione</option>${auditTypes.map(x=>`<option value="${x.id}">${x.label}</option>`).join('')}</select></label>
         <fieldset class="audit-status-field"><legend>Resultado encontrado</legend><label><input type="radio" name="status" value="OK" required> <span class="audit-status-ok">OK</span></label><label><input type="radio" name="status" value="NOK"> <span class="audit-status-nok">NOK</span></label></fieldset>
         <label class="field audit-observations-field">Observações <textarea name="observations" rows="3" maxlength="2000" placeholder="Descreva o que foi encontrado. Obrigatório para NOK."></textarea></label>
-        <label class="field audit-evidence-field">Fotos da evidência <input name="evidence" type="file" accept="image/jpeg,image/png,image/webp" multiple><small>Até 10 MB por foto. Anexos são privados e visíveis somente aos administradores.</small></label>
+        <label class="field audit-evidence-field">Fotos da evidência <input name="evidence" type="file" accept="image/jpeg,image/png,image/webp" multiple><small>Até 10 MB por foto. As imagens são redimensionadas e comprimidas automaticamente antes do envio. Anexos privados, visíveis somente aos administradores.</small></label>
         <button class="btn btn-primary" type="submit">Salvar auditoria</button>
       </form>
     </section>
@@ -121,6 +121,33 @@ async function openAudits() {
   }
 }
 
+async function compressAuditImage(file) {
+  const maxSide = 1600;
+  let bitmap, sourceUrl = '';
+  try {
+    if ('createImageBitmap' in window) bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    else {
+      sourceUrl = URL.createObjectURL(file);
+      bitmap = await new Promise((resolve,reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error('Não foi possível ler uma das imagens.')); image.src = sourceUrl; });
+    }
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Não foi possível preparar a imagem para compressão.');
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const toBlob = type => new Promise(resolve => canvas.toBlob(resolve, type, 0.78));
+    let blob = await toBlob('image/webp'), extension = 'webp';
+    if (!blob || blob.type !== 'image/webp') { blob = await toBlob('image/jpeg'); extension = 'jpg'; }
+    if (!blob) throw new Error('O navegador não conseguiu comprimir uma das imagens.');
+    return new File([blob], file.name.replace(/\\.[^.]+$/, '') + '.' + extension, { type: blob.type, lastModified: Date.now() });
+  } finally {
+    if (bitmap && typeof bitmap.close === 'function') bitmap.close();
+    if (sourceUrl) URL.revokeObjectURL(sourceUrl);
+  }
+}
+
 async function saveAudit(e) {
   e.preventDefault();
   if(profile?.role!=='admin')return;
@@ -130,10 +157,13 @@ async function saveAudit(e) {
   const btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Salvando…';
   const paths=[];
   try {
-    for(const file of files){
-      const safe=file.name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
-      const path=`${fd.get('audit_date')}/${crypto.randomUUID()}-${safe}`;
-      const {error}=await supabase.storage.from('audit-evidence').upload(path,file,{contentType:file.type,upsert:false});
+    for(let index=0;index<files.length;index++){
+      btn.textContent=files.length>1?'Comprimindo foto '+(index+1)+' de '+files.length+'…':'Comprimindo foto…';
+      const compressed=await compressAuditImage(files[index]);
+      const safe=compressed.name.normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
+      const path=fd.get('audit_date')+'/'+crypto.randomUUID()+'-'+safe;
+      btn.textContent=files.length>1?'Enviando foto '+(index+1)+' de '+files.length+'…':'Enviando foto…';
+      const {error}=await supabase.storage.from('audit-evidence').upload(path,compressed,{contentType:compressed.type,upsert:false});
       if(error)throw error;
       paths.push(path);
     }
