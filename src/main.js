@@ -424,7 +424,31 @@ const summaries = {
  '5s':`<h3>O que é 5S?</h3><p>Metodologia para organizar o local de trabalho, reduzir desperdícios e apoiar a segurança e a eficiência.</p><ol><li><b>Seiri — Utilização:</b> separar o necessário do desnecessário.</li><li><b>Seiton — Ordenação:</b> definir local e identificação para cada item.</li><li><b>Seiso — Limpeza:</b> limpar e inspecionar anomalias.</li><li><b>Seiketsu — Padronização:</b> estabelecer padrões visuais e rotinas.</li><li><b>Shitsuke — Disciplina:</b> manter os padrões continuamente.</li></ol><p>O 5S não é uma limpeza pontual: é um sistema de manutenção do padrão.</p>`,
  'lubrificacao':`<h3>Fundamentos da lubrificação</h3><p>A lubrificação forma uma película entre superfícies em movimento, reduzindo atrito, desgaste e aquecimento. Óleos fluem e podem circular; graxas tendem a permanecer no ponto de aplicação. A viscosidade deve atender à especificação do equipamento.</p><ul><li>Use o lubrificante e a quantidade especificados.</li><li>Evite misturas incompatíveis e contaminação por água ou partículas.</li><li>Registre a atividade e comunique vazamentos, ruídos ou aquecimento.</li><li>Siga os procedimentos de bloqueio e segurança antes de intervir.</li></ul>`,
  'pneumatica':`<h3>Fundamentos da pneumática</h3><p>A pneumática utiliza ar comprimido para acionar mecanismos. O compressor fornece ar; filtros e reguladores ajudam a preparar/controlar o ar; válvulas direcionais controlam o fluxo; cilindros transformam energia pneumática em movimento.</p><ul><li>Cilindro de simples ação: atua geralmente em um sentido e retorna por mola ou força externa.</li><li>Cilindro de dupla ação: o ar atua nos dois sentidos.</li><li>Antes de desmontar linhas, isole a energia e alivie a pressão conforme o procedimento.</li></ul>`,
- 'eletrica':`<h3>Fundamentos da elétrica</h3><ul><li><b>Tensão (V):</b> diferença de potencial.</li><li><b>Corrente (A):</b> fluxo de carga elétrica.</li><li><b>Resistência (Ω):</b> oposição à corrente.</li><li><b>Potência (W):</b> taxa de transferência/consumo de energia.</li></ul><p>Lei de Ohm: V = R × I. Em circuito CC simples, P = V × I. Disjuntores e fusíveis protegem contra sobrecorrentes dentro da aplicação e dimensionamento adequados.</p><p>Manutenção elétrica exige pessoas autorizadas, desenergização, bloqueio e verificação de ausência de tensão conforme procedimentos e normas aplicáveis.</p>`
+ 'eletrica':`<h3>Resumo dos Principais Tópicos do Material</h3>
+<p>O material de Elétrica Básica apresenta os fundamentos da eletricidade industrial, os principais componentes dos sistemas elétricos, práticas de segurança e técnicas de diagnóstico de falhas. O conteúdo está dividido em nove módulos:</p>
+<h4>1. Segurança em Eletricidade</h4>
+<p>Apresenta os principais riscos relacionados às atividades elétricas, como choque elétrico e arco elétrico. Aborda os requisitos da <b>NR-10</b>, a importância de trabalhar com circuitos desenergizados, bloqueados e com ausência de tensão devidamente verificada, além dos procedimentos de <b>bloqueio e etiquetagem (LOTO)</b> e da utilização correta de equipamentos de proteção individual (EPIs) e coletiva (EPCs).</p>
+<h4>2. Conceitos Elétricos Básicos</h4>
+<p>Introduz as quatro principais grandezas elétricas:</p>
+<ul><li><b>Tensão (V):</b> diferença de potencial elétrico.</li><li><b>Corrente (A):</b> fluxo de cargas elétricas.</li><li><b>Resistência (Ω):</b> oposição à passagem da corrente.</li><li><b>Potência (W):</b> taxa de transferência ou consumo de energia elétrica.</li></ul>
+<h4>3. Tipos de Corrente e Sistemas Elétricos</h4>
+<p>Explica as diferenças entre <b>corrente alternada (CA)</b> e <b>corrente contínua (CC)</b>, incluindo aplicações industriais de 24 VCC. Apresenta também os sistemas de alimentação monofásicos e trifásicos, suas características e aplicações em máquinas e equipamentos industriais.</p>
+<h4>4. Circuitos Elétricos</h4>
+<p>Aborda o funcionamento de circuitos em série e em paralelo, demonstrando como a ligação dos componentes influencia o funcionamento do sistema. Utiliza exemplos práticos, como circuitos de comando e cadeias de botões de emergência.</p>
+<h4>5. Instrumentos de Medição</h4>
+<p>Apresenta o funcionamento e a utilização segura do <b>multímetro e do alicate amperímetro</b>. Ensina os cuidados necessários para realizar medições de tensão, corrente e continuidade, destacando a seleção correta das escalas e dos pontos de medição para evitar danos aos instrumentos e riscos ao operador.</p>
+<h4>6. Componentes de Proteção e Comando</h4>
+<p>Apresenta os principais dispositivos utilizados em instalações e máquinas industriais:</p>
+<ul><li><b>Proteção:</b> disjuntores, fusíveis, dispositivos DR, relés térmicos e disjuntores-motores.</li><li><b>Comando:</b> contatores, relés auxiliares, botões, sinaleiros e sensores indutivos, capacitivos e fotoelétricos.</li></ul>
+<p>Explica a função de cada componente e sua importância para a operação e a proteção dos equipamentos.</p>
+<h4>7. Comandos Elétricos com Relés</h4>
+<p>Ensina a interpretar diagramas elétricos de potência e de comando. Aborda circuitos de partida direta de motores, contato de selo e intertravamentos, demonstrando como os componentes trabalham em conjunto para controlar máquinas e equipamentos.</p>
+<h4>8. Introdução aos Controladores Lógicos Programáveis (CLP)</h4>
+<p>Apresenta os conceitos básicos de automação com <b>CLPs</b>, explicando sua função no controle de processos industriais. Aborda a identificação das entradas e saídas, a interpretação dos LEDs de sinalização e o uso da <b>IHM (Interface Homem-Máquina)</b> para acompanhar estados e informações operacionais.</p>
+<h4>9. Diagnóstico Prático de Falhas</h4>
+<p>Apresenta uma sequência de verificações para situações em que uma máquina ou equipamento não funciona como esperado. Orienta a identificação de sintomas, a observação de sinalizações e condições de operação e a comunicação adequada das informações à equipe de manutenção, sempre respeitando os procedimentos de segurança.</p>
+<h4>Objetivo do aprendizado</h4>
+<p>Desenvolver conhecimentos fundamentais para compreender sistemas elétricos industriais, identificar componentes, interpretar comandos, utilizar instrumentos de medição e reconhecer situações anormais de funcionamento, contribuindo para uma operação mais segura e eficiente.</p>`
 };
 async function renderSubjectTab() {
   const box=document.querySelector('#lesson-content'); if(!box)return;
