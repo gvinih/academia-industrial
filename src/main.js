@@ -142,6 +142,7 @@ async function compressAuditImage(file) {
     if (!blob || blob.type !== 'image/webp') { blob = await toBlob('image/jpeg'); extension = 'jpg'; }
     if (!blob) throw new Error('O navegador não conseguiu comprimir uma das imagens.');
     const baseName=file.name.substring(0,file.name.lastIndexOf('.')) || file.name;
+    return new File([blob], baseName + '.' + extension, { type: blob.type, lastModified: Date.now() });
   } finally {
     if (bitmap && typeof bitmap.close === 'function') bitmap.close();
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
