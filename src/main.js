@@ -415,6 +415,7 @@ async function openSubject(id) {
 function renderSubjectTabs() {
   const tabs=[['resumo','Resumo'],['apostila','Apostila PDF'],['video','Vídeo'],['quiz','Quiz']];
   if(activeSubject?.id==='5s') tabs.push(['seiri','Quiz Seiri']);
+  if(activeSubject?.id==='5s') tabs.push(['seiton-seiso','Quiz Seiton & Seiso']);
   if(activeSubject?.id==='lubrificacao') tabs.push(['lubrificacao-quiz','Quiz Interativo']);
   if(activeSubject?.id==='eletrica') tabs.push(['eletrica-quiz','Quiz NR-10']);
   if(activeSubject?.id==='eletrica') tabs.push(['eletrica-quiz2','Quiz Tensão e Corrente']);
@@ -483,6 +484,7 @@ async function renderSubjectTab() {
   }
   if(activeTab==='quiz'){await renderQuiz(box);return;}
   if(activeTab==='seiri'){await renderSeiriQuiz(box);return;}
+  if(activeTab==='seiton-seiso'){await renderSeitonSeisoQuiz(box);return;}
   if(activeTab==='lubrificacao-quiz'){await renderLubricationQuiz(box);}
   if(activeTab==='eletrica-quiz'){await renderElectricalQuiz(box);}
   if(activeTab==='eletrica-quiz2'){await renderElectricalQuiz2(box);}
@@ -630,6 +632,38 @@ async function renderSeiriQuiz(box) {
   document.querySelector('#seiri-begin').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
   timerBtn.addEventListener('click',startTimer);
   nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
+}
+
+
+async function renderSeitonSeisoQuiz(box) {
+  box.innerHTML='<h2>Encontro 2: Seiton & Seiso</h2><p class="muted">Carregando as cinco questões…</p>';
+  const {data:questions,error}=await supabase.from('quiz_questions')
+    .select('id,question_text,options,correct_option,explanation,sort_order')
+    .eq('subject_id','5s').eq('is_active',true).gte('sort_order',9006).lte('sort_order',9010).order('sort_order');
+  if(error){console.error(error);box.innerHTML='<h2>Quiz Seiton & Seiso</h2><div class="empty-state">Não foi possível carregar este quiz. Execute o arquivo supabase/quiz_5s_seiton_seiso.sql no Supabase.</div>';return;}
+  if(!questions || questions.length!==5){box.innerHTML='<h2>Encontro 2: Seiton & Seiso</h2><div class="empty-state">Este quiz ainda não está configurado no banco. Execute o arquivo supabase/quiz_5s_seiton_seiso.sql no Supabase.</div>';return;}
+
+  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz 5S — Seiton e Seiso" src="/academia-industrial/quiz5s-encontro2.html" style="display:block;width:100%;max-width:900px;height:700px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
+  const frame=box.querySelector('iframe');
+  const mapped=questions.map(q=>({
+    id:q.id, question:q.question_text, options:q.options,
+    correct:q.correct_option, explanation:q.explanation
+  }));
+  frame.addEventListener('load',()=>frame.contentWindow.postMessage({type:'academia-5s-encontro2-questions',questions:mapped},'*'),{once:true});
+
+  const onMessage=async(event)=>{
+    if(event.source!==frame.contentWindow || event.data?.type!=='academia-5s-encontro2-submit')return;
+    const {data,error:submitError}=await supabase.rpc('submit_quiz',{p_subject_id:'5s',p_answers:event.data.answers});
+    if(submitError){
+      toast(submitError.message||'Não foi possível registrar a pontuação.',true);
+      frame.contentWindow.postMessage({type:'academia-5s-encontro2-submit-result',error:submitError.message||'Erro ao registrar resultado.'},'*');
+      return;
+    }
+    const result=Array.isArray(data)?data[0]:data;
+    frame.contentWindow.postMessage({type:'academia-5s-encontro2-submit-result',result},'*');
+    toast('Resultado do Quiz Seiton & Seiso registrado.');
+  };
+  window.addEventListener('message',onMessage);
 }
 
 async function renderLubricationQuiz(box) {
