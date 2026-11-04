@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interativo - Elétrica Básica: Tensão e Corrente</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js para efeitos sonoros -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfeff',
+                            100: '#cffafe',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                            700: '#0e7490',
+                            900: '#164e63',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-short': 'bounceShort 0.5s ease-in-out',
+                        'shake': 'shake 0.4s ease-in-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        bounceShort: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '20%, 60%': { transform: 'translateX(-6px)' },
+                            '40%, 80%': { transform: 'translateX(6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: radial-gradient(circle at 50% 0%, #083344, #0f172a 70%);
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .option-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .option-card:hover:not(:disabled) {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(6, 182, 212, 0.5);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-100 flex flex-col justify-between p-3 sm:p-6 overflow-x-hidden select-none">
+
+    <!-- Background Orbs para Efeito Visual -->
+    <div class="fixed top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none animate-pulse-slow"></div>
+    <div class="fixed bottom-10 right-10 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header Principal -->
+    <header class="max-w-4xl mx-auto w-full flex justify-between items-center z-10 mb-4">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-cyan-500 to-blue-600 p-3 rounded-2xl shadow-lg shadow-cyan-500/30 animate-float">
+                <i class="fa-solid fa-bolt text-2xl text-white"></i>
+            </div>
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-800">Aula 2</span>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-200 bg-clip-text text-transparent">
+                    Tensão, Corrente e Energia
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Botão de Som -->
+            <button id="soundToggleBtn" onclick="toggleSound()" title="Alternar som" class="glass-panel hover:bg-white/10 text-slate-300 w-10 h-10 rounded-xl flex items-center justify-center transition border border-white/10">
+                <i id="soundIcon" class="fa-solid fa-volume-high text-sm"></i>
+            </button>
+            <!-- Botão de JSON/Config -->
+            <button onclick="toggleEditModal()" title="Editar perguntas" class="glass-panel hover:bg-white/10 text-slate-300 w-10 h-10 rounded-xl flex items-center justify-center transition border border-white/10">
+                <i class="fa-solid fa-sliders text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="max-w-3xl mx-auto w-full my-auto z-10">
+        
+        <!-- ================= TELA 1: INÍCIO ================= -->
+        <div id="startScreen" class="glass-panel rounded-3xl p-6 sm:p-10 shadow-2xl text-center space-y-6 transform transition-all duration-300">
+            
+            <div class="relative inline-block">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 bg-gradient-to-tr from-cyan-600 via-blue-500 to-cyan-400 rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-cyan-500/40 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <i class="fa-solid fa-wave-square text-4xl sm:text-5xl text-white"></i>
+                </div>
+                <span class="absolute -bottom-2 -right-2 bg-amber-400 text-slate-900 font-extrabold text-xs px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                    <i class="fa-solid fa-star text-amber-900"></i> 5 Questões
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
+                    Quiz: Tensão, Corrente e Tipos de Energia
+                </h2>
+                <p class="text-slate-300 max-w-lg mx-auto text-sm sm:text-base leading-relaxed">
+                    Testes práticos sobre medição de corrente, circuitos de comando de 24 V, diferença entre Neutro e Terra, padrões de fiação de sensores e procedimentos diante de anomalias térmicas.
+                </p>
+            </div>
+
+            <!-- Features Rápidas -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto text-left pt-2">
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/5 text-center">
+                    <i class="fa-solid fa-stopwatch text-cyan-400 text-lg mb-1 block"></i>
+                    <span class="text-[11px] font-semibold text-slate-300 block">35s p/ responder</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/5 text-center">
+                    <i class="fa-solid fa-bolt text-amber-400 text-lg mb-1 block"></i>
+                    <span class="text-[11px] font-semibold text-slate-300 block">Sons & Efeitos</span>
+                </div>
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/5 text-center">
+                    <i class="fa-solid fa-lightbulb text-emerald-400 text-lg mb-1 block"></i>
+                    <span class="text-[11px] font-semibold text-slate-300 block">Gabarito Comentado</span>
+                </div>
+            </div>
+            
+            <div class="pt-4">
+                <button onclick="startQuiz()" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-600 hover:from-cyan-600 hover:to-blue-700 text-white text-lg font-bold px-10 py-4 rounded-2xl shadow-xl shadow-cyan-600/40 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3 mx-auto">
+                    <span>Iniciar Quiz</span>
+                    <i class="fa-solid fa-play text-xs bg-white/20 p-2 rounded-full"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TELA 2: QUIZ EM ANDAMENTO ================= -->
+        <div id="quizScreen" class="hidden glass-panel rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden">
+            
+            <!-- Barra Superior de Status -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-4 border-b border-white/10">
+                <!-- Contador de Pergunta -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Progresso</span>
+                    <span id="questionCounter" class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-extrabold text-xs px-2.5 py-1 rounded-lg">1 / 5</span>
+                </div>
+
+                <!-- Cronômetro Visual -->
+                <div class="flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-xl border border-white/10">
+                    <i class="fa-regular fa-clock text-cyan-400 text-sm"></i>
+                    <span id="timerText" class="font-mono text-sm font-bold text-slate-200">35s</span>
+                </div>
+
+                <!-- Pontuação Atual -->
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                    <span id="scoreTracker" class="font-black text-sm text-amber-300">0 pts</span>
+                </div>
+            </div>
+
+            <!-- Barra de Progresso do Timer -->
+            <div class="w-full bg-slate-900/80 h-1.5 rounded-full overflow-hidden mb-6">
+                <div id="timerBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-full transition-all duration-100 linear"></div>
+            </div>
+
+            <!-- Enunciado -->
+            <div class="mb-6">
+                <h3 id="questionText" class="text-base sm:text-lg md:text-xl font-bold text-white leading-relaxed">
+                    Carregando pergunta...
+                </h3>
+            </div>
+
+            <!-- Grade de Opções -->
+            <div id="optionsContainer" class="grid grid-cols-1 gap-3">
+                <!-- Opções injetadas dinamicamente -->
+            </div>
+
+            <!-- Feedback Interativo com Animação -->
+            <div id="feedbackBox" class="hidden mt-6 p-4 rounded-2xl border text-sm transition-all duration-300 transform scale-95"></div>
+
+            <!-- Rodapé do Quiz -->
+            <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+                <div class="text-xs text-slate-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info text-cyan-400"></i>
+                    <span>Selecione uma opção para responder</span>
+                </div>
+                <button id="nextBtn" onclick="nextQuestion()" disabled class="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-30 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-cyan-600/30 flex items-center gap-2">
+                    <span>Avançar</span>
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= TELA 3: RESULTADOS ================= -->
+        <div id="resultScreen" class="hidden glass-panel rounded-3xl p-6 sm:p-10 shadow-2xl text-center space-y-6">
+            
+            <div class="relative inline-block">
+                <div id="resultBadge" class="w-24 h-24 bg-cyan-500/20 border-2 border-cyan-500/40 rounded-full mx-auto flex items-center justify-center text-4xl text-cyan-400 mb-2">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <h2 id="resultTitle" class="text-2xl sm:text-3xl font-extrabold text-white">Quiz Concluído!</h2>
+                <p id="resultSubtitle" class="text-slate-400 text-sm">Confira seu desempenho em Tensão, Corrente e Tipos de Energia</p>
+            </div>
+
+            <!-- Card de Estatísticas -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-900/60 p-4 rounded-2xl border border-white/10 max-w-md mx-auto">
+                <div class="p-3">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Acertos</span>
+                    <span id="finalScore" class="text-2xl sm:text-3xl font-black text-cyan-400">0/5</span>
+                </div>
+                <div class="p-3 border-x border-white/10">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Aproveitamento</span>
+                    <span id="finalPercent" class="text-2xl sm:text-3xl font-black text-emerald-400">0%</span>
+                </div>
+                <div class="p-3 col-span-2 sm:col-span-1">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tempo Total</span>
+                    <span id="finalTime" class="text-2xl sm:text-3xl font-black text-amber-400">0s</span>
+                </div>
+            </div>
+
+            <!-- Mensagem Customizada -->
+            <div id="resultMessageCard" class="p-4 rounded-2xl bg-white/5 border border-white/10 max-w-md mx-auto text-sm text-slate-300 font-medium leading-relaxed">
+                ...
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="pt-2 flex flex-wrap gap-3 justify-center">
+                <button onclick="restartQuiz()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl transition shadow-lg shadow-cyan-600/30 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Refazer Quiz
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Rodapé Discreto -->
+    <footer class="text-center text-[11px] text-slate-400/80 py-3 z-10">
+        Desenvolvido para Apresentação • Treinamento de Elétrica Básica (Aula 2)
+    </footer>
+
+    <!-- MODAL DE EDIÇÃO / JSON -->
+    <div id="editModal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-white/10 overflow-hidden">
+            <div class="p-5 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
+                <h3 class="font-bold text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-code text-cyan-400"></i> Configuração de Questões (JSON)
+                </h3>
+                <button onclick="toggleEditModal()" class="text-slate-400 hover:text-white text-lg font-bold w-8 h-8 rounded-lg hover:bg-white/10 transition flex items-center justify-center">&times;</button>
+            </div>
+            <div class="p-5 flex-1 overflow-y-auto space-y-3">
+                <p class="text-xs text-slate-400">
+                    Você pode alterar os enunciados, alternativas ou explicações editando a estrutura JSON abaixo:
+                </p>
+                <textarea id="jsonInput" class="w-full h-64 p-4 font-mono text-xs border border-white/10 rounded-2xl bg-slate-950 text-emerald-400 focus:outline-none focus:border-cyan-500 transition" spellcheck="false"></textarea>
+            </div>
+            <div class="p-4 border-t border-white/10 bg-slate-900/50 flex justify-end gap-3">
+                <button onclick="toggleEditModal()" class="px-4 py-2 text-slate-400 font-semibold hover:bg-white/10 rounded-xl transition text-xs">Cancelar</button>
+                <button onclick="saveCustomQuestions()" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl transition text-xs shadow-md">Salvar e Recarregar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LÓGICA DO JOGO -->
+    <script>
+        // Perguntas extraídas exatamente do questionário 2
+        const defaultQuestions = [
+            {
+                question: "Pergunta 1: Qual instrumento é indicado na apostila para conferir a corrente elétrica?",
+                options: [
+                    "- A) Multímetro, exclusivamente.",
+                    "- B) Alicate amperímetro.",
+                    "- C) Termômetro infravermelho.",
+                    "- D) Megômetro, exclusivamente."
+                ],
+                correct: 1,
+                explanation: "Gabarito: B. A corrente elétrica é medida em amperes (A) e a apostila indica o alicate amperímetro para conferi-la de forma prática."
+            },
+            {
+                question: "Pergunta 2: Nas máquinas, a corrente contínua de 24 V é utilizada normalmente para alimentar quais componentes?",
+                options: [
+                    "- A) Motores e resistências.",
+                    "- B) Apenas a iluminação do galpão.",
+                    "- C) Botões, sensores, CLP e válvulas solenoides.",
+                    "- D) Somente a chave geral e os disjuntores."
+                ],
+                correct: 2,
+                explanation: "Gabarito: C. A corrente contínua (CC) de 24 V é a tensão padrão para o circuito de comando: botões, sensores, CLP e válvulas solenoides."
+            },
+            {
+                question: "Pergunta 3: Qual alternativa explica corretamente a diferença entre o condutor Neutro e o Terra (PE)?",
+                options: [
+                    "- A) O neutro faz parte do circuito e conduz a corrente de volta; o terra é proteção e conduz corrente quando há defeito.",
+                    "- B) O neutro é proteção e só conduz corrente quando há defeito; o terra faz parte do retorno normal.",
+                    "- C) Neutro e terra têm a mesma função e podem ser usados indistintamente.",
+                    "- D) O terra alimenta os sensores e o neutro alimenta o motor."
+                ],
+                correct: 0,
+                explanation: "Gabarito: A. O neutro é o condutor ativo de retorno da corrente à fonte; o condutor terra (PE) é exclusivo para proteção, conduzindo corrente só em casos de falha/fuga."
+            },
+            {
+                question: "Pergunta 4: Em um sensor de três fios, qual identificação corresponde ao padrão apresentado na apostila?",
+                options: [
+                    "- A) Marrom = saída; azul = +24 V; preto = 0 V.",
+                    "- B) Marrom = 0 V; azul = saída; preto = +24 V.",
+                    "- C) Marrom = +24 V; azul = 0 V; preto = saída.",
+                    "- D) Marrom = terra; azul = fase; preto = neutro."
+                ],
+                correct: 2,
+                explanation: "Gabarito: C. No código de cores padrão para sensores industriais de 3 fios: Marrom é o positivo (+24 V), Azul é o negativo (0 V) e Preto é o sinal de saída."
+            },
+            {
+                question: "Pergunta 5: Durante a operação, você percebe que o motor está mais quente que o normal e há cheiro de queimado. O que deve fazer?",
+                options: [
+                    "- A) Continuar operando, pois o aquecimento é esperado no fim do turno.",
+                    "- B) Abrir o painel e procurar o componente que está aquecendo.",
+                    "- C) Desconectar o fio terra para verificar se o aquecimento diminui.",
+                    "- D) Parar a máquina e avisar a manutenção."
+                ],
+                correct: 3,
+                explanation: "Gabarito: D. Aquecimento excessivo e odor de queimado indicam anomalia grave. A conduta padrão de segurança é parar a máquina imediatamente e acionar a equipe de manutenção."
+            }
+        ];
+
+        // Estado da Aplicação
+        let questions = defaultQuestions;
+        let submittedAnswers = [];
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let selectedOptionIdx = null;
+        let soundEnabled = true;
+
+        // Cronômetro por questão (35s)
+        const QUESTION_TIME = 35;
+        let timeLeft = QUESTION_TIME;
+        let timerInterval = null;
+        let totalTimeSpent = 0;
+        let totalTimerInterval = null;
+
+        // Efeitos Sonoros usando Tone.js Synthesizers
+        let synthCorrect, synthIncorrect, synthTick;
+
+        function initAudio() {
+            try {
+                synthCorrect = new Tone.PolySynth(Tone.Synth).toDestination();
+                synthIncorrect = new Tone.MembraneSynth().toDestination();
+                synthTick = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 } }).toDestination();
+                synthTick.volume.value = -12;
+            } catch(e) {
+                console.log("Audio Init Bypass", e);
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                Tone.start();
+                if (type === 'correct') {
+                    synthCorrect.triggerAttackRelease(["C5", "E5", "G5"], "8n");
+                } else if (type === 'incorrect') {
+                    synthIncorrect.triggerAttackRelease("C2", "8n");
+                } else if (type === 'tick') {
+                    synthTick.triggerAttackRelease("A5", "32n");
+                }
+            } catch(e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = "fa-solid fa-volume-high text-sm";
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-sm text-slate-500";
+            }
+        }
+
+        // Fluxo Principal
+        function startQuiz() {
+            initAudio();
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            currentQuestionIdx = 0;
+            score = 0;
+            submittedAnswers = [];
+            totalTimeSpent = 0;
+            
+            clearInterval(totalTimerInterval);
+            totalTimerInterval = setInterval(() => {
+                totalTimeSpent++;
+            }, 1000);
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIdx];
+            document.getElementById('questionCounter').innerText = `${currentQuestionIdx + 1} / ${questions.length}`;
+            document.getElementById('scoreTracker').innerText = `${score * 100} pts`;
+            document.getElementById('questionText').innerText = q.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            selectedOptionIdx = null;
+            document.getElementById('nextBtn').disabled = true;
+            
+            const feedbackBox = document.getElementById('feedbackBox');
+            feedbackBox.className = 'hidden mt-6 p-4 rounded-2xl border text-sm transition-all duration-300 transform scale-95';
+
+            q.options.forEach((opt, idx) => {
+                const button = document.createElement('button');
+                button.className = `option-card w-full text-left p-4 rounded-2xl border border-white/10 bg-slate-900/70 hover:bg-cyan-600/20 hover:border-cyan-500/50 text-slate-200 text-sm sm:text-base font-medium flex items-center justify-between group`;
+                button.onclick = () => selectOption(idx);
+                
+                button.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 shrink-0 rounded-xl bg-white/5 border border-white/10 group-hover:border-cyan-400 group-hover:bg-cyan-500/20 text-cyan-300 font-bold text-xs flex items-center justify-center transition">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span class="leading-snug">${opt.replace(/^-\s*[A-D]\)\s*/, '')}</span>
+                    </div>
+                    <div class="status-icon w-6 h-6 shrink-0 rounded-full border border-white/10 flex items-center justify-center text-xs opacity-0 transition-opacity">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                `;
+                optionsContainer.appendChild(button);
+            });
+
+            resetTimer();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = QUESTION_TIME;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 5 && timeLeft > 0) {
+                    playSound('tick');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (selectedOptionIdx === null) {
+                        autoTimeOut();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timerText').innerText = `${timeLeft}s`;
+            const percent = (timeLeft / QUESTION_TIME) * 100;
+            const bar = document.getElementById('timerBar');
+            bar.style.width = `${percent}%`;
+
+            if (timeLeft <= 5) {
+                bar.className = "bg-gradient-to-r from-rose-500 to-amber-500 h-full w-full transition-all duration-100 linear";
+            } else {
+                bar.className = "bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-full transition-all duration-100 linear";
+            }
+        }
+
+        function autoTimeOut() {
+            const q = questions[currentQuestionIdx];
+            selectOption(q.correct === 0 ? 1 : 0);
+        }
+
+        function selectOption(idx) {
+            if (selectedOptionIdx !== null) return;
+            selectedOptionIdx = idx;
+            submittedAnswers.push({ question_id: questions[currentQuestionIdx].id, selected_option: idx });
+
+            clearInterval(timerInterval);
+
+            const q = questions[currentQuestionIdx];
+            const options = document.getElementById('optionsContainer').children;
+            const isCorrect = idx === q.correct;
+
+            if (isCorrect) {
+                score++;
+                playSound('correct');
+            } else {
+                playSound('incorrect');
+            }
+
+            document.getElementById('scoreTracker').innerText = `${score * 100} pts`;
+
+            for (let i = 0; i < options.length; i++) {
+                const btn = options[i];
+                btn.disabled = true;
+
+                const iconBox = btn.querySelector('.status-icon');
+                iconBox.classList.remove('opacity-0');
+
+                if (i === q.correct) {
+                    btn.className = "option-card w-full text-left p-4 rounded-2xl border-2 border-emerald-500/80 bg-emerald-950/40 text-emerald-100 text-sm sm:text-base font-semibold flex items-center justify-between";
+                    iconBox.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i>';
+                } else if (i === idx && !isCorrect) {
+                    btn.className = "option-card w-full text-left p-4 rounded-2xl border-2 border-rose-500/80 bg-rose-950/40 text-rose-100 text-sm sm:text-base font-semibold flex items-center justify-between animate-shake";
+                    iconBox.innerHTML = '<i class="fa-solid fa-xmark text-rose-400"></i>';
+                } else {
+                    btn.className = "option-card w-full text-left p-4 rounded-2xl border border-white/5 bg-slate-900/30 text-slate-500 text-sm sm:text-base flex items-center justify-between opacity-40";
+                }
+            }
+
+            const feedbackBox = document.getElementById('feedbackBox');
+            feedbackBox.classList.remove('hidden');
+            setTimeout(() => {
+                feedbackBox.classList.remove('scale-95');
+                feedbackBox.classList.add('scale-100');
+            }, 10);
+
+            if (isCorrect) {
+                feedbackBox.className = "mt-6 p-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/40 text-emerald-200 text-xs sm:text-sm leading-relaxed";
+                feedbackBox.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base mt-0.5"></i>
+                        <div>
+                            <strong class="font-bold text-emerald-300 block mb-0.5">Resposta Correta!</strong>
+                            <span>${q.explanation}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                feedbackBox.className = "mt-6 p-4 rounded-2xl border border-rose-500/30 bg-rose-950/40 text-rose-200 text-xs sm:text-sm leading-relaxed";
+                feedbackBox.innerHTML = `
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-xmark text-rose-400 text-base mt-0.5"></i>
+                        <div>
+                            <strong class="font-bold text-rose-300 block mb-0.5">${idx === -1 ? 'Tempo Esgotado!' : 'Resposta Incorreta.'}</strong>
+                            <span>${q.explanation}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < questions.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            clearInterval(totalTimerInterval);
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('nextBtn').innerText = 'Registrando resultado...';
+            window.parent.postMessage({ type: 'academia-quiz2-submit', answers: submittedAnswers, totalTimeSpent }, '*');
+        }
+
+        window.addEventListener('message', (event) => {
+            const data = event.data || {};
+            if (data.type === 'academia-quiz2-questions') {
+                questions = data.questions;
+                document.getElementById('jsonInput').value = JSON.stringify(questions, null, 2);
+                return;
+            }
+            if (data.type === 'academia-quiz2-submit-result') {
+                document.getElementById('quizScreen').classList.add('hidden');
+                document.getElementById('resultScreen').classList.remove('hidden');
+                const final = data.result || {};
+                const percent = Math.round((Number(final.score || 0) / questions.length) * 100);
+                document.getElementById('finalScore').innerText = `${final.score}/${questions.length}`;
+                document.getElementById('finalPercent').innerText = `${percent}%`;
+                document.getElementById('finalTime').innerText = `${totalTimeSpent}s`;
+                const message = document.getElementById('resultMessageCard');
+                message.innerText = data.error
+                    ? data.error
+                    : (final.is_first_attempt
+                        ? `Você ganhou ${final.points_awarded} pontos nesta primeira tentativa. Pontos acumulados em Elétrica: ${final.best_score}.`
+                        : `Este quiz já foi concluído anteriormente. Nenhum ponto adicional foi concedido. Pontos acumulados em Elétrica: ${final.best_score}.`);
+                document.getElementById('nextBtn').innerText = 'Resultado registrado';
+            }
+        });
+        function restartQuiz() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            startQuiz();
+        }
+
+        // Gestão de JSON Customizado
+        function toggleEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal.classList.contains('hidden')) {
+                document.getElementById('jsonInput').value = JSON.stringify(questions, null, 2);
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function saveCustomQuestions() {
+            try {
+                const parsed = JSON.parse(document.getElementById('jsonInput').value);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    questions = parsed;
+                    localStorage.setItem('quiz_eletrica_aula2_questions', JSON.stringify(questions));
+                    toggleEditModal();
+                    restartQuiz();
+                } else {
+                    alert("O formato precisa ser uma lista (array) válida de questões.");
+                }
+            } catch (e) {
+                alert("Erro ao validar o JSON: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
