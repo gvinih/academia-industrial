@@ -141,7 +141,7 @@ async function compressAuditImage(file) {
     let blob = await toBlob('image/webp'), extension = 'webp';
     if (!blob || blob.type !== 'image/webp') { blob = await toBlob('image/jpeg'); extension = 'jpg'; }
     if (!blob) throw new Error('O navegador não conseguiu comprimir uma das imagens.');
-    return new File([blob], file.name.replace(/\\.[^.]+$/, '') + '.' + extension, { type: blob.type, lastModified: Date.now() });
+    const baseName=file.name.substring(0,file.name.lastIndexOf('.')) || file.name;
   } finally {
     if (bitmap && typeof bitmap.close === 'function') bitmap.close();
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
@@ -160,7 +160,7 @@ async function saveAudit(e) {
     for(let index=0;index<files.length;index++){
       btn.textContent=files.length>1?'Comprimindo foto '+(index+1)+' de '+files.length+'…':'Comprimindo foto…';
       const compressed=await compressAuditImage(files[index]);
-      const safe=compressed.name.normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-zA-Z0-9._-]/g,'_');
+      const safe=compressed.name.replace(/[^a-zA-Z0-9._-]/g,'_');
       const path=fd.get('audit_date')+'/'+crypto.randomUUID()+'-'+safe;
       btn.textContent=files.length>1?'Enviando foto '+(index+1)+' de '+files.length+'…':'Enviando foto…';
       const {error}=await supabase.storage.from('audit-evidence').upload(path,compressed,{contentType:compressed.type,upsert:false});
