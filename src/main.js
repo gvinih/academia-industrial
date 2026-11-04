@@ -718,7 +718,7 @@ async function renderElectricalQuiz(box) {
   if(error){console.error(error);box.innerHTML='<div class="empty-state">Não foi possível carregar o quiz. Verifique se o SQL supabase/quiz_eletrica_nr10.sql foi executado no Supabase.</div>';return;}
   if(!questions || questions.length!==5){box.innerHTML='<div class="empty-state">Este quiz ainda não está configurado no banco. Execute supabase/quiz_eletrica_nr10.sql no Supabase.</div>';return;}
 
-  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz Interativo - Elétrica Básica e NR-10" src="/academia-industrial/quiz1.html" style="display:block;width:100%;max-width:900px;height:900px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
+  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz Interativo - Elétrica Básica e NR-10" src="/academia-industrial/quiz1.html" style="display:block;width:100%;max-width:900px;height:700px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
   const frame=box.querySelector('iframe');
   const mapped=questions.map(q=>({
     id:q.id, question:q.question_text, options:q.options,
@@ -749,7 +749,7 @@ async function renderElectricalQuiz2(box) {
   if(error){console.error(error);box.innerHTML='<div class="empty-state">Não foi possível carregar o quiz. Verifique se o SQL supabase/quiz_eletrica_tensao_corrente.sql foi executado no Supabase.</div>';return;}
   if(!questions || questions.length!==5){box.innerHTML='<div class="empty-state">Este quiz ainda não está configurado no banco. Execute supabase/quiz_eletrica_tensao_corrente.sql no Supabase.</div>';return;}
 
-  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz Tensão, Corrente e Tipos de Energia" src="/academia-industrial/quiz2.html" style="display:block;width:100%;max-width:900px;height:900px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
+  box.innerHTML='<div style="display:flex;justify-content:center;width:100%"><iframe title="Quiz Tensão, Corrente e Tipos de Energia" src="/academia-industrial/quiz2.html" style="display:block;width:100%;max-width:900px;height:700px;border:0;border-radius:16px;background:#0f172a" loading="eager"></iframe></div>';
   const frame=box.querySelector('iframe');
   const mapped=questions.map(q=>({
     id:q.id, question:q.question_text, options:q.options,
