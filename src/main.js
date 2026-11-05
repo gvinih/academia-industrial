@@ -249,7 +249,6 @@ async function openAdminMonitoring() {
     const learners=(students||[]).filter(s=>s.role!=='admin');
     const rows=attempts||[];    const byUser=new Map();    rows.forEach(a=>{if(!byUser.has(a.user_id))byUser.set(a.user_id,[]);byUser.get(a.user_id).push(a);});
     const active=learners.filter(s=>(byUser.get(s.id)||[]).length>0).length;
-    const quizCount=rows.length;
     const avg=rows.length?Math.round(rows.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/rows.length):0;
     document.querySelector('#admin-monitor-stats').innerHTML=`
       <article class="admin-monitor-stat"><span>Alunos cadastrados</span><strong>${learners.length}</strong></article>
@@ -312,7 +311,7 @@ async function openAdminStudent(studentId,students,byUser) {
       const date=attempt.submitted_at?new Date(attempt.submitted_at).toLocaleString('pt-BR'):'—';
       const answers=Array.isArray(attempt.answers)?attempt.answers:[];
       const quizLabel=(attempt.quiz_key||'normal')==='normal'?'Quiz geral':'Quiz especial';
-      return `<details class="admin-attempt-card" ${index===0?'open':''}>
+      return `<details class="admin-attempt-card">
         <summary><span><strong>${esc(subject)} · ${quizLabel}</strong><small>${date}</small></span><span class="admin-attempt-grade">${score}/${total} · ${percent}%</span><span class="admin-attempt-points">${Number(attempt.points||0)} pts</span></summary>
         <div class="admin-attempt-review">${answers.map((answer,i)=>{
           const q=questionMap.get(answer.question_id);
