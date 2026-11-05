@@ -38,22 +38,28 @@ export async function openQuizManager({supabase,subjects,onBack}) {
   }
   async function renderList(){
     const target=document.querySelector('#managed-quiz-list');
-    const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at').order('created_at',{ascending:false});
+    const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at,content_type,html_path').order('created_at',{ascending:false});
     if(error){target.innerHTML='<p class="muted">Não foi possível carregar os quizzes.</p>';toast(error.message,true);return;}
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
     target.innerHTML='<div class="managed-quiz-list">'+data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
       <div class="managed-quiz-summary"><div><span class="eyebrow">${esc(subjects.find(s=>s.id===q.subject_id)?.name||q.subject_id)}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
-      <div class="managed-quiz-actions"><span class="muted small">${q.questions_per_attempt===0?'Todas as perguntas (configuração dinâmica) ':q.questions_per_attempt+' perguntas por tentativa'}</span><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Excluir quiz</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
+      <div class="managed-quiz-actions"><span class="muted small">${q.content_type==='html'?'HTML interativo personalizado':q.questions_per_attempt===0?'Todas as perguntas (configuração dinâmica)':q.questions_per_attempt+' perguntas por tentativa'}</span>${q.content_type==='html'?'<button class="btn btn-light btn-small" data-preview-html="'+q.id+'">Visualizar HTML</button>':'<button class="btn btn-light btn-small" data-manage="'+q.id+'">Gerenciar perguntas</button>'}<button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover do catálogo</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
     </article>`).join('')+'</div>';
     target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
+    target.querySelectorAll('[data-preview-html]').forEach(b=>b.addEventListener('click',()=>{
+      const q=data.find(x=>x.id===b.dataset.previewHtml);
+      if(q?.html_path)window.open(import.meta.env.BASE_URL+q.html_path,'_blank','noopener');
+    }));
     target.querySelectorAll('[data-publish]').forEach(b=>b.addEventListener('click',()=>togglePublish(data.find(q=>q.id===b.dataset.publish))));
     target.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeQuiz(data.find(q=>q.id===b.dataset.remove))));
   }
   async function togglePublish(q){
-    const {count,error:countError}=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
-    if(countError){toast(countError.message,true);return;}
-    const needed=q.questions_per_attempt;
-    if(!q.is_published&&(count===0||(needed>0&&count<needed))){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
+    if(q.content_type!=='html'){
+      const {count,error:countError}=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
+      if(countError){toast(countError.message,true);return;}
+      const needed=q.questions_per_attempt;
+      if(!q.is_published&&(count===0||(needed>0&&count<needed))){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
+    }
     const {error}=await supabase.from('quiz_catalog').update({is_published:!q.is_published,updated_at:new Date().toISOString()}).eq('id',q.id);
     if(error){toast(error.message,true);return;}toast(q.is_published?'Quiz retirado da publicação.':'Quiz publicado para os alunos.');await load();
   }
