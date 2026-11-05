@@ -53,7 +53,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     const {count,error:countError}=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
     if(countError){toast(countError.message,true);return;}
     const needed=q.questions_per_attempt;
-    if(!q.is_published&&count<needed){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
+    if(!q.is_published&&(count===0||(needed>0&&count<needed))){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
     const {error}=await supabase.from('quiz_catalog').update({is_published:!q.is_published,updated_at:new Date().toISOString()}).eq('id',q.id);
     if(error){toast(error.message,true);return;}toast(q.is_published?'Quiz retirado da publicação.':'Quiz publicado para os alunos.');await load();
   }
