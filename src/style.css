@@ -911,3 +911,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:650px){.managed-quiz-player.mode-exam{padding:12px}.managed-exam-question{padding:15px}.managed-exam-submit{align-items:stretch;flex-direction:column}.managed-exam-submit .btn{width:100%}.managed-exam-statement{font-size:14px}}
 
 .admin-quiz-management{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border:1px solid var(--border,#e3e8ef);border-radius:12px;background:var(--surface,#fff)}.admin-quiz-management h3{margin:0 0 5px}.admin-quiz-management p{margin:0}@media(max-width:560px){.admin-quiz-management{align-items:stretch;flex-direction:column}.admin-quiz-management .btn{width:100%}}
+
+
+/* Cards da área de administração: apostilas, vídeos e quizzes */
+.admin-panel{display:flex;flex-direction:column;gap:18px!important}
+.admin-section-heading h2{margin:4px 0 6px}
+.admin-section-heading p{margin:0}
+.admin-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%}
+.admin-tool-card{display:flex;flex-direction:column;align-items:stretch;gap:14px;min-width:0;padding:20px;border:1px solid var(--line,#e5eaf0);border-radius:14px;background:var(--surface,#fff)}
+.admin-tool-heading h3{margin:0 0 6px}
+.admin-tool-heading p{margin:0;line-height:1.5}
+.admin-tool-card .upload-form{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;width:100%;margin:0}
+.admin-tool-card .upload-form .field,.admin-tool-card .upload-form .field:nth-child(n){grid-column:1/-1;margin:0;min-width:0}
+.admin-tool-card .upload-form button{justify-self:start;margin-top:4px}
+.admin-tool-card.admin-quiz-management{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:14px;padding:20px}
+.admin-tool-card.admin-quiz-management .admin-tool-heading{width:100%}
+.admin-tool-card.admin-quiz-management .btn{align-self:flex-start}
+@media(max-width:680px){.admin-tools-grid{grid-template-columns:minmax(0,1fr)}.admin-tool-card{padding:17px}.admin-tool-card .upload-form button,.admin-tool-card.admin-quiz-management .btn{width:100%}}
