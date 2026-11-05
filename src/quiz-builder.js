@@ -39,7 +39,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     quizType.addEventListener('change',syncQuizType);syncQuizType();
     document.querySelector('#new-managed-quiz').addEventListener('submit',async e=>{
       e.preventDefault();const fd=new FormData(e.currentTarget),isHtml=fd.get('content_type')==='html';
-      const htmlPath=String(fd.get('html_path')||'').trim().replace(/^\\/+/, '');
+      const htmlPath=String(fd.get('html_path')||'').trim().replace(/^\/+/, '');
       if(isHtml&&!htmlPath){toast('Informe o caminho do arquivo HTML.',true);return;}
       if(isHtml){
         const {data:existing,error:lookupError}=await supabase.from('quiz_catalog').select('id').eq('html_path',htmlPath).maybeSingle();
