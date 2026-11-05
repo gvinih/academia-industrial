@@ -82,7 +82,7 @@ async function dashboard() {
   document.querySelector('#video-upload-form')?.addEventListener('submit', uploadVideo);
 }
 
-const auditSectors = ['Bihler','Forno','Jato','Pintura','Seleção Visual','Acabamento','Ajan','Estampagem RSFI','Montagem Final RSFI','Estampagem Combinada','Montagem Final Combinada','Parafuso','Laminação','Automática','Montagem Final RSFC','Estampagem Tucho','Montagem Final Tucho','Mangote'];
+const auditSectors = ['Bihler','Forno','Jato','Pintura','Seleção Visual','Acabamento','Ajan','Estampagem RSFI','Montagem Final RSFI','Estampagem Combinada','Montagem Final Combinada','Laminação Parafuso','Estampagem Parafuso','Laminação','Componentes','Automática','Montagem Final RSFC','Estampagem Tucho','Montagem Final Tucho','Mangote'];
 const auditTypes = [{id:'escalonada',label:'Auditoria escalonada'},{id:'manutencao_autonoma',label:'Manutenção autônoma'}];
 
 async function openAudits() {
