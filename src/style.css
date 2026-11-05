@@ -417,6 +417,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 
 /* Quiz de Lubrificação — tema âmbar/laranja inspirado no HTML fornecido */
+
+.pneumatica-theme{position:relative;isolation:isolate;overflow:hidden;max-width:100%;padding:clamp(18px,4vw,34px);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,rgba(217,119,6,.2),transparent 48%),linear-gradient(145deg,#21170c,#2a1b0b 58%,#422006);color:#fff7ed;box-shadow:0 24px 65px #43140730}
+.seiri-wrap.pneumatica-theme:before,.seiri-wrap.pneumatica-theme:after{content:"";position:absolute;z-index:-1;width:230px;height:230px;border-radius:50%;filter:blur(65px);pointer-events:none;opacity:.35}
+.seiri-wrap.pneumatica-theme:before{top:80px;left:30%;background:#f59e0b}.seiri-wrap.pneumatica-theme:after{right:-90px;bottom:10px;background:#ea580c}
+.pneumatica-theme .seiri-heading{text-align:center;margin-bottom:24px}.pneumatica-theme .seiri-kicker{display:inline-block;padding:5px 10px;border:1px solid #92400e;border-radius:7px;background:#451a03;color:#fcd34d;font-size:10px;font-weight:900;letter-spacing:.13em}
+.pneumatica-theme .seiri-heading h2{color:#fff7ed}.pneumatica-theme .seiri-start,.pneumatica-theme .seiri-game,.pneumatica-theme .seiri-result{background:#fff;color:#192033;border-color:#fed7aa}
+.pneumatica-theme .seiri-icon,.pneumatica-theme .seiri-start .btn,.pneumatica-theme .seiri-controls .btn-primary{background:linear-gradient(110deg,#d97706,#ea580c);color:#fff}
+.pneumatica-theme .seiri-facts span{background:#fff7ed;color:#9a3412}
+
 .lubrificacao-theme{background:radial-gradient(circle at 50% 0%,#3b2814,#172033 58%,#0f172a 100%);border:1px solid #ffffff1c}
 .lubrificacao-theme:before{background:#d97706}
 .lubrificacao-theme:after{background:#ea580c}
