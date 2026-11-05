@@ -909,3 +909,5 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .managed-exam-final{margin-top:18px}
 .managed-quiz-player.mode-exam .managed-result-card{border-color:#dce5eb}
 @media(max-width:650px){.managed-quiz-player.mode-exam{padding:12px}.managed-exam-question{padding:15px}.managed-exam-submit{align-items:stretch;flex-direction:column}.managed-exam-submit .btn{width:100%}.managed-exam-statement{font-size:14px}}
+
+.admin-quiz-management{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border:1px solid var(--border,#e3e8ef);border-radius:12px;background:var(--surface,#fff)}.admin-quiz-management h3{margin:0 0 5px}.admin-quiz-management p{margin:0}@media(max-width:560px){.admin-quiz-management{align-items:stretch;flex-direction:column}.admin-quiz-management .btn{width:100%}}
