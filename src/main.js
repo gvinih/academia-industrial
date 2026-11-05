@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, APP_NAME } from './config.js';
 import './style.css';
+import { openQuizManager, renderManagedQuiz } from './quiz-builder.js';
 
 const configured = SUPABASE_URL.startsWith('https://') &&
   !SUPABASE_URL.includes('COLE_AQUI') && !SUPABASE_ANON_KEY.includes('COLE_AQUI');
@@ -32,10 +33,11 @@ function toast(message, isError=false) {
 }
 function shell(content) {
   app.innerHTML = `<header class="topbar"><a class="brand" href="#"><img class="brand-logo" src="/academia-industrial/progeral-logo.svg" alt="Progeral em Boas Mãos"><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
-  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-monitoring-button">Acompanhamento</button><button class="btn btn-light btn-small" id="admin-audits-button">Auditorias</button>':''}<button class="btn btn-light btn-small" id="profile-button">Perfil</button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
+  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-quizzes-button">Gerenciar quizzes</button><button class="btn btn-light btn-small" id="admin-monitoring-button">Acompanhamento</button><button class="btn btn-light btn-small" id="admin-audits-button">Auditorias</button>':''}<button class="btn btn-light btn-small" id="profile-button">Perfil</button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">Sair</button>`;
   document.querySelector('#logout')?.addEventListener('click', logout);
   document.querySelector('#profile-button')?.addEventListener('click', openProfile);
   document.querySelector('#admin-monitoring-button')?.addEventListener('click', openAdminMonitoring);
+  document.querySelector('#admin-quizzes-button')?.addEventListener('click', () => openQuizManager({supabase,subjects,onBack:dashboard}));
   document.querySelector('#admin-audits-button')?.addEventListener('click', openAudits);
 }
 function authView(mode='login', message='') {
@@ -523,26 +525,43 @@ async function deleteSubjectFile(kind, file) {
 }
 
 async function renderQuiz(box) {
-  box.innerHTML='<h2>Quiz</h2><p class="muted">Carregando perguntas…</p>';
-  const {data:loadedQuestions,error}=await supabase.from('quiz_questions').select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id).eq('is_active',true).lt('sort_order',9001).order('sort_order');
-  if(error){box.innerHTML='<p class="muted">Não foi possível carregar o quiz. Confira a configuração do banco.</p>';return;}
-  const questionPool = loadedQuestions || [];
-  if(!questionPool.length){box.innerHTML='<h2>Quiz</h2><div class="empty-state">As perguntas deste módulo ainda não foram cadastradas.</div>';return;}
-  if(questionPool.length < 10){box.innerHTML=`<h2>Quiz</h2><div class="empty-state">Esta matéria precisa ter pelo menos 10 perguntas ativas. No momento, há ${questionPool.length}.</div>`;return;}
-  const questions = shuffleArray(questionPool).slice(0,10);
-  box.innerHTML=`<div class="quiz-heading"><div><h2>Teste seus conhecimentos</h2><p class="muted">10 perguntas sorteadas de ${questionPool.length} disponíveis · somente a primeira tentativa conta para o ranking</p></div><span class="points-pill">10 pts por acerto</span></div><form id="quiz-form">${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.question_text)}</legend>${shuffleArray(q.options.map((op,j)=>({text:op,index:j}))).map(op=>`<label class="option"><input type="radio" name="${q.id}" value="${op.index}" required> ${esc(op.text)}</label>`).join('')}</fieldset>`).join('')}<button class="btn btn-primary" type="submit">Enviar respostas</button></form><div id="quiz-result"></div>`;
+  box.innerHTML='<h2>Quizzes disponíveis</h2><p class="muted">Carregando avaliações desta matéria…</p>';
+  const {data:catalog,error}=await supabase.from('quiz_catalog')
+    .select('id,title,description,questions_per_attempt,created_at')
+    .eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true});
+  if(error){console.error(error);box.innerHTML='<h2>Quizzes</h2><div class="empty-state">Não foi possível carregar os quizzes publicados.</div>';return;}
+  const {data:legacy,error:legacyError}=await supabase.from('quiz_questions')
+    .select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id)
+    .is('quiz_id',null).eq('is_active',true).lt('sort_order',9001).order('sort_order');
+  if(legacyError)console.warn('Quiz geral legado indisponível:',legacyError);
+  const legacyAvailable=(legacy||[]).length>=10;
+  box.innerHTML='<div class="quiz-catalog-heading"><div><h2>Quizzes da matéria</h2><p class="muted">Selecione uma avaliação para iniciar. Cada tentativa sorteia perguntas e alternativas.</p></div></div>'+
+    '<div class="quiz-catalog-grid">'+
+    (legacyAvailable?'<article class="quiz-catalog-card legacy-quiz-card"><span class="eyebrow">BANCO GERAL</span><h3>Quiz geral</h3><p>10 perguntas sorteadas do banco de questões da matéria.</p><button class="btn btn-primary" id="start-legacy-quiz">Iniciar quiz</button></article>':'')+
+    (catalog||[]).map(q=>'<article class="quiz-catalog-card '+({ '5s':'quiz-theme-5s','lubrificacao':'quiz-theme-lube','pneumatica':'quiz-theme-pneumatic','eletrica':'quiz-theme-electric'}[activeSubject.id]||'')+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(q.title)+'</h3><p>'+esc(q.description||'Avaliação de conhecimentos.')+'</p><div class="quiz-catalog-meta">'+(q.questions_per_attempt===1?'Todas as perguntas':q.questions_per_attempt+' perguntas')+' · 35s por questão</div><button class="btn btn-primary" data-managed-quiz="'+q.id+'">Iniciar quiz</button></article>').join('')+
+    '</div>'+
+    (!legacyAvailable&&!(catalog||[]).length?'<div class="empty-state">Ainda não há quizzes publicados nesta matéria.</div>':'');
+  box.querySelector('#start-legacy-quiz')?.addEventListener('click',()=>renderLegacyQuiz(box,legacy));
+  box.querySelectorAll('[data-managed-quiz]').forEach(button=>button.addEventListener('click',async()=>{
+    const quiz=catalog.find(q=>q.id===button.dataset.managedQuiz);
+    if(quiz)await renderManagedQuiz({supabase,quiz,box,onFinish:dashboard});
+  }));
+}
+async function renderLegacyQuiz(box,loadedQuestions) {
+  const questionPool=loadedQuestions||[];
+  const questions=shuffleArray(questionPool).slice(0,10);
+  box.innerHTML=`<div class="quiz-heading"><div><h2>Quiz geral — ${esc(activeSubject.name)}</h2><p class="muted">10 perguntas sorteadas de ${questionPool.length} disponíveis · somente a primeira tentativa conta para o ranking</p></div><span class="points-pill">Até 100 pontos</span></div><form id="quiz-form">${questions.map((q,i)=>`<fieldset class="question"><legend>${i+1}. ${esc(q.question_text)}</legend>${shuffleArray(q.options.map((op,j)=>({text:op,index:j}))).map(op=>`<label class="option"><input type="radio" name="${q.id}" value="${op.index}" required> ${esc(op.text)}</label>`).join('')}</fieldset>`).join('')}<button class="btn btn-primary" type="submit">Enviar respostas</button></form><div id="quiz-result"></div>`;
   document.querySelector('#quiz-form').addEventListener('submit',async e=>{
     e.preventDefault();const btn=e.currentTarget.querySelector('button');btn.disabled=true;btn.textContent='Corrigindo…';
     const answers=questions.map(q=>({question_id:q.id,selected_option:Number(new FormData(e.currentTarget).get(q.id))}));
     const {data,error}=await supabase.rpc('submit_quiz',{p_subject_id:activeSubject.id,p_answers:answers});
     if(error){toast(error.message||'Falha ao enviar respostas.',true);btn.disabled=false;btn.textContent='Enviar respostas';return;}
     const result=Array.isArray(data)?data[0]:data;
-    document.querySelector('#quiz-result').innerHTML=`<div class="result-box"><div class="eyebrow">RESULTADO</div><h2>${result.score}/${questions.length} acertos</h2><p>${result.is_first_attempt?'Você ganhou <b>'+result.points_awarded+' pontos</b> nesta primeira tentativa.':'Este quiz já foi concluído anteriormente. Você ganhou <b>0 pontos adicionais</b>; somente a primeira tentativa conta para o ranking.'}</p><p class="muted">Pontos acumulados nesta matéria: <b>${result.best_score}</b>. Cada quiz diferente pode somar pontos uma única vez.</p><button class="btn btn-light" id="back-to-dashboard">Ver ranking atualizado</button></div>`;
+    document.querySelector('#quiz-result').innerHTML=`<div class="result-box"><div class="eyebrow">RESULTADO</div><h2>${result.score}/${questions.length} acertos</h2><p>${result.is_first_attempt?'Você ganhou <b>'+result.points_awarded+' pontos</b> nesta primeira tentativa.':'Este quiz já foi concluído anteriormente. Você ganhou <b>0 pontos adicionais</b>.'}</p><p class="muted">Pontos acumulados nesta matéria: <b>${result.best_score}</b>.</p><button class="btn btn-light" id="back-to-dashboard">Ver ranking atualizado</button></div>`;
     e.currentTarget.querySelectorAll('input,button').forEach(el=>el.disabled=true);
     document.querySelector('#back-to-dashboard').addEventListener('click',dashboard);
   });
 }
-
 async function renderSeiriQuiz(box) {
   box.innerHTML='<h2>Encontro 1: Introdução ao 5S e Seiri</h2><p class="muted">Carregando as cinco questões…</p>';
   const {data:questions,error}=await supabase.from('quiz_questions')
