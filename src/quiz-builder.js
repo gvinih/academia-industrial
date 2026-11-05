@@ -56,7 +56,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
   }
   async function togglePublish(q){
     if(!q.html_path){
-      const {count,error:countError=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
+      const {count,error:countError}=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
       if(countError){toast(countError.message,true);return;}
       const needed=q.questions_per_attempt;
       if(!q.is_published&&(count===0||(needed>0&&count<needed))){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
