@@ -20,36 +20,19 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     <section class="panel quiz-builder-panel"><div class="section-title"><h2>Novo quiz</h2><span class="muted">Banco de questões independente</span></div>
     <form id="new-managed-quiz" class="quiz-builder-form">
       <label class="field">Matéria<select name="subject_id" required>${subjects.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select></label>
-      <label class="field">Formato do quiz<select name="content_type" id="new-quiz-type"><option value="generated" selected>Prova (perguntas e alternativas)</option><option value="html">Interativo (HTML personalizado)</option></select></label>
+      <label class="field">Formato do quiz<select name="content_type" id="new-quiz-type"><option value="interactive" selected>Interativo (padrão visual da matéria)</option><option value="exam">Prova (modelo do Quiz geral 5S)</option></select></label>
       <label class="field">Título do quiz<input name="title" maxlength="120" placeholder="Ex.: Encontro 2 — Seiton" required></label>
       <label class="field quiz-builder-wide">Descrição<textarea name="description" rows="2" maxlength="500" placeholder="Descreva os assuntos abordados neste quiz."></textarea></label>
-      <label class="field" id="new-quiz-amount-field">Perguntas por tentativa<select name="questions_per_attempt"><option value="5">5 perguntas</option><option value="10" selected>10 perguntas</option><option value="15">15 perguntas</option><option value="20">20 perguntas</option><option value="0">Usar todas as perguntas</option></select></label>
-      <label class="field quiz-builder-wide" id="new-quiz-html-field" hidden>Arquivo HTML (caminho dentro de public/)<input name="html_path" maxlength="180" placeholder="Ex.: quiz-novo-encontro.html"><small class="muted">O arquivo precisa estar publicado na pasta public/ do GitHub. O HTML mantém seu próprio visual e funcionamento.</small></label>
+      <label class="field">Perguntas por tentativa<select name="questions_per_attempt"><option value="5">5 perguntas</option><option value="10" selected>10 perguntas</option><option value="15">15 perguntas</option><option value="20">20 perguntas</option><option value="0">Usar todas as perguntas</option></select><small class="muted">Cadastre um banco maior de perguntas. A cada tentativa, o sistema sorteará a quantidade escolhida, sem repetir perguntas dentro da mesma tentativa.</small></label>
       <button class="btn btn-primary" type="submit">Criar quiz</button>
     </form></section>
     <section class="panel quiz-builder-panel"><div class="section-title"><h2>Quizzes cadastrados</h2></div><div id="managed-quiz-list"><div class="skeleton">Carregando quizzes…</div></div></section>`);
-    const quizType=document.querySelector('#new-quiz-type');
-    const htmlField=document.querySelector('#new-quiz-html-field');
-    const amountField=document.querySelector('#new-quiz-amount-field');
-    const syncQuizType=()=>{
-      const isHtml=quizType.value==='html';
-      htmlField.hidden=!isHtml;amountField.hidden=isHtml;
-      htmlField.querySelector('input').required=isHtml;
-    };
-    quizType.addEventListener('change',syncQuizType);syncQuizType();
     document.querySelector('#new-managed-quiz').addEventListener('submit',async e=>{
-      e.preventDefault();const fd=new FormData(e.currentTarget),isHtml=fd.get('content_type')==='html';
-      const htmlPath=String(fd.get('html_path')||'').trim().replace(/^\/+/, '');
-      if(isHtml&&!htmlPath){toast('Informe o caminho do arquivo HTML.',true);return;}
-      if(isHtml){
-        const {data:existing,error:lookupError}=await supabase.from('quiz_catalog').select('id').eq('html_path',htmlPath).maybeSingle();
-        if(lookupError){toast(lookupError.message,true);return;}
-        if(existing){toast('Esse arquivo HTML já está cadastrado no catálogo.',true);return;}
-      }
-      const payload={subject_id:fd.get('subject_id'),title:fd.get('title').trim(),description:fd.get('description').trim(),questions_per_attempt:isHtml?0:Number(fd.get('questions_per_attempt')),content_type:isHtml?'html':'generated',html_path:isHtml?htmlPath:null,is_published:false};
+      e.preventDefault();const fd=new FormData(e.currentTarget);
+      const payload={subject_id:fd.get('subject_id'),title:fd.get('title').trim(),description:fd.get('description').trim(),questions_per_attempt:Number(fd.get('questions_per_attempt')),content_type:fd.get('content_type'),html_path:null,is_published:false};
       const {error}=await supabase.from('quiz_catalog').insert(payload);
       if(error){toast(error.message,true);return;}
-      toast(isHtml?'Quiz HTML cadastrado como rascunho.':'Prova criada como rascunho. Agora adicione as perguntas.');
+      toast(payload.content_type==='interactive'?'Quiz interativo criado como rascunho. Cadastre as perguntas para publicar.':'Prova criada como rascunho. Cadastre o banco de perguntas para publicar.');
       await load();
     });
     await renderList();
@@ -61,18 +44,14 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
     target.innerHTML='<div class="managed-quiz-list">'+data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
       <div class="managed-quiz-summary"><div><span class="eyebrow">${esc(subjects.find(s=>s.id===q.subject_id)?.name||q.subject_id)}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
-      <div class="managed-quiz-actions"><span class="muted small">${q.content_type==='html'?'HTML interativo personalizado':q.questions_per_attempt===0?'Todas as perguntas (configuração dinâmica)':q.questions_per_attempt+' perguntas por tentativa'}</span>${q.content_type==='html'?'<button class="btn btn-light btn-small" data-preview-html="'+q.id+'">Visualizar HTML</button>':'<button class="btn btn-light btn-small" data-manage="'+q.id+'">Gerenciar perguntas</button>'}<button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover do catálogo</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
+      <div class="managed-quiz-actions"><span class="muted small">${q.content_type==='interactive'?'Interativo · padrão visual da matéria':'Prova · '+(q.questions_per_attempt===0?'todas as perguntas':q.questions_per_attempt+' por tentativa')}</span><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover do catálogo</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
     </article>`).join('')+'</div>';
     target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
-    target.querySelectorAll('[data-preview-html]').forEach(b=>b.addEventListener('click',()=>{
-      const q=data.find(x=>x.id===b.dataset.previewHtml);
-      if(q?.html_path)window.open(import.meta.env.BASE_URL+q.html_path,'_blank','noopener');
-    }));
     target.querySelectorAll('[data-publish]').forEach(b=>b.addEventListener('click',()=>togglePublish(data.find(q=>q.id===b.dataset.publish))));
     target.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeQuiz(data.find(q=>q.id===b.dataset.remove))));
   }
   async function togglePublish(q){
-    if(q.content_type!=='html'){
+    {
       const {count,error:countError}=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
       if(countError){toast(countError.message,true);return;}
       const needed=q.questions_per_attempt;
