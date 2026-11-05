@@ -382,7 +382,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-status span{color:#c7d2fe;font-size:11px}
 .seiri-progress{height:6px;border-radius:99px;overflow:hidden;background:#020617b8;margin:19px 0 25px}
 .seiri-progress>div{height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);transition:width .3s linear}
-.seiri-timer-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
+.seiri-timer-row{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:20px}
 .seiri-timer{font:800 14px ui-monospace,monospace;color:#e0e7ff;background:#02061780;padding:8px 12px;border:1px solid #ffffff15;border-radius:10px}
 .seiri-timer.urgent{color:#fda4af}
 .seiri-game h3{font-size:clamp(16px,2.6vw,21px);line-height:1.55;color:#fff;margin:0 0 21px}
