@@ -247,8 +247,7 @@ async function openAdminMonitoring() {
     if(studentError) throw studentError;
     if(attemptError) throw attemptError;
     const learners=(students||[]).filter(s=>s.role!=='admin');
-    const rows=attempts||[];    const byUser=new Map();
-    rows.forEach(a=>{if(!byUser.has(a.user_id))byUser.set(a.user_id,[]);byUser.get(a.user_id).push(a);});
+    const rows=attempts||[];    const byUser=new Map();    rows.forEach(a=>{if(!byUser.has(a.user_id))byUser.set(a.user_id,[]);byUser.get(a.user_id).push(a);});
     const active=learners.filter(s=>(byUser.get(s.id)||[]).length>0).length;
     const quizCount=rows.length;
     const avg=rows.length?Math.round(rows.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/rows.length):0;
@@ -497,8 +496,7 @@ async function deleteSubjectFile(kind, file) {
   const subjectName = activeSubject.name;
   const confirmed = window.confirm(
     `ATENÇÃO: você está na matéria "${subjectName}".\n\nDeseja excluir o ${label} "${file.title}"? O arquivo será removido permanentemente.`  );
-  if (!confirmed) return;
-  const typed = window.prompt('Para confirmar a exclusão permanente, digite EXCLUIR (em letras maiúsculas):');
+  if (!confirmed) return;  const typed = window.prompt('Para confirmar a exclusão permanente, digite EXCLUIR (em letras maiúsculas):');
   if (typed !== 'EXCLUIR') {
     toast('Exclusão cancelada. A confirmação não corresponde.', true);
     return;
@@ -729,7 +727,7 @@ async function renderLubricationQuiz(box) {
         <div class="seiri-timer-row"><span class="seiri-timer" id="lub-timer">35s</span></div>
         <h3 id="lub-question"></h3><div id="lub-options" class="seiri-options"></div>
         <div id="lub-feedback" class="seiri-feedback" hidden></div>
-        <div class="seiri-controls"><span id="lub-hint">Leia as alternativas e inicie o cronômetro quando estiver pronto.</span><button class="btn btn-primary" id="lub-next" disabled>Avançar →</button></div>
+        <div class="seiri-controls"><span id="lub-hint">O tempo começa automaticamente. Escolha uma alternativa.</span><button class="btn btn-primary" id="lub-next" disabled>Avançar →</button></div>
       </div>
       <div id="lub-result" class="seiri-result" hidden></div>
     </div>`;
@@ -747,8 +745,7 @@ async function renderLubricationQuiz(box) {
     stopTimer();timeLeft=35;selected=null;
     const q=questions[index];
     document.querySelector('#lub-counter').textContent='Questão '+(index+1)+' de '+questions.length;
-    document.querySelector('#lub-points').textContent=(correctCount*20)+' pontos provisórios';
-    document.querySelector('#lub-question').textContent=q.question_text;
+    document.querySelector('#lub-points').textContent=(correctCount*20)+' pontos provisórios';    document.querySelector('#lub-question').textContent=q.question_text;
     document.querySelector('#lub-timer').textContent='35s';document.querySelector('#lub-timer').classList.remove('urgent');
     document.querySelector('#lub-progress-bar').style.width='100%';
     document.querySelector('#lub-hint').textContent='O tempo começa automaticamente. Escolha uma alternativa.';
@@ -757,7 +754,6 @@ async function renderLubricationQuiz(box) {
     const options=document.querySelector('#lub-options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
     options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
-    startTimer();
     startTimer();
   }
   function choose(optionIndex,timedOut){
