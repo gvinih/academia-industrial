@@ -131,36 +131,58 @@ export async function openQuizManager({supabase,subjects,onBack}) {
 export async function renderManagedQuiz({supabase,quiz,box,onFinish}) {
   const theme=themeFor(quiz.subject_id);
   box.innerHTML='<p class="muted">Carregando perguntas…</p>';
-  const {data:pool,error}=await supabase.from('quiz_questions').select('id,question_text,options').eq('quiz_id',quiz.id).eq('is_active',true);
+  const {data:pool,error}=await supabase.from('quiz_questions').select('id,question_text,options,correct_option,explanation').eq('quiz_id',quiz.id).eq('is_active',true);
   if(error){box.innerHTML='<p class="muted">Não foi possível carregar este quiz.</p>';return;}
   const amount=quiz.questions_per_attempt===0?pool.length:quiz.questions_per_attempt;
-  if(pool.length<amount||!pool.length){box.innerHTML='<div class="empty-state">Este quiz ainda não possui perguntas suficientes.</div>';return;}
+  if(!pool?.length||pool.length<amount){box.innerHTML='<div class="empty-state">Este quiz ainda não possui perguntas suficientes.</div>';return;}
   const questions=shuffle(pool).slice(0,amount).map(q=>({...q,shuffledOptions:shuffle(q.options.map((text,index)=>({text,index})))}));
-  let current=0,answers={},seconds=35,timer=null,locked=false,started=Date.now();
-  box.innerHTML=`<div class="managed-quiz-player ${theme} mode-${quiz.content_type||'exam'}"><header class="managed-player-head"><span class="managed-player-tag">${esc(quiz.title)}</span><span class="managed-player-count" id="managed-count"></span></header><div class="managed-player-progress"><i id="managed-progress"></i></div><div class="managed-player-card"><div class="managed-player-meta"><span id="managed-question-number"></span><strong id="managed-timer">35s</strong></div><h2 id="managed-question-text"></h2><div class="managed-player-options" id="managed-options"></div><div class="managed-player-feedback" id="managed-feedback" hidden></div><div class="managed-player-controls"><button class="btn btn-light" id="managed-back" disabled>Anterior</button><button class="btn btn-primary" id="managed-next" disabled>Próxima</button></div></div></div>`;
-  const $=id=>box.querySelector('#'+id);
-  const finish=async()=>{
-    clearInterval(timer);$('managed-next').disabled=true;
-    const payload=questions.map(q=>({question_id:q.id,selected_option:answers[q.id]?.index??-1}));
-    const {data,error}=await supabase.rpc('submit_managed_quiz',{p_quiz_id:quiz.id,p_answers:payload});
-    if(error){box.insertAdjacentHTML('beforeend','<p class="inline-message">'+esc(error.message)+'</p>');return;}
+  const started=Date.now();
+  box.innerHTML=`<div class="managed-quiz-player ${theme} mode-exam">
+    <header class="managed-player-head"><div><span class="managed-player-tag">PROVA</span><h2 class="managed-exam-title">${esc(quiz.title)}</h2><p class="managed-exam-description">${esc(quiz.description||'Leia cada questão com atenção e selecione uma alternativa.')}</p></div><span class="managed-player-count">${questions.length} questões</span></header>
+    <form id="managed-exam-form" class="managed-exam-form">
+      <div class="managed-exam-instructions">Responda todas as questões e, quando terminar, clique em <strong>Enviar respostas</strong>. A correção será exibida somente após o envio.</div>
+      ${questions.map((q,i)=>`<fieldset class="managed-exam-question" data-question-id="${q.id}">
+        <legend><span class="managed-exam-number">QUESTÃO ${i+1}</span><span class="managed-exam-statement">${esc(q.question_text)}</span></legend>
+        <div class="managed-exam-options">${q.shuffledOptions.map((o,j)=>`<label class="managed-exam-option"><input type="radio" name="question-${q.id}" value="${o.index}" required><span class="managed-exam-letter">${String.fromCharCode(65+j)}</span><span>${esc(o.text)}</span></label>`).join('')}</div>
+        <div class="managed-exam-correction" hidden></div>
+      </fieldset>`).join('')}
+      <div class="managed-exam-submit"><span class="managed-exam-progress">${questions.length} questões · Uma única submissão</span><button class="btn btn-primary" type="submit">Enviar respostas</button></div>
+    </form>
+    <section class="managed-exam-final" hidden></section>
+  </div>`;
+  const form=box.querySelector('#managed-exam-form');
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();
+    const submit=form.querySelector('[type="submit"]');
+    if(!form.reportValidity())return;
+    submit.disabled=true;submit.textContent='Corrigindo respostas…';
+    const fd=new FormData(form);
+    const answers=questions.map(q=>({question_id:q.id,selected_option:Number(fd.get('question-'+q.id))}));
+    const {data,error}=await supabase.rpc('submit_managed_quiz',{p_quiz_id:quiz.id,p_answers:answers});
+    if(error){toast(error.message||'Não foi possível registrar a prova.',true);submit.disabled=false;submit.textContent='Enviar respostas';return;}
     const result=Array.isArray(data)?data[0]:data;
-    box.innerHTML=`<div class="managed-quiz-player ${theme} mode-${quiz.content_type||'exam'}"><div class="managed-result-card"><span class="managed-player-tag">RESULTADO FINAL</span><h2>${result.score}/${result.total_questions} acertos</h2><p>${result.is_first_attempt?'Você recebeu '+result.points_awarded+' pontos no ranking.':'Esta tentativa foi registrada, mas os pontos deste quiz já foram contabilizados na primeira participação.'}</p><p class="muted">Pontuação da primeira tentativa: ${result.points_awarded} pontos · Tempo: ${Math.floor((Date.now()-started)/1000)}s</p><button class="btn btn-primary" id="managed-finish">Concluir</button></div></div>`;
-    $('managed-finish').addEventListener('click',onFinish);
-  };
-  const show=()=>{
-    locked=false;seconds=35;const q=questions[current];
-    $('managed-count').textContent=(current+1)+' de '+questions.length;
-    $('managed-question-number').textContent='PERGUNTA '+(current+1);
-    $('managed-question-text').textContent=q.question_text;
-    $('managed-timer').textContent=seconds+'s';$('managed-progress').style.width=((current+1)/questions.length*100)+'%';
-    $('managed-options').innerHTML=q.shuffledOptions.map(o=>`<button type="button" class="managed-option ${answers[q.id]?.index===o.index?'is-selected':''}" data-option="${o.index}"><span>${String.fromCharCode(65+q.shuffledOptions.indexOf(o))}</span>${esc(o.text)}</button>`).join('');
-    $('managed-feedback').hidden=true;$('managed-next').disabled=answers[q.id]===undefined;$('managed-next').textContent=current===questions.length-1?'Finalizar quiz':'Próxima';
-    $('managed-back').disabled=current===0;
-    $('managed-options').querySelectorAll('[data-option]').forEach(b=>b.addEventListener('click',()=>{if(locked)return;answers[q.id]={index:Number(b.dataset.option)};$('managed-options').querySelectorAll('.managed-option').forEach(x=>x.classList.toggle('is-selected',x===b));$('managed-next').disabled=false;}));
-    $('managed-back').onclick=()=>{if(current>0){clearInterval(timer);current--;show();}};
-    $('managed-next').onclick=()=>{if(!answers[q.id]||locked)return;clearInterval(timer);if(current===questions.length-1)finish();else{current++;show();}};
-    clearInterval(timer);timer=setInterval(()=>{seconds--;$('managed-timer').textContent=seconds+'s';if(seconds<=0){clearInterval(timer);locked=true;if(current===questions.length-1)finish();else{current++;show();}}},1000);
-  };
-  show();
+    const answerMap=new Map(answers.map(a=>[a.question_id,a.selected_option]));
+    questions.forEach(q=>{
+      const field=form.querySelector('[data-question-id="'+q.id+'"]');
+      const selected=answerMap.get(q.id),isCorrect=selected===q.correct_option;
+      field.classList.add(isCorrect?'is-correct':'is-wrong');
+      field.querySelectorAll('input').forEach(input=>{
+        input.disabled=true;
+        const label=input.closest('.managed-exam-option');
+        const optionIndex=Number(input.value);
+        if(optionIndex===q.correct_option)label.classList.add('is-answer-correct');
+        if(optionIndex===selected&&!isCorrect)label.classList.add('is-answer-wrong');
+      });
+      const correction=field.querySelector('.managed-exam-correction');
+      correction.hidden=false;
+      correction.innerHTML='<strong>'+(isCorrect?'✓ Resposta correta':'✕ Resposta incorreta')+'</strong><p><b>Alternativa correta:</b> '+esc(q.options[q.correct_option])+'</p>'+(q.explanation?'<p>'+esc(q.explanation)+'</p>':'');
+    });
+    submit.remove();
+    form.querySelector('.managed-exam-instructions').textContent='Prova corrigida. Confira abaixo o resultado de cada questão.';
+    const final=box.querySelector('.managed-exam-final');
+    const percent=Math.round((result.score/(result.total_questions||questions.length))*100);
+    final.hidden=false;
+    final.innerHTML=`<div class="managed-result-card"><span class="managed-player-tag">RESULTADO FINAL</span><h2>${result.score}/${result.total_questions||questions.length} acertos · ${percent}%</h2><p>${result.is_first_attempt?'Você recebeu '+result.points_awarded+' pontos no ranking.':'Esta tentativa foi registrada; os pontos deste quiz já foram contabilizados na primeira participação.'}</p><p class="muted">Tempo de prova: ${Math.floor((Date.now()-started)/1000)}s</p><button class="btn btn-primary" type="button" id="managed-finish">Concluir</button></div>`;
+    final.querySelector('#managed-finish').addEventListener('click',onFinish);
+  });
 }
