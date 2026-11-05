@@ -783,6 +783,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .quiz-builder-form .field,.managed-question-form .field{display:grid;gap:7px;font-size:12px;font-weight:700;color:#536b7a;min-width:0}
 .quiz-builder-form input,.quiz-builder-form select,.quiz-builder-form textarea,.managed-question-form input:not([type=radio]),.managed-question-form textarea{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #dce5eb;border-radius:10px;background:#fff;color:#173b55;font:inherit}
 .quiz-builder-wide{grid-column:1/-1}
+
+.managed-subject-group{display:grid;gap:12px;margin:0 0 24px}
+.managed-subject-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 2px 8px;border-bottom:1px solid #e5ebf0}
+.managed-subject-heading h3{margin:3px 0 0;color:#173b55;font-size:18px}
+.managed-subject-group .managed-quiz-list{display:grid;gap:10px}
+
 .managed-quiz-list{display:grid;gap:12px}
 .managed-quiz-card{border:1px solid #dce5eb;border-radius:14px;background:#fff;overflow:hidden}
 .managed-quiz-summary{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:17px}
