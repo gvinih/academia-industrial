@@ -15,7 +15,9 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     document.querySelector('#quiz-manager-back').addEventListener('click',onBack);
   };
   const toast=(msg,error=false)=>{const el=document.querySelector('#toast');if(el){el.textContent=msg;el.className='toast show '+(error?'error':'');}};
+  let currentSubject=null;
   async function load(selectedSubject=null){
+    currentSubject=selectedSubject;
     if(!selectedSubject){
       shell(`<section class="profile-heading"><div class="eyebrow">ADMINISTRAÇÃO</div><h1>Gerenciador de quizzes</h1><p class="muted">Selecione uma matéria para visualizar, criar e administrar seus quizzes.</p></section>
       <section class="quiz-manager-subject-grid">${subjects.map(s=>`<button type="button" class="quiz-manager-subject-card" data-subject="${s.id}"><span class="eyebrow">MATÉRIA</span><strong>${esc(s.name)}</strong><span>Gerenciar quizzes <b aria-hidden="true">→</b></span></button>`).join('')}</section>`);
@@ -41,7 +43,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
       const {error}=await supabase.from('quiz_catalog').insert(payload);
       if(error){toast(error.message,true);return;}
       toast(payload.content_type==='interactive'?'Quiz interativo criado como rascunho. Cadastre as perguntas para publicar.':'Prova criada como rascunho. Cadastre o banco de perguntas para publicar.');
-      await load(selectedSubject);
+      await load(currentSubject);
     });
     await renderList(selectedSubject);
   }
@@ -81,7 +83,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     if(error){toast(error.message,true);return;}toast(q.is_published?'Quiz retirado da publicação.':'Quiz publicado para os alunos.');await load(selectedSubject);
   }
   async function removeQuiz(q){
-    if(!confirm((q.html_path?'Remover "'+q.title+'" do catálogo? O arquivo HTML continuará no GitHub.':'Excluir o quiz "'+q.title+'" e todas as perguntas vinculadas? O histórico de tentativas dos alunos será preservado.')))return;
+    if(!confirm('Excluir o quiz "'+q.title+'" e todas as perguntas vinculadas? O histórico de tentativas dos alunos será preservado.'))return;
     const {error}=await supabase.from('quiz_catalog').delete().eq('id',q.id);
     if(error){toast(error.message,true);return;}toast('Quiz excluído.');await load(selectedSubject);
   }
