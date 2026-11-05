@@ -254,7 +254,6 @@ async function openAdminMonitoring() {
     document.querySelector('#admin-monitor-stats').innerHTML=`
       <article class="admin-monitor-stat"><span>Alunos cadastrados</span><strong>${learners.length}</strong></article>
       <article class="admin-monitor-stat"><span>Alunos que já responderam</span><strong>${active}</strong></article>
-      <article class="admin-monitor-stat"><span>Tentativas registradas</span><strong>${quizCount}</strong></article>
       <article class="admin-monitor-stat"><span>Aproveitamento médio</span><strong>${avg}%</strong></article>`;
     document.querySelector('#admin-student-count').textContent=learners.length+' aluno(s)';
     const list=document.querySelector('#admin-student-list');
@@ -291,20 +290,22 @@ async function openAdminStudent(studentId,students,byUser) {
   const history=(byUser.get(studentId)||[]).slice().sort((a,b)=>new Date(b.submitted_at)-new Date(a.submitted_at));
   shell(`<button class="back-button" id="student-history-back">← Voltar aos alunos</button>
     <section class="profile-heading"><div class="eyebrow">HISTÓRICO INDIVIDUAL</div><h1>${esc(student.display_name||'Aluno')}</h1><p class="muted">${esc(student.department||'Setor não informado')} · Cadastro: ${student.created_at?new Date(student.created_at).toLocaleDateString('pt-BR'):'—'}</p></section>
-    <section class="admin-monitor-stats">
-      <article class="admin-monitor-stat"><span>Quizzes respondidos</span><strong>${new Set(history.map(a=>a.subject_id+':'+(a.quiz_key||'normal'))).size}</strong></article>
-      <article class="admin-monitor-stat"><span>Tentativas</span><strong>${history.length}</strong></article>
-      <article class="admin-monitor-stat"><span>Pontos registrados</span><strong>${history.reduce((sum,a)=>sum+Number(a.points||0),0)}</strong></article>
-      <article class="admin-monitor-stat"><span>Aproveitamento médio</span><strong>${history.length?Math.round(history.reduce((sum,a)=>sum+(Number(a.total_questions)?Number(a.score)/Number(a.total_questions)*100:0),0)/history.length):0}%</strong></article>
-    </section>
-    <section class="panel admin-monitor-panel"><div class="section-title"><h2>Histórico de quizzes</h2><span class="muted">${history.length} tentativa(s)</span></div><div id="admin-attempt-details" class="admin-attempt-list">${history.length?'<div class="skeleton">Carregando detalhes das respostas…</div>':'<p class="muted">Este aluno ainda não respondeu a nenhum quiz.</p>'}</div></section>`);
+    <section class="panel admin-monitor-panel"><div class="section-title"><h2>Progresso por curso</h2><span class="muted">${history.length} registro(s)</span></div><p class="muted admin-course-instructions">Abra um curso para visualizar as tentativas e, em seguida, selecione uma tentativa para conferir as respostas.</p><div id="admin-attempt-details" class="admin-course-list">${history.length?'<div class="skeleton">Carregando detalhes das respostas…</div>':'<p class="muted">Este aluno ainda não respondeu a nenhum quiz.</p>'}</div></section>`);
   document.querySelector('#student-history-back').addEventListener('click',openAdminMonitoring);
   if(!history.length)return;
   try {
     const {data:questions,error}=await supabase.from('quiz_questions').select('id,subject_id,question_text,options,correct_option,explanation');
     if(error)throw error;
     const questionMap=new Map((questions||[]).map(q=>[q.id,q]));
-    document.querySelector('#admin-attempt-details').innerHTML=history.map((attempt,index)=>{
+    const groupedHistory=new Map();
+    history.forEach(attempt=>{if(!groupedHistory.has(attempt.subject_id))groupedHistory.set(attempt.subject_id,[]);groupedHistory.get(attempt.subject_id).push(attempt);});
+    const orderedCourses=Array.from(groupedHistory.entries()).sort((a,b)=>{const ai=subjects.findIndex(s=>s.id===a[0]),bi=subjects.findIndex(s=>s.id===b[0]);return (ai<0?999:ai)-(bi<0?999:bi);});
+    document.querySelector('#admin-attempt-details').innerHTML=orderedCourses.map(([subjectId,courseHistory])=>{
+      const subjectName=subjects.find(s=>s.id===subjectId)?.name||subjectId;
+      const quizCount=new Set(courseHistory.map(a=>a.quiz_key||'normal')).size;
+      const points=courseHistory.reduce((sum,a)=>sum+Number(a.points||0),0);
+      const attemptsMarkup=(()=>{
+      return courseHistory.map((attempt,index)=>{
       const subject=subjects.find(s=>s.id===attempt.subject_id)?.name||attempt.subject_id;
       const total=Number(attempt.total_questions)||0,score=Number(attempt.score)||0;
       const percent=total?Math.round(score/total*100):0;
@@ -326,6 +327,9 @@ async function openAdminStudent(studentId,students,byUser) {
             ${q.explanation?'<p class="admin-answer-explanation">'+esc(q.explanation)+'</p>':''}
           </article>`;
         }).join('')}</div></details>`;
+      }).join('');
+      })();
+      return `<details class="admin-course-card"><summary><strong>${esc(subjectName)}</strong><span class="admin-course-meta">${quizCount} quiz(s) · ${courseHistory.length} tentativa(s) · ${points} pontos</span><span class="admin-course-chevron">＋</span></summary><div class="admin-course-attempts">${attemptsMarkup}</div></details>`;
     }).join('');
   } catch(err) {
     console.error('Falha ao carregar revisão dos quizzes:',err);
