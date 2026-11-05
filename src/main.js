@@ -517,60 +517,19 @@ async function deleteSubjectFile(kind, file) {
 async function renderQuiz(box) {
   box.innerHTML='<h2>Quizzes disponíveis</h2><p class="muted">Carregando avaliações desta matéria…</p>';
   const {data:catalog,error}=await supabase.from('quiz_catalog')
-    .select('id,title,description,questions_per_attempt,created_at,content_type,html_path')
+    .select('id,title,description,questions_per_attempt,created_at,content_type')
     .eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true});
   if(error){console.error(error);box.innerHTML='<h2>Quizzes</h2><div class="empty-state">Não foi possível carregar os quizzes publicados.</div>';return;}
-  const {data:legacy,error:legacyError}=await supabase.from('quiz_questions')
-    .select('id,question_text,options,sort_order').eq('subject_id',activeSubject.id)
-    .is('quiz_id',null).eq('is_active',true).lt('sort_order',9001).order('sort_order');
-  if(legacyError)console.warn('Quiz geral legado indisponível:',legacyError);
-  const legacyAvailable=(legacy||[]).length>=10;
-
-  // Os quizzes interativos já configurados usam o mesmo player padronizado
-  // da respectiva matéria, em vez de abrir versões HTML com layouts diferentes.
-  const builtInBySubject={
-    '5s':[{key:'seiri',title:'Encontro 1: Introdução ao 5S & Seiri',description:'Cinco questões sobre utilização, triagem e organização do posto de trabalho.'}],
-    'lubrificacao':[{key:'lubrificacao-quiz',title:'Quiz Interativo — Lubrificação Básica',description:'Cinco questões sobre atrito, desgaste, lubrificantes e aplicação.'}]
-  };
-  const htmlHandlers={
-    'quiz5s-encontro2.html':'seiton-seiso',
-    'quiz1.html':'eletrica-quiz',
-    'quiz2.html':'eletrica-quiz2'
-  };
   const themeClass=({'5s':'quiz-theme-5s','lubrificacao':'quiz-theme-lube','pneumatica':'quiz-theme-pneumatic','eletrica':'quiz-theme-electric'}[activeSubject.id]||'');
-  const card=(title,description,meta,buttonAttr)=>'<article class="quiz-catalog-card '+themeClass+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(title)+'</h3><p>'+esc(description)+'</p><div class="quiz-catalog-meta">'+esc(meta)+'</div><button class="btn btn-primary" '+buttonAttr+'>Iniciar quiz</button></article>';
-  const builtInCards=(builtInBySubject[activeSubject.id]||[]).map(q=>card(q.title,q.description,'5 questões · 35s por questão','data-internal-quiz="'+q.key+'"')).join('');
-  const catalogCards=(catalog||[]).map(q=>{
-    const handler=q.content_type==='interactive'&&q.html_path?htmlHandlers[(q.html_path||'').split('/').pop()]:null;
-    const description=q.description||'Avaliação de conhecimentos.';
-    const meta=q.content_type==='interactive'?'Interativo · padrão '+activeSubject.name:(q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa');
-    return card(q.title,description,meta,handler?'data-internal-quiz="'+handler+'"':'data-managed-quiz="'+q.id+'"');
-  }).join('');
-  box.innerHTML='<div class="quiz-catalog-heading"><div><h2>Quizzes da matéria</h2><p class="muted">Todos os quizzes desta matéria estão reunidos aqui. Selecione um card para começar.</p></div></div>'+
-    '<div class="quiz-catalog-grid">'+
-    (legacyAvailable?card('Quiz geral','10 perguntas sorteadas do banco de questões da matéria.','Banco geral · até 100 pontos','id="start-legacy-quiz"'):'')+
-    builtInCards+catalogCards+
-    '</div>'+
-    (!legacyAvailable&&!builtInCards&&!(catalog||[]).length?'<div class="empty-state">Ainda não há quizzes publicados nesta matéria.</div>':'');
-  box.querySelector('#start-legacy-quiz')?.addEventListener('click',()=>renderLegacyQuiz(box,legacy));
-  box.querySelectorAll('[data-internal-quiz]').forEach(button=>button.addEventListener('click',async()=>{
-    const key=button.dataset.internalQuiz;
-    if(key==='seiri')await renderSeiriQuiz(box);
-    else if(key==='seiton-seiso')await renderSeitonSeisoQuiz(box);
-    else if(key==='lubrificacao-quiz')await renderLubricationQuiz(box);
-    else if(key==='eletrica-quiz')await renderElectricalQuiz(box);
-    else if(key==='eletrica-quiz2')await renderElectricalQuiz2(box);
-  }));
-  box.querySelectorAll('[data-html-quiz]').forEach(button=>button.addEventListener('click',()=>{
-    const quiz=catalog.find(q=>q.id===button.dataset.htmlQuiz);
-    if(!quiz?.html_path)return;
-    const url=import.meta.env.BASE_URL+quiz.html_path;
-    box.innerHTML='<div class="html-quiz-shell"><div class="html-quiz-toolbar"><div><h2>'+esc(quiz.title)+'</h2><p class="muted">Quiz interativo personalizado</p></div><div class="html-quiz-actions"><button class="btn btn-light" id="return-html-quiz">Voltar aos quizzes</button><a class="btn btn-primary" href="'+url+'" target="_blank" rel="noopener">Abrir em nova aba</a></div></div><iframe class="html-quiz-frame" title="'+esc(quiz.title)+'" src="'+url+'" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups" allow="fullscreen"></iframe></div>';
-    box.querySelector('#return-html-quiz').addEventListener('click',()=>renderQuiz(box));
-  }));
+  const card=(q)=>'<article class="quiz-catalog-card '+themeClass+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(q.title)+'</h3><p>'+esc(q.description||'Avaliação de conhecimentos.')+'</p><div class="quiz-catalog-meta">'+(q.content_type==='interactive'?'Interativo · padrão visual da matéria':(q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa'))+'</div><button class="btn btn-primary" data-managed-quiz="'+q.id+'">Iniciar quiz</button></article>';
+  box.innerHTML='<div class="quiz-catalog-heading"><div><h2>Quizzes da matéria</h2><p class="muted">Selecione uma avaliação para começar. As provas sorteiam perguntas do banco cadastrado.</p></div></div>'+
+    '<div class="quiz-catalog-grid">'+(catalog||[]).map(card).join('')+'</div>'+
+    (!(catalog||[]).length?'<div class="empty-state">Ainda não há quizzes publicados nesta matéria.</div>':'');
   box.querySelectorAll('[data-managed-quiz]').forEach(button=>button.addEventListener('click',async()=>{
     const quiz=catalog.find(q=>q.id===button.dataset.managedQuiz);
-    if(quiz){if(quiz.content_type==='interactive'&&!quiz.html_path)await renderCatalogInteractiveQuiz(box,quiz);else await renderManagedQuiz({supabase,quiz,box,onFinish:dashboard});}
+    if(!quiz)return;
+    if(quiz.content_type==='interactive')await renderCatalogInteractiveQuiz(box,quiz);
+    else await renderManagedQuiz({supabase,quiz,box,onFinish:dashboard});
   }));
 }
 
