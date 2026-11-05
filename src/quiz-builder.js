@@ -42,15 +42,27 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at,content_type,html_path').order('created_at',{ascending:false});
     if(error){target.innerHTML='<p class="muted">Não foi possível carregar os quizzes.</p>';toast(error.message,true);return;}
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
-    target.innerHTML='<div class="managed-quiz-list">'+data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
-      <div class="managed-quiz-summary"><div><span class="eyebrow">${esc(subjects.find(s=>s.id===q.subject_id)?.name||q.subject_id)}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
-      <div class="managed-quiz-actions"><span class="muted small">${q.html_path?'Quiz interativo existente':q.content_type==='interactive'?'Interativo · padrão visual da matéria':'Prova · '+(q.questions_per_attempt===0?'todas as perguntas':q.questions_per_attempt+' por tentativa')}</span>${q.html_path?'<button class="btn btn-light btn-small" data-preview-html="'+q.id+'">Visualizar</button>':'<button class="btn btn-light btn-small" data-manage="'+q.id+'">Gerenciar perguntas</button>'}<button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover do catálogo</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
-    </article>`).join('')+'</div>';
-    target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
-    target.querySelectorAll('[data-preview-html]').forEach(b=>b.addEventListener('click',()=>{
-      const q=data.find(x=>x.id===b.dataset.previewHtml);
-      if(q?.html_path)window.open(import.meta.env.BASE_URL+q.html_path,'_blank','noopener');
+    const grouped=subjects.map(subject=>({subject,quizzes:data.filter(q=>q.subject_id===subject.id)})).filter(group=>group.quizzes.length);
+    target.innerHTML=grouped.length?grouped.map(group=>`
+      <section class="managed-subject-group">
+        <header class="managed-subject-heading"><div><span class="eyebrow">MATÉRIA</span><h3>${esc(group.subject.name)}</h3></div><span class="muted small">${group.quizzes.length} quiz(es)</span></header>
+        <div class="managed-quiz-list">${group.quizzes.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
+          <div class="managed-quiz-summary"><div><span class="eyebrow">${q.content_type==='interactive'?'INTERATIVO':'PROVA'}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
+          <div class="managed-quiz-actions"><span class="muted small">${q.content_type==='interactive'?'Padrão visual da matéria':q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa'}</span><button class="btn btn-light btn-small" data-edit-title="${q.id}">Alterar título</button><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover quiz</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
+        </article>`).join('')}</div>
+      </section>`).join(''):'<div class="empty-state">Nenhum quiz cadastrado.</div>';
+    target.querySelectorAll('[data-edit-title]').forEach(b=>b.addEventListener('click',async()=>{
+      const q=data.find(item=>item.id===b.dataset.editTitle);if(!q)return;
+      const nextTitle=prompt('Digite o novo título do quiz:',q.title);
+      if(nextTitle===null)return;
+      const title=nextTitle.trim();
+      if(!title){toast('O título não pode ficar vazio.',true);return;}
+      if(title.length>120){toast('O título deve ter no máximo 120 caracteres.',true);return;}
+      const {error}=await supabase.from('quiz_catalog').update({title,updated_at:new Date().toISOString()}).eq('id',q.id);
+      if(error){toast(error.message,true);return;}
+      toast('Título atualizado. O card da matéria também exibirá o novo título.');await load();
     }));
+    target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
     target.querySelectorAll('[data-publish]').forEach(b=>b.addEventListener('click',()=>togglePublish(data.find(q=>q.id===b.dataset.publish))));
     target.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeQuiz(data.find(q=>q.id===b.dataset.remove))));
   }
