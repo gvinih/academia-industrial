@@ -247,8 +247,7 @@ async function openAdminMonitoring() {
     if(studentError) throw studentError;
     if(attemptError) throw attemptError;
     const learners=(students||[]).filter(s=>s.role!=='admin');
-    const rows=attempts||[];
-    const byUser=new Map();
+    const rows=attempts||[];    const byUser=new Map();
     rows.forEach(a=>{if(!byUser.has(a.user_id))byUser.set(a.user_id,[]);byUser.get(a.user_id).push(a);});
     const active=learners.filter(s=>(byUser.get(s.id)||[]).length>0).length;
     const quizCount=rows.length;
@@ -497,8 +496,7 @@ async function deleteSubjectFile(kind, file) {
   const label = kind === 'video' ? 'vídeo' : 'PDF';
   const subjectName = activeSubject.name;
   const confirmed = window.confirm(
-    `ATENÇÃO: você está na matéria "${subjectName}".\n\nDeseja excluir o ${label} "${file.title}"? O arquivo será removido permanentemente.`
-  );
+    `ATENÇÃO: você está na matéria "${subjectName}".\n\nDeseja excluir o ${label} "${file.title}"? O arquivo será removido permanentemente.`  );
   if (!confirmed) return;
   const typed = window.prompt('Para confirmar a exclusão permanente, digite EXCLUIR (em letras maiúsculas):');
   if (typed !== 'EXCLUIR') {
@@ -554,11 +552,11 @@ async function renderSeiriQuiz(box) {
   box.innerHTML=`
     <div class="seiri-wrap">
       <div class="seiri-heading"><span class="seiri-kicker">MÓDULO 1 · 5S</span><h2>Encontro 1: Introdução ao 5S &amp; Seiri</h2><p class="muted">Cinco questões sobre utilização, triagem e organização do posto de trabalho.</p></div>
-      <div id="seiri-start" class="seiri-start"><div class="seiri-icon">▦</div><h3>Pronto para testar seus conhecimentos?</h3><p>Você terá 35 segundos por questão, mas o cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" id="seiri-begin">Começar quiz</button></div>
+      <div id="seiri-start" class="seiri-start"><div class="seiri-icon">▦</div><h3>Pronto para testar seus conhecimentos?</h3><p>Você terá 35 segundos por questão. O cronômetro começa automaticamente assim que cada pergunta aparecer. Ao final, sua pontuação será registrada no ranking.</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" id="seiri-begin">Começar quiz</button></div>
       <div id="seiri-game" class="seiri-game" hidden>
         <div class="seiri-status"><span id="seiri-counter">Questão 1 de 5</span><span id="seiri-points">0 pontos provisórios</span></div>
         <div class="seiri-progress"><div id="seiri-progress-bar"></div></div>
-        <div class="seiri-timer-row"><button class="btn seiri-timer-start" id="seiri-timer-start">▶ Iniciar tempo</button><span class="seiri-timer" id="seiri-timer">35s</span></div>
+        <div class="seiri-timer-row"><span class="seiri-timer" id="seiri-timer">35s</span></div>
         <h3 id="seiri-question"></h3><div id="seiri-options" class="seiri-options"></div>
         <div id="seiri-feedback" class="seiri-feedback" hidden></div>
         <div class="seiri-controls"><span id="seiri-hint">Selecione uma alternativa antes que o tempo termine.</span><button class="btn btn-primary" id="seiri-next" disabled>Avançar →</button></div>
@@ -568,11 +566,11 @@ async function renderSeiriQuiz(box) {
   let index=0, timer=null, timeLeft=35, timerStarted=false, selected=null, correctCount=0, totalSeconds=0;
   const answers=[];
   const start=document.querySelector('#seiri-start'), game=document.querySelector('#seiri-game'), resultBox=document.querySelector('#seiri-result');
-  const timerBtn=document.querySelector('#seiri-timer-start'), nextBtn=document.querySelector('#seiri-next');
+  const nextBtn=document.querySelector('#seiri-next');
   function stopTimer(){if(timer){clearInterval(timer);timer=null;}timerStarted=false;}
   function startTimer(){
     if(timerStarted||selected!==null)return;
-    timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
+    timerStarted=true;
     document.querySelector('#seiri-hint').textContent='O tempo está correndo automaticamente. Escolha uma alternativa.';
     timer=setInterval(()=>{
       timeLeft--;totalSeconds++;
@@ -591,14 +589,13 @@ async function renderSeiriQuiz(box) {
     document.querySelector('#seiri-timer').textContent='35s';
     document.querySelector('#seiri-timer').classList.remove('urgent');
     document.querySelector('#seiri-progress-bar').style.width='100%';
-    timerBtn.disabled=false;timerBtn.textContent='▶ Iniciar tempo';
-    document.querySelector('#seiri-hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
+    document.querySelector('#seiri-hint').textContent='O tempo começa automaticamente. Escolha uma alternativa.';
     document.querySelector('#seiri-feedback').hidden=true;
     nextBtn.disabled=true;nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
     const options=document.querySelector('#seiri-options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
     options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
-    // O cronômetro começa somente quando o participante clicar em “Iniciar tempo”.
+    startTimer();
   }
   function choose(optionIndex,timedOut){
     if(selected!==null)return;
@@ -630,7 +627,6 @@ async function renderSeiriQuiz(box) {
     document.querySelector('#seiri-dashboard').addEventListener('click',dashboard);
   }
   document.querySelector('#seiri-begin').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
-  timerBtn.addEventListener('click',startTimer);
   nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
 }
 
@@ -645,18 +641,18 @@ async function renderStandardInteractiveQuiz(box, config) {
   box.innerHTML='<div class="seiri-wrap '+esc(themeClass)+'"><div class="seiri-heading"><span class="seiri-kicker">'+esc(kicker)+'</span><h2>'+esc(title)+'</h2><p class="muted">'+esc(description)+'</p></div>'+
     '<div class="seiri-start"><div class="seiri-icon">▦</div><h3>'+esc(startTitle)+'</h3><p>'+esc(startDescription)+'</p><div class="seiri-facts"><span>5 questões</span><span>35s por questão</span><span>Até 100 pontos</span></div><button class="btn btn-primary" data-action="begin">Começar quiz</button></div>'+
     '<div class="seiri-game" hidden><div class="seiri-status"><span data-role="counter">Questão 1 de 5</span><span data-role="points">0 pontos provisórios</span></div><div class="seiri-progress"><div data-role="progress"></div></div>'+
-    '<div class="seiri-timer-row"><button class="btn seiri-timer-start" data-action="timer">▶ Iniciar tempo</button><span class="seiri-timer" data-role="timer">35s</span></div>'+
+    '<div class="seiri-timer-row"><span class="seiri-timer" data-role="timer">35s</span></div>'+
     '<h3 data-role="question"></h3><div class="seiri-options" data-role="options"></div><div class="seiri-feedback" data-role="feedback" hidden></div>'+
     '<div class="seiri-controls"><span data-role="hint">Selecione uma alternativa antes que o tempo termine.</span><button class="btn btn-primary" data-action="next" disabled>Avançar →</button></div></div><div class="seiri-result" hidden></div></div>';
   const root=box.querySelector('.seiri-wrap'),start=root.querySelector('.seiri-start'),game=root.querySelector('.seiri-game'),resultBox=root.querySelector('.seiri-result');
-  const timerBtn=root.querySelector('[data-action="timer"]'),nextBtn=root.querySelector('[data-action="next"]');
+  const nextBtn=root.querySelector('[data-action="next"]');
   const role=name=>root.querySelector('[data-role="'+name+'"]');
   let index=0,timer=null,timeLeft=35,timerStarted=false,selected=null,correctCount=0,totalSeconds=0;
   const answers=[];
   function stopTimer(){if(timer){clearInterval(timer);timer=null;}timerStarted=false;}
   function startTimer(){
     if(timerStarted||selected!==null)return;
-    timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
+    timerStarted=true;
     role('hint').textContent='O tempo está correndo automaticamente. Escolha uma alternativa.';
     timer=setInterval(()=>{timeLeft--;totalSeconds++;role('timer').textContent=timeLeft+'s';role('progress').style.width=(timeLeft/35*100)+'%';
       if(timeLeft<=5)role('timer').classList.add('urgent');
@@ -668,13 +664,13 @@ async function renderStandardInteractiveQuiz(box, config) {
     role('counter').textContent='Questão '+(index+1)+' de '+questions.length;
     role('points').textContent=(correctCount*20)+' pontos provisórios';role('question').textContent=q.question_text;
     role('timer').textContent='35s';role('timer').classList.remove('urgent');role('progress').style.width='100%';
-    timerBtn.disabled=false;timerBtn.textContent='▶ Iniciar tempo';
-    role('hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
+    role('hint').textContent='O tempo começa automaticamente. Escolha uma alternativa.';
     role('feedback').hidden=true;nextBtn.disabled=true;nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
     const options=role('options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>
       '<button type="button" class="seiri-option" data-option="'+op.originalIndex+'"><span class="seiri-letter">'+String.fromCharCode(65+i)+'</span><span>'+esc(op.label)+'</span></button>').join('');
     options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    startTimer();
   }
   function choose(optionIndex,timedOut){
     if(selected!==null)return;selected=optionIndex;stopTimer();const q=questions[index],isCorrect=optionIndex===q.correct_option;
@@ -702,7 +698,6 @@ async function renderStandardInteractiveQuiz(box, config) {
     resultBox.querySelector('[data-action="dashboard"]').addEventListener('click',dashboard);
   }
   start.querySelector('[data-action="begin"]').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
-  timerBtn.addEventListener('click',startTimer);
   nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
 }
 
@@ -711,7 +706,7 @@ async function renderSeitonSeisoQuiz(box) {
     subjectId:'5s',minSort:9006,maxSort:9010,title:'Encontro 2: Seiton & Seiso',
     kicker:'MÓDULO 2 · 5S',description:'Cinco questões sobre senso de ordenação, senso de limpeza e aplicação prática no ambiente de trabalho.',
     startTitle:'Pronto para testar seus conhecimentos?',
-    startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
+    startDescription:'Você terá 35 segundos por questão. O cronômetro começa automaticamente assim que cada pergunta aparecer. Ao final, sua pontuação será registrada no ranking.',
     sqlPath:'supabase/quiz_5s_seiton_seiso.sql',resultLabel:'5S · SEITON & SEISO'
   });
 }
@@ -731,7 +726,7 @@ async function renderLubricationQuiz(box) {
       <div id="lub-game" class="seiri-game" hidden>
         <div class="seiri-status"><span id="lub-counter">Questão 1 de 5</span><span id="lub-points">0 pontos provisórios</span></div>
         <div class="seiri-progress"><div id="lub-progress-bar"></div></div>
-        <div class="seiri-timer-row"><button class="btn seiri-timer-start" id="lub-timer-start">▶ Iniciar tempo</button><span class="seiri-timer" id="lub-timer">35s</span></div>
+        <div class="seiri-timer-row"><span class="seiri-timer" id="lub-timer">35s</span></div>
         <h3 id="lub-question"></h3><div id="lub-options" class="seiri-options"></div>
         <div id="lub-feedback" class="seiri-feedback" hidden></div>
         <div class="seiri-controls"><span id="lub-hint">Leia as alternativas e inicie o cronômetro quando estiver pronto.</span><button class="btn btn-primary" id="lub-next" disabled>Avançar →</button></div>
@@ -741,14 +736,13 @@ async function renderLubricationQuiz(box) {
   let index=0,timer=null,timeLeft=35,timerStarted=false,selected=null,correctCount=0,totalSeconds=0;
   const answers=[];
   const start=document.querySelector('#lub-start'),game=document.querySelector('#lub-game'),resultBox=document.querySelector('#lub-result');
-  const timerBtn=document.querySelector('#lub-timer-start'),nextBtn=document.querySelector('#lub-next');
+  const nextBtn=document.querySelector('#lub-next');
   function stopTimer(){if(timer){clearInterval(timer);timer=null;}timerStarted=false;}
   function startTimer(){
     if(timerStarted||selected!==null)return;
-    timerStarted=true;timerBtn.disabled=true;timerBtn.textContent='⏱ Tempo em andamento';
+    timerStarted=true;
     document.querySelector('#lub-hint').textContent='O tempo está correndo. Escolha uma alternativa.';
-    timer=setInterval(()=>{timeLeft--;totalSeconds++;document.querySelector('#lub-timer').textContent=timeLeft+'s';document.querySelector('#lub-progress-bar').style.width=(timeLeft/35*100)+'%';if(timeLeft<=5)document.querySelector('#lub-timer').classList.add('urgent');if(timeLeft<=0){stopTimer();choose(questions[index].correct_option===0?1:0,true);}},1000);
-  }
+    timer=setInterval(()=>{timeLeft--;totalSeconds++;document.querySelector('#lub-timer').textContent=timeLeft+'s';document.querySelector('#lub-progress-bar').style.width=(timeLeft/35*100)+'%';if(timeLeft<=5)document.querySelector('#lub-timer').classList.add('urgent');if(timeLeft<=0){stopTimer();choose(questions[index].correct_option===0?1:0,true);}},1000);  }
   function loadQuestion(){
     stopTimer();timeLeft=35;selected=null;
     const q=questions[index];
@@ -757,13 +751,13 @@ async function renderLubricationQuiz(box) {
     document.querySelector('#lub-question').textContent=q.question_text;
     document.querySelector('#lub-timer').textContent='35s';document.querySelector('#lub-timer').classList.remove('urgent');
     document.querySelector('#lub-progress-bar').style.width='100%';
-    timerBtn.disabled=false;timerBtn.textContent='⏱ Tempo em andamento';
-    document.querySelector('#lub-hint').textContent='Leia as alternativas e inicie o cronômetro quando estiver pronto.';
+    document.querySelector('#lub-hint').textContent='O tempo começa automaticamente. Escolha uma alternativa.';
     document.querySelector('#lub-feedback').hidden=true;nextBtn.disabled=true;
     nextBtn.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
     const options=document.querySelector('#lub-options');
     options.innerHTML=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex}))).map((op,i)=>`<button type="button" class="seiri-option" data-option="${op.originalIndex}"><span class="seiri-letter">${String.fromCharCode(65+i)}</span><span>${esc(op.label)}</span></button>`).join('');
     options.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    startTimer();
     startTimer();
   }
   function choose(optionIndex,timedOut){
@@ -790,7 +784,6 @@ async function renderLubricationQuiz(box) {
     document.querySelector('#lub-dashboard').addEventListener('click',dashboard);
   }
   document.querySelector('#lub-begin').addEventListener('click',()=>{start.hidden=true;game.hidden=false;loadQuestion();});
-  timerBtn.addEventListener('click',startTimer);
   nextBtn.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;loadQuestion();}else finish();});
 }
 
@@ -800,7 +793,7 @@ async function renderElectricalQuiz(box) {
     subjectId:'eletrica',minSort:9201,maxSort:9205,title:'Módulo 1: Segurança em Eletricidade',
     kicker:'MÓDULO 1 · ELÉTRICA',description:'Cinco questões sobre NR-10, segurança em eletricidade, regras de ouro, bloqueio e etiquetagem e dispositivos de proteção.',
     startTitle:'Pronto para testar seus conhecimentos?',
-    startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
+    startDescription:'Você terá 35 segundos por questão. O cronômetro começa automaticamente assim que cada pergunta aparecer. Ao final, sua pontuação será registrada no ranking.',
     sqlPath:'supabase/quiz_eletrica_nr10.sql',resultLabel:'ELÉTRICA · NR-10',themeClass:'eletrica-theme'
   });
 }
@@ -810,7 +803,7 @@ async function renderElectricalQuiz2(box) {
     subjectId:'eletrica',minSort:9211,maxSort:9215,title:'Quiz: Tensão, Corrente e Tipos de Energia',
     kicker:'MÓDULO 2 · ELÉTRICA',description:'Cinco questões sobre medição de corrente, circuitos de comando de 24 V, diferença entre Neutro e Terra, fiação de sensores e anomalias térmicas.',
     startTitle:'Pronto para testar seus conhecimentos?',
-    startDescription:'Você terá 35 segundos por questão. O cronômetro só começa quando clicar em “Iniciar tempo”. Ao final, sua pontuação será registrada no ranking.',
+    startDescription:'Você terá 35 segundos por questão. O cronômetro começa automaticamente assim que cada pergunta aparecer. Ao final, sua pontuação será registrada no ranking.',
     sqlPath:'supabase/quiz_eletrica_tensao_corrente.sql',resultLabel:'ELÉTRICA · TENSÃO E CORRENTE',themeClass:'eletrica-theme'
   });
 }
