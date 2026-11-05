@@ -44,15 +44,19 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
     target.innerHTML='<div class="managed-quiz-list">'+data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
       <div class="managed-quiz-summary"><div><span class="eyebrow">${esc(subjects.find(s=>s.id===q.subject_id)?.name||q.subject_id)}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
-      <div class="managed-quiz-actions"><span class="muted small">${q.content_type==='interactive'?'Interativo · padrão visual da matéria':'Prova · '+(q.questions_per_attempt===0?'todas as perguntas':q.questions_per_attempt+' por tentativa')}</span><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover do catálogo</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
+      <div class="managed-quiz-actions"><span class="muted small">${q.html_path?'Quiz interativo existente':q.content_type==='interactive'?'Interativo · padrão visual da matéria':'Prova · '+(q.questions_per_attempt===0?'todas as perguntas':q.questions_per_attempt+' por tentativa')}</span>${q.html_path?'<button class="btn btn-light btn-small" data-preview-html="'+q.id+'">Visualizar</button>':'<button class="btn btn-light btn-small" data-manage="'+q.id+'">Gerenciar perguntas</button>'}<button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover do catálogo</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
     </article>`).join('')+'</div>';
     target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
+    target.querySelectorAll('[data-preview-html]').forEach(b=>b.addEventListener('click',()=>{
+      const q=data.find(x=>x.id===b.dataset.previewHtml);
+      if(q?.html_path)window.open(import.meta.env.BASE_URL+q.html_path,'_blank','noopener');
+    }));
     target.querySelectorAll('[data-publish]').forEach(b=>b.addEventListener('click',()=>togglePublish(data.find(q=>q.id===b.dataset.publish))));
     target.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeQuiz(data.find(q=>q.id===b.dataset.remove))));
   }
   async function togglePublish(q){
-    {
-      const {count,error:countError}=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
+    if(!q.html_path){
+      const {count,error:countError=await supabase.from('quiz_questions').select('id',{count:'exact',head:true}).eq('quiz_id',q.id).eq('is_active',true);
       if(countError){toast(countError.message,true);return;}
       const needed=q.questions_per_attempt;
       if(!q.is_published&&(count===0||(needed>0&&count<needed))){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
@@ -61,7 +65,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     if(error){toast(error.message,true);return;}toast(q.is_published?'Quiz retirado da publicação.':'Quiz publicado para os alunos.');await load();
   }
   async function removeQuiz(q){
-    if(!confirm(q.content_type==='html'?'Remover "'+q.title+'" do catálogo? O arquivo HTML continuará no GitHub.':'Excluir o quiz "'+q.title+'" e todas as perguntas vinculadas? O histórico de tentativas dos alunos será preservado.'))return;
+    if(!confirm((q.html_path?'Remover "'+q.title+'" do catálogo? O arquivo HTML continuará no GitHub.':'Excluir o quiz "'+q.title+'" e todas as perguntas vinculadas? O histórico de tentativas dos alunos será preservado.')))return;
     const {error}=await supabase.from('quiz_catalog').delete().eq('id',q.id);
     if(error){toast(error.message,true);return;}toast('Quiz excluído.');await load();
   }
@@ -115,7 +119,7 @@ export async function renderManagedQuiz({supabase,quiz,box,onFinish}) {
   if(pool.length<amount||!pool.length){box.innerHTML='<div class="empty-state">Este quiz ainda não possui perguntas suficientes.</div>';return;}
   const questions=shuffle(pool).slice(0,amount).map(q=>({...q,shuffledOptions:shuffle(q.options.map((text,index)=>({text,index})))}));
   let current=0,answers={},seconds=35,timer=null,locked=false,started=Date.now();
-  box.innerHTML=`<div class="managed-quiz-player ${theme}"><header class="managed-player-head"><span class="managed-player-tag">${esc(quiz.title)}</span><span class="managed-player-count" id="managed-count"></span></header><div class="managed-player-progress"><i id="managed-progress"></i></div><div class="managed-player-card"><div class="managed-player-meta"><span id="managed-question-number"></span><strong id="managed-timer">35s</strong></div><h2 id="managed-question-text"></h2><div class="managed-player-options" id="managed-options"></div><div class="managed-player-feedback" id="managed-feedback" hidden></div><div class="managed-player-controls"><button class="btn btn-light" id="managed-back" disabled>Anterior</button><button class="btn btn-primary" id="managed-next" disabled>Próxima</button></div></div></div>`;
+  box.innerHTML=`<div class="managed-quiz-player ${theme} mode-${quiz.content_type||'exam'}"><header class="managed-player-head"><span class="managed-player-tag">${esc(quiz.title)}</span><span class="managed-player-count" id="managed-count"></span></header><div class="managed-player-progress"><i id="managed-progress"></i></div><div class="managed-player-card"><div class="managed-player-meta"><span id="managed-question-number"></span><strong id="managed-timer">35s</strong></div><h2 id="managed-question-text"></h2><div class="managed-player-options" id="managed-options"></div><div class="managed-player-feedback" id="managed-feedback" hidden></div><div class="managed-player-controls"><button class="btn btn-light" id="managed-back" disabled>Anterior</button><button class="btn btn-primary" id="managed-next" disabled>Próxima</button></div></div></div>`;
   const $=id=>box.querySelector('#'+id);
   const finish=async()=>{
     clearInterval(timer);$('managed-next').disabled=true;
@@ -123,7 +127,7 @@ export async function renderManagedQuiz({supabase,quiz,box,onFinish}) {
     const {data,error}=await supabase.rpc('submit_managed_quiz',{p_quiz_id:quiz.id,p_answers:payload});
     if(error){box.insertAdjacentHTML('beforeend','<p class="inline-message">'+esc(error.message)+'</p>');return;}
     const result=Array.isArray(data)?data[0]:data;
-    box.innerHTML=`<div class="managed-quiz-player ${theme}"><div class="managed-result-card"><span class="managed-player-tag">RESULTADO FINAL</span><h2>${result.score}/${result.total_questions} acertos</h2><p>${result.is_first_attempt?'Você recebeu '+result.points_awarded+' pontos no ranking.':'Esta tentativa foi registrada, mas os pontos deste quiz já foram contabilizados na primeira participação.'}</p><p class="muted">Pontuação da primeira tentativa: ${result.points_awarded} pontos · Tempo: ${Math.floor((Date.now()-started)/1000)}s</p><button class="btn btn-primary" id="managed-finish">Concluir</button></div></div>`;
+    box.innerHTML=`<div class="managed-quiz-player ${theme} mode-${quiz.content_type||'exam'}"><div class="managed-result-card"><span class="managed-player-tag">RESULTADO FINAL</span><h2>${result.score}/${result.total_questions} acertos</h2><p>${result.is_first_attempt?'Você recebeu '+result.points_awarded+' pontos no ranking.':'Esta tentativa foi registrada, mas os pontos deste quiz já foram contabilizados na primeira participação.'}</p><p class="muted">Pontuação da primeira tentativa: ${result.points_awarded} pontos · Tempo: ${Math.floor((Date.now()-started)/1000)}s</p><button class="btn btn-primary" id="managed-finish">Concluir</button></div></div>`;
     $('managed-finish').addEventListener('click',onFinish);
   };
   const show=()=>{
