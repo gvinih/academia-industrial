@@ -15,42 +15,46 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     document.querySelector('#quiz-manager-back').addEventListener('click',onBack);
   };
   const toast=(msg,error=false)=>{const el=document.querySelector('#toast');if(el){el.textContent=msg;el.className='toast show '+(error?'error':'');}};
-  async function load(){
-    shell(`<section class="profile-heading"><div class="eyebrow">ADMINISTRAÇÃO</div><h1>Gerenciador de quizzes</h1><p class="muted">Crie avaliações, cadastre perguntas e publique cada quiz para os alunos.</p></section>
-    <section class="panel quiz-builder-panel"><div class="section-title"><h2>Novo quiz</h2><span class="muted">Banco de questões independente</span></div>
+  async function load(selectedSubject=null){
+    if(!selectedSubject){
+      shell(`<section class="profile-heading"><div class="eyebrow">ADMINISTRAÇÃO</div><h1>Gerenciador de quizzes</h1><p class="muted">Selecione uma matéria para visualizar, criar e administrar seus quizzes.</p></section>
+      <section class="quiz-manager-subject-grid">${subjects.map(s=>`<button type="button" class="quiz-manager-subject-card" data-subject="${s.id}"><span class="eyebrow">MATÉRIA</span><strong>${esc(s.name)}</strong><span>Gerenciar quizzes <b aria-hidden="true">→</b></span></button>`).join('')}</section>`);
+      document.querySelectorAll('[data-subject]').forEach(b=>b.addEventListener('click',()=>load(subjects.find(s=>s.id===b.dataset.subject))));
+      return;
+    }
+    shell(`<button class="back-button" id="quiz-subject-back">← Todas as matérias</button>
+    <section class="profile-heading"><div class="eyebrow">GERENCIAMENTO POR MATÉRIA</div><h1>${esc(selectedSubject.name)}</h1><p class="muted">Crie e gerencie somente os quizzes desta matéria.</p></section>
+    <section class="panel quiz-builder-panel"><div class="section-title"><h2>Novo quiz · ${esc(selectedSubject.name)}</h2><span class="muted">Banco de questões independente</span></div>
     <form id="new-managed-quiz" class="quiz-builder-form">
-      <label class="field">Matéria<select name="subject_id" required>${subjects.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select></label>
-      <label class="field">Formato do quiz<select name="content_type" id="new-quiz-type"><option value="interactive" selected>Interativo (padrão visual da matéria)</option><option value="exam">Prova (modelo do Quiz geral 5S)</option></select></label>
+      <input type="hidden" name="subject_id" value="${selectedSubject.id}">
+      <label class="field">Formato do quiz<select name="content_type" id="new-quiz-type"><option value="interactive" selected>Interativo</option><option value="exam">Prova</option></select></label>
       <label class="field">Título do quiz<input name="title" maxlength="120" placeholder="Ex.: Encontro 2 — Seiton" required></label>
       <label class="field quiz-builder-wide">Descrição<textarea name="description" rows="2" maxlength="500" placeholder="Descreva os assuntos abordados neste quiz."></textarea></label>
       <label class="field">Perguntas por tentativa<select name="questions_per_attempt"><option value="5">5 perguntas</option><option value="10" selected>10 perguntas</option><option value="15">15 perguntas</option><option value="20">20 perguntas</option><option value="0">Usar todas as perguntas</option></select><small class="muted">Cadastre um banco maior de perguntas. A cada tentativa, o sistema sorteará a quantidade escolhida, sem repetir perguntas dentro da mesma tentativa.</small></label>
       <button class="btn btn-primary" type="submit">Criar quiz</button>
     </form></section>
-    <section class="panel quiz-builder-panel"><div class="section-title"><h2>Quizzes cadastrados</h2></div><div id="managed-quiz-list"><div class="skeleton">Carregando quizzes…</div></div></section>`);
+    <section class="panel quiz-builder-panel"><div class="section-title"><h2>Quizzes de ${esc(selectedSubject.name)}</h2></div><div id="managed-quiz-list"><div class="skeleton">Carregando quizzes…</div></div></section>`);
+    document.querySelector('#quiz-subject-back').addEventListener('click',()=>load());
     document.querySelector('#new-managed-quiz').addEventListener('submit',async e=>{
       e.preventDefault();const fd=new FormData(e.currentTarget);
-      const payload={subject_id:fd.get('subject_id'),title:fd.get('title').trim(),description:fd.get('description').trim(),questions_per_attempt:Number(fd.get('questions_per_attempt')),content_type:fd.get('content_type'),html_path:null,is_published:false};
+      const payload={subject_id:selectedSubject.id,title:fd.get('title').trim(),description:fd.get('description').trim(),questions_per_attempt:Number(fd.get('questions_per_attempt')),content_type:fd.get('content_type'),html_path:null,is_published:false};
       const {error}=await supabase.from('quiz_catalog').insert(payload);
       if(error){toast(error.message,true);return;}
       toast(payload.content_type==='interactive'?'Quiz interativo criado como rascunho. Cadastre as perguntas para publicar.':'Prova criada como rascunho. Cadastre o banco de perguntas para publicar.');
-      await load();
+      await load(selectedSubject);
     });
-    await renderList();
+    await renderList(selectedSubject);
   }
-  async function renderList(){
+  async function renderList(selectedSubject){
     const target=document.querySelector('#managed-quiz-list');
-    const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at,content_type,html_path').order('created_at',{ascending:false});
+    const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at,content_type,html_path').eq('subject_id',selectedSubject.id).is('html_path',null).order('created_at',{ascending:false});
     if(error){target.innerHTML='<p class="muted">Não foi possível carregar os quizzes.</p>';toast(error.message,true);return;}
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
-    const grouped=subjects.map(subject=>({subject,quizzes:data.filter(q=>q.subject_id===subject.id)})).filter(group=>group.quizzes.length);
-    target.innerHTML=grouped.length?grouped.map(group=>`
-      <section class="managed-subject-group">
-        <header class="managed-subject-heading"><div><span class="eyebrow">MATÉRIA</span><h3>${esc(group.subject.name)}</h3></div><span class="muted small">${group.quizzes.length} quiz(es)</span></header>
-        <div class="managed-quiz-list">${group.quizzes.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
+    target.innerHTML=data.length?`<div class="managed-subject-count">${data.length} quiz(es) cadastrado(s)</div><div class="managed-quiz-list">${data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
           <div class="managed-quiz-summary"><div><span class="eyebrow">${q.content_type==='interactive'?'INTERATIVO':'PROVA'}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
           <div class="managed-quiz-actions"><span class="muted small">${q.content_type==='interactive'?'Padrão visual da matéria':q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa'}</span><button class="btn btn-light btn-small" data-edit-title="${q.id}">Alterar título</button><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Remover quiz</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
         </article>`).join('')}</div>
-      </section>`).join(''):'<div class="empty-state">Nenhum quiz cadastrado.</div>';
+      </div>`:'<div class="empty-state">Ainda não há quizzes cadastrados para esta matéria.</div>';
     target.querySelectorAll('[data-edit-title]').forEach(b=>b.addEventListener('click',async()=>{
       const q=data.find(item=>item.id===b.dataset.editTitle);if(!q)return;
       const nextTitle=prompt('Digite o novo título do quiz:',q.title);
@@ -60,7 +64,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
       if(title.length>120){toast('O título deve ter no máximo 120 caracteres.',true);return;}
       const {error}=await supabase.from('quiz_catalog').update({title,updated_at:new Date().toISOString()}).eq('id',q.id);
       if(error){toast(error.message,true);return;}
-      toast('Título atualizado. O card da matéria também exibirá o novo título.');await load();
+      toast('Título atualizado. O card da matéria também exibirá o novo título.');await load(selectedSubject);
     }));
     target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
     target.querySelectorAll('[data-publish]').forEach(b=>b.addEventListener('click',()=>togglePublish(data.find(q=>q.id===b.dataset.publish))));
@@ -74,12 +78,12 @@ export async function openQuizManager({supabase,subjects,onBack}) {
       if(!q.is_published&&(count===0||(needed>0&&count<needed))){toast('Cadastre pelo menos '+needed+' perguntas ativas antes de publicar.',true);return;}
     }
     const {error}=await supabase.from('quiz_catalog').update({is_published:!q.is_published,updated_at:new Date().toISOString()}).eq('id',q.id);
-    if(error){toast(error.message,true);return;}toast(q.is_published?'Quiz retirado da publicação.':'Quiz publicado para os alunos.');await load();
+    if(error){toast(error.message,true);return;}toast(q.is_published?'Quiz retirado da publicação.':'Quiz publicado para os alunos.');await load(selectedSubject);
   }
   async function removeQuiz(q){
     if(!confirm((q.html_path?'Remover "'+q.title+'" do catálogo? O arquivo HTML continuará no GitHub.':'Excluir o quiz "'+q.title+'" e todas as perguntas vinculadas? O histórico de tentativas dos alunos será preservado.')))return;
     const {error}=await supabase.from('quiz_catalog').delete().eq('id',q.id);
-    if(error){toast(error.message,true);return;}toast('Quiz excluído.');await load();
+    if(error){toast(error.message,true);return;}toast('Quiz excluído.');await load(selectedSubject);
   }
   async function manageQuestions(q){
     const area=document.querySelector('#questions-'+q.id);area.hidden=false;area.innerHTML='<div class="skeleton">Carregando perguntas…</div>';
