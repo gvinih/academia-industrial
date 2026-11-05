@@ -812,6 +812,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .managed-quiz-player.theme-lube{--quiz-accent:#16804a;--quiz-bg:#eff8f2}
 .managed-quiz-player.theme-pneumatic{--quiz-accent:#c26a12;--quiz-bg:#fff7ed}
 .managed-quiz-player.theme-electric{--quiz-accent:#0891b2;--quiz-bg:#ecfeff}
+
+/* Modo interativo: mantém a estrutura visual da matéria, separado do modelo prova */
+.managed-quiz-player.mode-interactive{border:1px solid #dce7f5;box-shadow:0 12px 35px #0e459610}
+.managed-quiz-player.mode-interactive.theme-5s{background:linear-gradient(145deg,#fff,#f0f5fb);border-color:#dce7f5}
+.managed-quiz-player.mode-interactive.theme-lube{background:radial-gradient(circle at 50% 0%,#3b2814,#172033 75%);border-color:#92400e;color:#fff}
+.managed-quiz-player.mode-interactive.theme-pneumatic{background:linear-gradient(145deg,#fffaf2,#fff1df);border-color:#fed7aa}
+.managed-quiz-player.mode-interactive.theme-electric{background:linear-gradient(145deg,#fff,#ecfeff);border-color:#a5f3fc}
+.managed-quiz-player.mode-interactive .managed-player-card,.managed-quiz-player.mode-interactive .managed-result-card{border-radius:20px;box-shadow:0 12px 35px #0e459610}
+.managed-quiz-player.mode-interactive.theme-lube .managed-player-card,.managed-quiz-player.mode-interactive.theme-lube .managed-result-card{background:#fff;color:#173b55}
+.managed-quiz-player.mode-interactive.theme-lube .managed-player-tag{color:#fbbf24}
+
 .managed-player-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .managed-player-tag{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--quiz-accent)}
 .managed-player-count{font-size:12px;font-weight:800;color:#718391}
