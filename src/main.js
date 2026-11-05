@@ -527,7 +527,7 @@ async function deleteSubjectFile(kind, file) {
 async function renderQuiz(box) {
   box.innerHTML='<h2>Quizzes disponíveis</h2><p class="muted">Carregando avaliações desta matéria…</p>';
   const {data:catalog,error}=await supabase.from('quiz_catalog')
-    .select('id,title,description,questions_per_attempt,created_at')
+    .select('id,title,description,questions_per_attempt,created_at,content_type,html_path')
     .eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true});
   if(error){console.error(error);box.innerHTML='<h2>Quizzes</h2><div class="empty-state">Não foi possível carregar os quizzes publicados.</div>';return;}
   const {data:legacy,error:legacyError}=await supabase.from('quiz_questions')
@@ -538,10 +538,17 @@ async function renderQuiz(box) {
   box.innerHTML='<div class="quiz-catalog-heading"><div><h2>Quizzes da matéria</h2><p class="muted">Selecione uma avaliação para iniciar. Cada tentativa sorteia perguntas e alternativas.</p></div></div>'+
     '<div class="quiz-catalog-grid">'+
     (legacyAvailable?'<article class="quiz-catalog-card legacy-quiz-card"><span class="eyebrow">BANCO GERAL</span><h3>Quiz geral</h3><p>10 perguntas sorteadas do banco de questões da matéria.</p><button class="btn btn-primary" id="start-legacy-quiz">Iniciar quiz</button></article>':'')+
-    (catalog||[]).map(q=>'<article class="quiz-catalog-card '+({ '5s':'quiz-theme-5s','lubrificacao':'quiz-theme-lube','pneumatica':'quiz-theme-pneumatic','eletrica':'quiz-theme-electric'}[activeSubject.id]||'')+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(q.title)+'</h3><p>'+esc(q.description||'Avaliação de conhecimentos.')+'</p><div class="quiz-catalog-meta">'+(q.questions_per_attempt===1?'Todas as perguntas':q.questions_per_attempt+' perguntas')+' · 35s por questão</div><button class="btn btn-primary" data-managed-quiz="'+q.id+'">Iniciar quiz</button></article>').join('')+
+    (catalog||[]).map(q=>'<article class="quiz-catalog-card '+({ '5s':'quiz-theme-5s','lubrificacao':'quiz-theme-lube','pneumatica':'quiz-theme-pneumatic','eletrica':'quiz-theme-electric'}[activeSubject.id]||'')+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(q.title)+'</h3><p>'+esc(q.description||'Avaliação de conhecimentos.')+'</p><div class="quiz-catalog-meta">'+(q.content_type==='html'?'Quiz interativo personalizado':q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa')+'</div><button class="btn btn-primary" '+(q.content_type==='html'?'data-html-quiz="'+q.id+'"':'data-managed-quiz="'+q.id+'"')+'>Iniciar quiz</button></article>').join('')+
     '</div>'+
     (!legacyAvailable&&!(catalog||[]).length?'<div class="empty-state">Ainda não há quizzes publicados nesta matéria.</div>':'');
   box.querySelector('#start-legacy-quiz')?.addEventListener('click',()=>renderLegacyQuiz(box,legacy));
+  box.querySelectorAll('[data-html-quiz]').forEach(button=>button.addEventListener('click',()=>{
+    const quiz=catalog.find(q=>q.id===button.dataset.htmlQuiz);
+    if(!quiz?.html_path)return;
+    const url=import.meta.env.BASE_URL+quiz.html_path;
+    box.innerHTML='<div class="html-quiz-shell"><div class="html-quiz-toolbar"><div><h2>'+esc(quiz.title)+'</h2><p class="muted">Quiz interativo personalizado</p></div><div class="html-quiz-actions"><button class="btn btn-light" id="return-html-quiz">Voltar aos quizzes</button><a class="btn btn-primary" href="'+url+'" target="_blank" rel="noopener">Abrir em nova aba</a></div></div><iframe class="html-quiz-frame" title="'+esc(quiz.title)+'" src="'+url+'" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups" allow="fullscreen"></iframe></div>';
+    box.querySelector('#return-html-quiz').addEventListener('click',()=>renderQuiz(box));
+  }));
   box.querySelectorAll('[data-managed-quiz]').forEach(button=>button.addEventListener('click',async()=>{
     const quiz=catalog.find(q=>q.id===button.dataset.managedQuiz);
     if(quiz)await renderManagedQuiz({supabase,quiz,box,onFinish:dashboard});
