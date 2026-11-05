@@ -867,3 +867,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .html-quiz-actions a{text-decoration:none}
 .html-quiz-frame{display:block;width:100%;height:clamp(680px,85vh,980px);border:1px solid #dce5eb;border-radius:16px;background:#fff}
 @media(max-width:650px){.html-quiz-toolbar{align-items:flex-start}.html-quiz-actions{width:100%}.html-quiz-actions .btn{flex:1;text-align:center;justify-content:center}.html-quiz-frame{height:82vh;min-height:650px;border-radius:12px}}
+
+
+/* Gerenciador de quizzes — seleção inicial por matéria */
+.quiz-manager-subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0}
+.quiz-manager-subject-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-height:138px;padding:22px;border:1px solid #dce5eb;border-radius:15px;background:#fff;text-align:left;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
+.quiz-manager-subject-card:hover{border-color:#0e4596;box-shadow:0 8px 24px #0e459614;transform:translateY(-2px)}
+.quiz-manager-subject-card>strong{color:#173b55;font-size:21px}
+.quiz-manager-subject-card>span:last-child{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;margin-top:auto;color:#637887;font-size:12px;font-weight:700}
+.quiz-manager-subject-card>span:last-child b{color:#0e4596;font-size:18px}
+.managed-subject-count{margin:0 0 12px;color:#718391;font-size:12px}
+@media(max-width:600px){.quiz-manager-subject-grid{grid-template-columns:1fr;gap:10px}.quiz-manager-subject-card{min-height:110px;padding:18px}}
