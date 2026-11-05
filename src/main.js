@@ -570,9 +570,59 @@ async function renderQuiz(box) {
   }));
   box.querySelectorAll('[data-managed-quiz]').forEach(button=>button.addEventListener('click',async()=>{
     const quiz=catalog.find(q=>q.id===button.dataset.managedQuiz);
-    if(quiz)await renderManagedQuiz({supabase,quiz,box,onFinish:dashboard});
+    if(quiz){if(quiz.content_type==='interactive'&&!quiz.html_path)await renderCatalogInteractiveQuiz(box,quiz);else await renderManagedQuiz({supabase,quiz,box,onFinish:dashboard});}
   }));
 }
+
+async function renderCatalogInteractiveQuiz(box,quiz) {
+  const matterClass=({'5s':'','lubrificacao':'lubrificacao-theme','pneumatica':'pneumatica-theme','eletrica':'eletrica-theme'}[quiz.subject_id]||'');
+  const {data:pool,error}=await supabase.from('quiz_questions').select('id,question_text,options,correct_option,explanation').eq('quiz_id',quiz.id).eq('is_active',true);
+  if(error){box.innerHTML='<div class="empty-state">Não foi possível carregar as perguntas.</div>';return;}
+  const amount=quiz.questions_per_attempt===0?pool.length:quiz.questions_per_attempt;
+  if(!pool?.length||pool.length<amount){box.innerHTML='<div class="empty-state">Este quiz ainda não possui perguntas suficientes.</div>';return;}
+  const questions=shuffleArray(pool).slice(0,amount);
+  box.innerHTML='<div class="seiri-wrap '+matterClass+'"><div class="seiri-heading"><span class="seiri-kicker">'+esc(activeSubject.name.toUpperCase())+' · INTERATIVO</span><h2>'+esc(quiz.title)+'</h2><p class="muted">'+esc(quiz.description||'Teste seus conhecimentos.')+'</p></div><div class="seiri-start"><div class="seiri-icon">▦</div><h3>Pronto para testar seus conhecimentos?</h3><p>Você terá 35 segundos por pergunta. O cronômetro começa automaticamente. A cada tentativa, as perguntas e as alternativas são embaralhadas.</p><div class="seiri-facts"><span>'+questions.length+' perguntas</span><span>35s por pergunta</span><span>Até 100 pontos</span></div><button class="btn btn-primary" data-action="begin">Começar quiz</button></div><div class="seiri-game" hidden><div class="seiri-status"><span data-role="counter"></span><span data-role="points">0 pontos provisórios</span></div><div class="seiri-progress"><div data-role="progress"></div></div><div class="seiri-timer-row"><span class="seiri-timer" data-role="timer">35s</span></div><h3 data-role="question"></h3><div class="seiri-options" data-role="options"></div><div class="seiri-feedback" data-role="feedback" hidden></div><div class="seiri-controls"><span data-role="hint">O tempo começa automaticamente.</span><button class="btn btn-primary" data-action="next" disabled>Avançar →</button></div></div><div class="seiri-result" hidden></div></div>';
+  const root=box.querySelector('.seiri-wrap'),start=root.querySelector('.seiri-start'),game=root.querySelector('.seiri-game'),resultBox=root.querySelector('.seiri-result');
+  const el=n=>root.querySelector('[data-role="'+n+'"]'),next=root.querySelector('[data-action="next"]');
+  let index=0,selected=null,correct=0,time=35,elapsed=0,timer=null;
+  const answers=[];
+  const stop=()=>{if(timer){clearInterval(timer);timer=null;}};
+  function load(){
+    stop();time=35;selected=null;const q=questions[index];
+    el('counter').textContent='Questão '+(index+1)+' de '+questions.length;
+    el('points').textContent=Math.round(correct*100/questions.length)+' pontos provisórios';
+    el('question').textContent=q.question_text;el('timer').textContent='35s';el('timer').classList.remove('urgent');
+    el('progress').style.width='100%';el('feedback').hidden=true;next.disabled=true;
+    next.textContent=index===questions.length-1?'Ver resultado':'Avançar →';
+    el('hint').textContent='O tempo começa automaticamente. Escolha uma alternativa.';
+    const opts=shuffleArray(q.options.map((label,originalIndex)=>({label,originalIndex})));
+    el('options').innerHTML=opts.map((o,i)=>'<button type="button" class="seiri-option" data-option="'+o.originalIndex+'"><span class="seiri-letter">'+String.fromCharCode(65+i)+'</span><span>'+esc(o.label)+'</span></button>').join('');
+    el('options').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.option),false)));
+    timer=setInterval(()=>{time--;elapsed++;el('timer').textContent=time+'s';el('progress').style.width=(time/35*100)+'%';if(time<=5)el('timer').classList.add('urgent');if(time<=0)choose(-1,true);},1000);
+  }
+  function choose(option,timedOut){
+    if(selected!==null)return;selected=option;stop();const q=questions[index],ok=option===q.correct_option;if(ok)correct++;
+    answers.push({question_id:q.id,selected_option:option});
+    el('options').querySelectorAll('button').forEach(b=>{const n=Number(b.dataset.option);b.disabled=true;if(n===q.correct_option)b.classList.add('is-correct');else if(n===option)b.classList.add('is-wrong');});
+    const fb=el('feedback');fb.hidden=false;fb.className='seiri-feedback '+(ok?'feedback-correct':'feedback-wrong');
+    fb.innerHTML='<strong>'+(timedOut?'Tempo esgotado. ':ok?'Resposta correta! ':'Resposta incorreta. ')+'</strong>'+esc(q.explanation||q.options[q.correct_option]);
+    el('points').textContent=Math.round(correct*100/questions.length)+' pontos provisórios';el('hint').textContent='Confira a explicação antes de avançar.';next.disabled=false;
+  }
+  async function finish(){
+    stop();next.disabled=true;next.textContent='Registrando resultado…';
+    const payload=questions.map(q=>({question_id:q.id,selected_option:answers.find(a=>a.question_id===q.id)?.selected_option??-1}));
+    const {data,error}=await supabase.rpc('submit_managed_quiz',{p_quiz_id:quiz.id,p_answers:payload});
+    if(error){toast(error.message||'Falha ao registrar resultado.',true);next.disabled=false;next.textContent='Tentar registrar novamente';return;}
+    const result=Array.isArray(data)?data[0]:data,percent=Math.round(result.score/questions.length*100);
+    game.hidden=true;resultBox.hidden=false;
+    resultBox.innerHTML='<div class="seiri-result-medal">'+(percent===100?'🏆':percent>=60?'⭐':'📘')+'</div><span class="seiri-kicker">RESULTADO · '+esc(activeSubject.name.toUpperCase())+'</span><h2>'+result.score+'/'+questions.length+' acertos · '+percent+'%</h2><p>'+(result.is_first_attempt?'Você recebeu <b>'+result.points_awarded+' pontos</b> no ranking.':'Os pontos deste quiz já foram contabilizados na primeira tentativa.')+'</p><div class="seiri-review"><h3>Revisão das respostas</h3>'+questions.map((q,i)=>{const a=answers[i];return '<article class="seiri-review-item"><strong>'+(i+1)+'. '+esc(q.question_text)+'</strong><p class="'+(a.selected_option===q.correct_option?'review-good':'review-bad')+'">'+(a.selected_option===q.correct_option?'✓ Resposta correta':'✕ Resposta incorreta')+' — '+esc(q.options[q.correct_option])+'</p><p>'+esc(q.explanation||'')+'</p></article>';}).join('')+'</div><div class="seiri-result-actions"><button class="btn btn-primary" data-action="retry">Tentar novamente</button><button class="btn btn-light" data-action="dashboard">Ver ranking atualizado</button></div>';
+    resultBox.querySelector('[data-action="retry"]').addEventListener('click',()=>renderCatalogInteractiveQuiz(box,quiz));
+    resultBox.querySelector('[data-action="dashboard"]').addEventListener('click',dashboard);
+  }
+  start.querySelector('[data-action="begin"]').addEventListener('click',()=>{start.hidden=true;game.hidden=false;load();});
+  next.addEventListener('click',()=>{if(selected===null)return;if(index<questions.length-1){index++;load();}else finish();});
+}
+
 async function renderLegacyQuiz(box,loadedQuestions) {
   const questionPool=loadedQuestions||[];
   const questions=shuffleArray(questionPool).slice(0,10);
