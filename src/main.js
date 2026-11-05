@@ -541,10 +541,10 @@ async function renderQuiz(box) {
   const card=(title,description,meta,buttonAttr)=>'<article class="quiz-catalog-card '+themeClass+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(title)+'</h3><p>'+esc(description)+'</p><div class="quiz-catalog-meta">'+esc(meta)+'</div><button class="btn btn-primary" '+buttonAttr+'>Iniciar quiz</button></article>';
   const builtInCards=(builtInBySubject[activeSubject.id]||[]).map(q=>card(q.title,q.description,'5 questões · 35s por questão','data-internal-quiz="'+q.key+'"')).join('');
   const catalogCards=(catalog||[]).map(q=>{
-    const handler=q.content_type==='html'?htmlHandlers[(q.html_path||'').split('/').pop()]:null;
+    const handler=q.content_type==='interactive'&&q.html_path?htmlHandlers[(q.html_path||'').split('/').pop()]:null;
     const description=q.description||'Avaliação de conhecimentos.';
-    const meta=q.content_type==='html'?'Quiz interativo · padrão '+activeSubject.name:(q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa');
-    return card(q.title,description,meta,handler?'data-internal-quiz="'+handler+'"':q.content_type==='html'?'data-html-quiz="'+q.id+'"':'data-managed-quiz="'+q.id+'"');
+    const meta=q.content_type==='interactive'?'Interativo · padrão '+activeSubject.name:(q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa');
+    return card(q.title,description,meta,handler?'data-internal-quiz="'+handler+'"':'data-managed-quiz="'+q.id+'"');
   }).join('');
   box.innerHTML='<div class="quiz-catalog-heading"><div><h2>Quizzes da matéria</h2><p class="muted">Todos os quizzes desta matéria estão reunidos aqui. Selecione um card para começar.</p></div></div>'+
     '<div class="quiz-catalog-grid">'+
