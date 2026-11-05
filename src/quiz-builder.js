@@ -28,7 +28,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     <section class="panel quiz-builder-panel"><div class="section-title"><h2>Quizzes cadastrados</h2></div><div id="managed-quiz-list"><div class="skeleton">Carregando quizzes…</div></div></section>`);
     document.querySelector('#new-managed-quiz').addEventListener('submit',async e=>{
       e.preventDefault();const fd=new FormData(e.currentTarget),n=Number(fd.get('questions_per_attempt'));
-      const payload={subject_id:fd.get('subject_id'),title:fd.get('title').trim(),description:fd.get('description').trim(),questions_per_attempt:n||1,is_published:false};
+      const payload={subject_id:fd.get('subject_id'),title:fd.get('title').trim(),description:fd.get('description').trim(),questions_per_attempt:n,is_published:false};
       const {error}=await supabase.from('quiz_catalog').insert(payload);
       if(error){toast(error.message,true);return;}
       toast('Quiz criado como rascunho. Agora adicione as perguntas.');
@@ -43,7 +43,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
     target.innerHTML='<div class="managed-quiz-list">'+data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
       <div class="managed-quiz-summary"><div><span class="eyebrow">${esc(subjects.find(s=>s.id===q.subject_id)?.name||q.subject_id)}</span><h3>${esc(q.title)}</h3><p>${esc(q.description||'Sem descrição')}</p></div><span class="managed-status ${q.is_published?'is-published':''}">${q.is_published?'Publicado':'Rascunho'}</span></div>
-      <div class="managed-quiz-actions"><span class="muted small">${q.questions_per_attempt===1?'Todas as perguntas (configuração dinâmica) ':q.questions_per_attempt+' perguntas por tentativa'}</span><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Excluir quiz</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
+      <div class="managed-quiz-actions"><span class="muted small">${q.questions_per_attempt===0?'Todas as perguntas (configuração dinâmica) ':q.questions_per_attempt+' perguntas por tentativa'}</span><button class="btn btn-light btn-small" data-manage="${q.id}">Gerenciar perguntas</button><button class="btn btn-light btn-small" data-publish="${q.id}" data-state="${q.is_published}">${q.is_published?'Retirar publicação':'Publicar'}</button><button class="btn btn-danger btn-small" data-remove="${q.id}">Excluir quiz</button></div><div class="managed-question-area" id="questions-${q.id}" hidden></div>
     </article>`).join('')+'</div>';
     target.querySelectorAll('[data-manage]').forEach(b=>b.addEventListener('click',()=>manageQuestions(data.find(q=>q.id===b.dataset.manage))));
     target.querySelectorAll('[data-publish]').forEach(b=>b.addEventListener('click',()=>togglePublish(data.find(q=>q.id===b.dataset.publish))));
@@ -108,7 +108,7 @@ export async function renderManagedQuiz({supabase,quiz,box,onFinish}) {
   box.innerHTML='<p class="muted">Carregando perguntas…</p>';
   const {data:pool,error}=await supabase.from('quiz_questions').select('id,question_text,options').eq('quiz_id',quiz.id).eq('is_active',true);
   if(error){box.innerHTML='<p class="muted">Não foi possível carregar este quiz.</p>';return;}
-  const amount=quiz.questions_per_attempt===1?pool.length:quiz.questions_per_attempt;
+  const amount=quiz.questions_per_attempt===0?pool.length:quiz.questions_per_attempt;
   if(pool.length<amount||!pool.length){box.innerHTML='<div class="empty-state">Este quiz ainda não possui perguntas suficientes.</div>';return;}
   const questions=shuffle(pool).slice(0,amount).map(q=>({...q,shuffledOptions:shuffle(q.options.map((text,index)=>({text,index})))}));
   let current=0,answers={},seconds=35,timer=null,locked=false,started=Date.now();
