@@ -319,7 +319,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-progress{height:6px;background:#e4eaf2;border-radius:99px;overflow:hidden;margin-bottom:22px}
 .seiri-progress>div{height:100%;width:100%;background:linear-gradient(90deg,#0E4596,#4c91df);transition:width .25s linear}
 .seiri-timer-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.seiri-timer-start{background:#fbbf24;color:#172033;min-height:40px}
 .seiri-timer{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:850;color:#174c8d;background:#eaf2fc;padding:10px 13px;border-radius:10px;min-width:58px;text-align:center}
 .seiri-timer.urgent{background:#fff1f2;color:#be123c}
 .seiri-game h3{font-size:clamp(17px,2.4vw,22px);line-height:1.55;margin:0 0 20px;white-space:pre-wrap}
@@ -352,7 +351,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-review-item .review-bad{color:#be123c;font-weight:750}
 .seiri-result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
 @media(max-width:560px){
- .seiri-timer-row{justify-content:space-between}
+ .seiri-timer-row{justify-content:flex-end}
  .seiri-controls{align-items:stretch;flex-direction:column}
  .seiri-controls .btn{width:100%}
  .seiri-final-stats{gap:6px}
@@ -384,7 +383,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-progress{height:6px;border-radius:99px;overflow:hidden;background:#020617b8;margin:19px 0 25px}
 .seiri-progress>div{height:100%;background:linear-gradient(90deg,#6366f1,#a855f7);transition:width .3s linear}
 .seiri-timer-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
-.seiri-timer-start{border:1px solid #ffffff1c;background:#ffffff0b!important;color:#c7d2fe!important;border-radius:10px!important;padding:8px 11px!important;font-size:10px!important}
 .seiri-timer{font:800 14px ui-monospace,monospace;color:#e0e7ff;background:#02061780;padding:8px 12px;border:1px solid #ffffff15;border-radius:10px}
 .seiri-timer.urgent{color:#fda4af}
 .seiri-game h3{font-size:clamp(16px,2.6vw,21px);line-height:1.55;color:#fff;margin:0 0 21px}
@@ -429,7 +427,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .lubrificacao-theme .seiri-start .btn,.lubrificacao-theme .seiri-controls .btn-primary,.lubrificacao-theme .seiri-result-actions .btn-primary{background:linear-gradient(110deg,#f59e0b,#ea580c);box-shadow:0 9px 25px #ea580c45;color:#fff}
 .lubrificacao-theme .seiri-status span{color:#fed7aa}
 .lubrificacao-theme .seiri-progress>div{background:linear-gradient(90deg,#f59e0b,#f97316)}
-.lubrificacao-theme .seiri-timer-start{display:none!important}
 .lubrificacao-theme .seiri-timer{color:#fde68a}
 .lubrificacao-theme .seiri-option:hover:not(:disabled){border-color:#f59e0b;background:#b453091c}
 .lubrificacao-theme .seiri-letter{color:#fcd34d;background:#ffffff0a}
@@ -757,7 +754,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .eletrica-theme .seiri-facts{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin:20px 0}.eletrica-theme .seiri-facts span{padding:8px 12px;border:1px solid #ffffff1c;border-radius:9px;background:#02061755;color:#cbd5e1;font-size:11px;font-weight:700}
 .eletrica-theme .btn-primary{border:0;border-radius:12px;background:linear-gradient(100deg,#0891b2,#2563eb);color:#fff;font-weight:900;box-shadow:0 9px 24px #0891b244}.eletrica-theme .btn-primary:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .eletrica-theme .seiri-status{color:#67e8f9;font-size:11px;font-weight:900;letter-spacing:.08em}.eletrica-theme .seiri-progress{height:7px;margin:13px 0 20px;border-radius:20px;background:#ffffff15;overflow:hidden}.eletrica-theme .seiri-progress>div{height:100%;border-radius:20px;background:linear-gradient(90deg,#06b6d4,#3b82f6)}
-.eletrica-theme .seiri-timer-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0}.eletrica-theme .seiri-timer-start{border:1px solid #0e7490;border-radius:9px;background:#083344;color:#67e8f9;font-size:11px;font-weight:800}.eletrica-theme .seiri-timer{color:#fbbf24;font-size:21px;font-weight:900}.eletrica-theme .seiri-timer.urgent{color:#fb7185;animation:elePulse .55s infinite alternate}
+.eletrica-theme .seiri-timer-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin:14px 0}.eletrica-theme .seiri-timer{color:#fbbf24;font-size:21px;font-weight:900}.eletrica-theme .seiri-timer.urgent{color:#fb7185;animation:elePulse .55s infinite alternate}
 .eletrica-theme .seiri-game h3{margin:20px 0 16px;color:#f8fafc;font-size:clamp(18px,3vw,23px);line-height:1.5;font-weight:800}
 .eletrica-theme .seiri-options{display:grid;gap:10px}.eletrica-theme .seiri-option{display:flex;align-items:center;gap:12px;width:100%;padding:13px;text-align:left;border:1px solid #ffffff20;border-radius:13px;background:#ffffff08;color:#dbe5f2;font:inherit;font-size:12px;line-height:1.55;cursor:pointer;transition:.18s}.eletrica-theme .seiri-option:hover:not(:disabled){border-color:#22d3ee;background:#0891b222;transform:translateX(3px)}.eletrica-theme .seiri-option:disabled{cursor:default}.eletrica-theme .seiri-letter{flex:0 0 29px;width:29px;height:29px;display:grid;place-items:center;border-radius:9px;background:#ffffff12;color:#67e8f9;font-weight:900}.eletrica-theme .seiri-option.is-correct{border-color:#10b981;background:#064e3b66}.eletrica-theme .seiri-option.is-wrong{border-color:#f43f5e;background:#88133766}
 .eletrica-theme .seiri-feedback{margin-top:17px;padding:14px;border:1px solid;border-radius:12px;font-size:12px;line-height:1.65}.eletrica-theme .feedback-correct{border-color:#05966980;background:#064e3b55;color:#a7f3d0}.eletrica-theme .feedback-wrong{border-color:#e11d4880;background:#88133744;color:#fecdd3}
