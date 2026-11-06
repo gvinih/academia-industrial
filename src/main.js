@@ -468,8 +468,12 @@ async function renderSubjectTab() {
     const {data,error}=await supabase.from('videos').select('id,title,storage_path,created_at').eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true}).order('id',{ascending:true});
     if(error){console.error(error);box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Não foi possível carregar os vídeos. Confira se o SQL de configuração de vídeos foi aplicado no Supabase.</p>';return;}
     if(!data?.length){box.innerHTML='<h2>Vídeos de treinamento</h2><div class="empty-state">Nenhum vídeo foi publicado para esta matéria ainda.</div>';return;}
-    const items=await Promise.all(data.map(async v=>{const {data:signed,error:urlError}=await supabase.storage.from('training-videos').createSignedUrl(v.storage_path,3600);return {...v,url:urlError?null:signed?.signedUrl}}));
-    box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">'+(profile?.role==='admin'?'Como administrador, você pode excluir somente os vídeos desta matéria.':'Vídeos oficiais desta matéria.')+'</p><p class="video-order-note">Organizados do vídeo mais antigo ao mais recente. Selecione um título para abrir o vídeo.</p><div class="training-video-list">'+items.map((v,i)=>`<article class="training-video"><button class="training-video-title" type="button" data-toggle-video="${v.id}" aria-expanded="false" aria-controls="video-panel-${v.id}"><span class="training-video-number">${String(i+1).padStart(2,'0')}</span><span class="training-video-title-text"><strong>${esc(v.title)}</strong><small>${v.created_at? 'Enviado em '+new Date(v.created_at).toLocaleDateString('pt-BR'):'Vídeo de treinamento'}</small></span><span class="training-video-chevron" aria-hidden="true">⌄</span></button><div class="training-video-panel" id="video-panel-${v.id}" hidden>${v.url?`<video class="training-video-player" controls playsinline preload="none"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`:'<p class="muted">Vídeo indisponível no momento.</p>'}</div>${profile?.role==='admin'? `<button class="btn btn-small admin-delete-content" type="button" data-delete-video="${v.id}">Excluir vídeo</button>`:''}</article>`).join('')+'</div>';
+    const videoIds=data.map(v=>v.id);
+    const {data:progressRows,error:progressError}=await supabase.from('video_progress').select('video_id,watched_seconds,duration_seconds,last_position,completed_at').eq('user_id',session.user.id).in('video_id',videoIds);
+    if(progressError){console.error('Falha ao carregar progresso dos vídeos:',progressError);box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">Não foi possível carregar o progresso. Verifique se a configuração de acompanhamento de vídeos foi aplicada no Supabase.</p>';return;}
+    const progressMap=new Map((progressRows||[]).map(row=>[row.video_id,row]));
+    const items=await Promise.all(data.map(async v=>{const {data:signed,error:urlError}=await supabase.storage.from('training-videos').createSignedUrl(v.storage_path,3600);return {...v,url:urlError?null:signed?.signedUrl,progress:progressMap.get(v.id)||null}}));
+    box.innerHTML='<h2>Vídeos de treinamento</h2><p class="muted">'+(profile?.role==='admin'?'Como administrador, você pode excluir somente os vídeos desta matéria.':'Vídeos oficiais desta matéria.')+'</p><p class="video-order-note">Organizados do vídeo mais antigo ao mais recente. A conclusão é registrada automaticamente após 80% de reprodução efetiva.</p><div class="training-video-list">'+items.map((v,i)=>{const p=v.progress||{},done=!!p.completed_at,percent=p.duration_seconds?Math.min(100,Math.floor(Number(p.watched_seconds||0)/Number(p.duration_seconds)*100)):0;return `<article class="training-video"><button class="training-video-title" type="button" data-toggle-video="${v.id}" aria-expanded="false" aria-controls="video-panel-${v.id}"><span class="training-video-number">${String(i+1).padStart(2,'0')}</span><span class="training-video-title-text"><strong>${esc(v.title)}</strong><small>${v.created_at? 'Enviado em '+new Date(v.created_at).toLocaleDateString('pt-BR'):'Vídeo de treinamento'}</small></span><span class="training-video-status ${done?'is-done':'is-pending'}" data-video-status="${v.id}">${done?'✓ Concluído':percent+'% assistido'}</span><span class="training-video-chevron" aria-hidden="true">⌄</span></button><div class="training-video-panel" id="video-panel-${v.id}" hidden>${v.url?`<video class="training-video-player" data-video-player="${v.id}" controls playsinline preload="none"><source src="${esc(v.url)}" type="video/mp4">Seu navegador não suporta a reprodução deste vídeo.</video>`: '<p class="muted">Vídeo indisponível no momento.</p>'}<div class="video-progress-wrap"><div class="video-progress-track"><span data-video-progress-bar="${v.id}" style="width:${percent}%"></span></div><small data-video-progress-label="${v.id}">${done?'Vídeo concluído':percent+'% assistido · necessário: 80%'}</small></div></div>${profile?.role==='admin'? `<button class="btn btn-small admin-delete-content" type="button" data-delete-video="${v.id}">Excluir vídeo</button>`:''}</article>`;}).join('')+'</div>';
     box.querySelectorAll('[data-toggle-video]').forEach(button=>button.addEventListener('click',()=>{
       const panel=document.getElementById(button.getAttribute('aria-controls'));
       const willOpen=button.getAttribute('aria-expanded')!=='true';
@@ -477,6 +481,51 @@ async function renderSubjectTab() {
       if(panel) panel.hidden=!willOpen;
       button.querySelector('.training-video-chevron').textContent=willOpen?'⌃':'⌄';
     }));
+    box.querySelectorAll('[data-video-player]').forEach(video=>{
+      const videoId=video.dataset.videoPlayer,initial=progressMap.get(videoId)||{};
+      let watchedSeconds=Number(initial.watched_seconds||0),durationSeconds=Number(initial.duration_seconds||0),lastPosition=Number(initial.last_position||0),completed=!!initial.completed_at,lastMediaTime=null,lastSavedAt=0,saveQueue=Promise.resolve(),isSeeking=false;
+      const status=box.querySelector('[data-video-status="'+videoId+'"]'),bar=box.querySelector('[data-video-progress-bar="'+videoId+'"]'),label=box.querySelector('[data-video-progress-label="'+videoId+'"]');
+      const renderProgress=()=>{
+        const percent=durationSeconds?Math.min(100,Math.floor(watchedSeconds/durationSeconds*100)):0;
+        if(bar)bar.style.width=percent+'%';
+        if(label)label.textContent=completed?'Vídeo concluído':percent+'% assistido · necessário: 80%';
+        if(status){status.textContent=completed?'✓ Concluído':percent+'% assistido';status.classList.toggle('is-done',completed);status.classList.toggle('is-pending',!completed);}
+      };
+      const saveProgress=()=>{
+        if(!durationSeconds)return;
+        const shouldComplete=completed||watchedSeconds>=durationSeconds*0.8;
+        if(shouldComplete)completed=true;
+        const snapshot={user_id:session.user.id,video_id:videoId,watched_seconds:Math.min(durationSeconds,Math.floor(watchedSeconds)),duration_seconds:Math.ceil(durationSeconds),last_position:Math.max(0,Math.min(durationSeconds,Number(video.currentTime||lastPosition))),completed_at:completed?(initial.completed_at||new Date().toISOString()):null,updated_at:new Date().toISOString()};
+        renderProgress();
+        saveQueue=saveQueue.then(async()=>{
+          const {error:saveError}=await supabase.from('video_progress').upsert(snapshot,{onConflict:'user_id,video_id'});
+          if(saveError)throw saveError;
+        }).catch(err=>{console.error('Falha ao salvar progresso do vídeo:',err);toast('Não foi possível salvar o progresso do vídeo. Confira sua conexão.',true);});
+        return saveQueue;
+      };
+      video.addEventListener('loadedmetadata',()=>{
+        durationSeconds=Number(video.duration)||durationSeconds;
+        if(initial.duration_seconds&&lastPosition>0&&!completed&&lastPosition<durationSeconds-2){video.currentTime=lastPosition;}
+        renderProgress();
+        saveProgress();
+      });
+      video.addEventListener('play',()=>{lastMediaTime=Number(video.currentTime)||0;});
+      video.addEventListener('seeking',()=>{isSeeking=true;});
+      video.addEventListener('seeked',()=>{lastMediaTime=Number(video.currentTime)||0;isSeeking=false;lastPosition=lastMediaTime;saveProgress();});
+      video.addEventListener('timeupdate',()=>{
+        const current=Number(video.currentTime)||0;
+        if(!video.paused&&!video.ended&&!isSeeking&&lastMediaTime!==null){
+          const delta=current-lastMediaTime;
+          if(delta>0&&delta<=2.5){watchedSeconds+=delta;lastPosition=current;}
+        }
+        lastMediaTime=current;
+        const now=Date.now();
+        if(now-lastSavedAt>=8000){lastSavedAt=now;saveProgress();}else renderProgress();
+      });
+      video.addEventListener('pause',()=>{lastPosition=Number(video.currentTime)||lastPosition;saveProgress();});
+      video.addEventListener('ended',()=>{lastPosition=durationSeconds||Number(video.currentTime)||lastPosition;saveProgress();});
+      video.addEventListener('error',()=>toast('Não foi possível reproduzir este vídeo. Tente novamente.',true));
+    });
     if(profile?.role==='admin') box.querySelectorAll('[data-delete-video]').forEach(button=>button.addEventListener('click',()=>deleteSubjectFile('video',items.find(v=>v.id===button.dataset.deleteVideo))));
     return;
   }
