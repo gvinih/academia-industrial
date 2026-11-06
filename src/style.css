@@ -928,3 +928,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .admin-tool-card.admin-quiz-management .admin-tool-heading{width:100%}
 .admin-tool-card.admin-quiz-management .btn{align-self:flex-start}
 @media(max-width:680px){.admin-tools-grid{grid-template-columns:minmax(0,1fr)}.admin-tool-card{padding:17px}.admin-tool-card .upload-form button,.admin-tool-card.admin-quiz-management .btn{width:100%}}
+
+
+/* Correção do cabeçalho dos cards de questão no modo Prova */
+.managed-quiz-player.mode-exam .managed-exam-question{min-inline-size:0;padding:20px;}
+.managed-quiz-player.mode-exam .managed-exam-question legend{float:left;width:100%;margin:0 0 14px;padding:0;}
+.managed-quiz-player.mode-exam .managed-exam-question legend + *{clear:both;}
+.managed-quiz-player.mode-exam .managed-exam-number,
+.managed-quiz-player.mode-exam .managed-exam-statement{position:static;transform:none;text-align:left;}
+@media(max-width:650px){.managed-quiz-player.mode-exam .managed-exam-question{padding:15px;}}
