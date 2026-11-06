@@ -1124,3 +1124,45 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-wrap.pneumatica-theme .seiri-final-stats strong{color:#07566b}
 .seiri-wrap.pneumatica-theme .seiri-review{border-color:#b8cdd2}
 .seiri-wrap.pneumatica-theme .seiri-review-item{border-color:#b8cdd2}
+
+
+/* Correção definitiva: identidade Pneumática aplicada tanto ao quiz interativo quanto ao modelo prova */
+.seiri-wrap.theme-pneumatic,
+.seiri-wrap.pneumatica-theme.theme-pneumatic{
+  background:linear-gradient(rgba(34,211,238,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.055) 1px,transparent 1px),radial-gradient(ellipse at 82% 12%,rgba(8,145,178,.28),transparent 38%),linear-gradient(145deg,#101d2b 0%,#142b3b 58%,#0b1724 100%) !important;
+  background-size:28px 28px,28px 28px,auto,auto !important;border:1px solid #256477 !important;color:#e6f5f8 !important;
+}
+.seiri-wrap.theme-pneumatic .seiri-heading h2{color:#f0f9ff !important}
+.seiri-wrap.theme-pneumatic .seiri-heading p{color:#b7d2dc !important}
+.seiri-wrap.theme-pneumatic .seiri-start,
+.seiri-wrap.theme-pneumatic .seiri-game,
+.seiri-wrap.theme-pneumatic .seiri-result{background:linear-gradient(145deg,#eaf2f4,#dce8eb) !important;border:1px solid #8baab4 !important;color:#173344 !important}
+.seiri-wrap.theme-pneumatic .seiri-icon{background:linear-gradient(145deg,#0e7490,#155e75) !important;border:4px solid #a5f3fc !important;color:#fff !important}
+.seiri-wrap.theme-pneumatic .seiri-start h3,
+.seiri-wrap.theme-pneumatic .seiri-game h3,
+.seiri-wrap.theme-pneumatic .seiri-result h2{color:#123247 !important}
+.seiri-wrap.theme-pneumatic .seiri-facts span{background:#c8e3e9 !important;border:1px solid #a4cbd4 !important;color:#07566b !important}
+.seiri-wrap.theme-pneumatic .seiri-start .btn,
+.seiri-wrap.theme-pneumatic .seiri-controls .btn-primary,
+.seiri-wrap.theme-pneumatic .seiri-result-actions .btn-primary{background:linear-gradient(110deg,#0e7490,#0891b2) !important;color:#fff !important;border:1px solid #0e7490 !important}
+.seiri-wrap.theme-pneumatic .seiri-option{background:#f8fbfc !important;color:#173344 !important;border:1px solid #b5cbd1 !important}
+.seiri-wrap.theme-pneumatic .seiri-option:hover:not(:disabled){border-color:#0891b2 !important;background:#e0f7fa !important}
+.seiri-wrap.theme-pneumatic .seiri-letter{background:#d5edf1 !important;color:#07566b !important;border:1px solid #a4cbd4 !important}
+.seiri-wrap.theme-pneumatic .seiri-timer{background:#123247 !important;color:#67e8f9 !important;border:1px solid #0e7490 !important}
+.seiri-wrap.theme-pneumatic .seiri-status,
+.seiri-wrap.theme-pneumatic .seiri-status span{color:#315365 !important}
+.seiri-wrap.theme-pneumatic .seiri-progress>div{background:linear-gradient(90deg,#0e7490,#22d3ee) !important}
+.managed-quiz-player.theme-pneumatic{--quiz-accent:#0891b2 !important;--quiz-bg:#e0f7fa !important;background:linear-gradient(145deg,#101d2b,#142b3b 65%,#0b1724) !important;border:1px solid #256477 !important;color:#e6f5f8 !important}
+.managed-quiz-player.theme-pneumatic .managed-player-tag{color:#67e8f9 !important}
+.managed-quiz-player.theme-pneumatic .managed-player-count{color:#b7d2dc !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-title{color:#f0f9ff !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-description{color:#b7d2dc !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-instructions{background:#eaf2f4 !important;border-color:#8baab4 !important;color:#173344 !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-question{background:#eaf2f4 !important;border-color:#8baab4 !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-statement{color:#123247 !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-number{color:#087eaa !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-option{background:#f8fbfc !important;border-color:#b5cbd1 !important;color:#173344 !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-letter{background:#d5edf1 !important;color:#07566b !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-submit{background:#eaf2f4 !important;border-color:#8baab4 !important}
+.managed-quiz-player.theme-pneumatic .managed-exam-progress{color:#315365 !important}
+.managed-quiz-player.theme-pneumatic .btn-primary{background:linear-gradient(110deg,#0e7490,#0891b2) !important;color:#fff !important}
