@@ -583,7 +583,7 @@ async function renderQuiz(box) {
 }
 
 async function renderCatalogInteractiveQuiz(box,quiz) {
-  const matterClass=({'5s':'','lubrificacao':'lubrificacao-theme','pneumatica':'pneumatica-theme','eletrica':'eletrica-theme'}[quiz.subject_id]||'');
+  const matterClass=({'5s':'','lubrificacao':'lubrificacao-theme','pneumatica':'pneumatica-theme theme-pneumatic','eletrica':'eletrica-theme'}[quiz.subject_id]||'');
   const matterIcon=({'5s':'▦','lubrificacao':'◉','pneumatica':'P','eletrica':'ϟ'}[quiz.subject_id]||'◈');
   const matterKicker=quiz.subject_id==='pneumatica'?'SISTEMAS PNEUMÁTICOS · INTERATIVO':activeSubject.name.toUpperCase()+' · INTERATIVO';
   const {data:pool,error}=await supabase.from('quiz_questions').select('id,question_text,options,correct_option,explanation').eq('quiz_id',quiz.id).eq('is_active',true);
