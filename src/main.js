@@ -518,7 +518,7 @@ async function renderQuiz(box) {
   box.innerHTML='<h2>Quizzes disponíveis</h2><p class="muted">Carregando avaliações desta matéria…</p>';
   const {data:catalog,error}=await supabase.from('quiz_catalog')
     .select('id,title,description,questions_per_attempt,created_at,content_type')
-    .eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true});
+    .eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true}).order('id',{ascending:true});
   if(error){console.error(error);box.innerHTML='<h2>Quizzes</h2><div class="empty-state">Não foi possível carregar os quizzes publicados.</div>';return;}
   const themeClass=({'5s':'quiz-theme-5s','lubrificacao':'quiz-theme-lube','pneumatica':'quiz-theme-pneumatic','eletrica':'quiz-theme-electric'}[activeSubject.id]||'');
   const card=(q)=>'<article class="quiz-catalog-card '+themeClass+'"><span class="eyebrow">'+esc(activeSubject.name)+'</span><h3>'+esc(q.title)+'</h3><p>'+esc(q.description||'Avaliação de conhecimentos.')+'</p><div class="quiz-catalog-meta">'+(q.content_type==='interactive'?'Interativo · padrão visual da matéria':(q.questions_per_attempt===0?'Todas as perguntas':q.questions_per_attempt+' perguntas por tentativa'))+'</div><button class="btn btn-primary" data-managed-quiz="'+q.id+'">Iniciar quiz</button></article>';
