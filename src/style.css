@@ -1036,3 +1036,91 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .seiri-wrap.pneumatica-theme{padding:14px;border-radius:16px}
   .pneumatica-theme .seiri-start,.pneumatica-theme .seiri-game,.pneumatica-theme .seiri-result{padding:18px 14px;border-radius:14px}
 }
+
+
+/* Pneumática Básica — identidade visual industrial própria (após os estilos genéricos do quiz) */
+.seiri-wrap.pneumatica-theme{
+  background:
+    linear-gradient(rgba(34,211,238,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(34,211,238,.055) 1px,transparent 1px),
+    radial-gradient(ellipse at 82% 12%,rgba(8,145,178,.28),transparent 38%),
+    linear-gradient(145deg,#101d2b 0%,#142b3b 58%,#0b1724 100%);
+  background-size:28px 28px,28px 28px,auto,auto;
+  border:1px solid #256477;
+  color:#e6f5f8;
+  box-shadow:0 24px 65px rgba(8,47,73,.28);
+}
+.seiri-wrap.pneumatica-theme:before{
+  width:260px;height:260px;left:auto;right:12%;top:95px;
+  background:#0891b2;opacity:.22;filter:blur(70px);
+}
+.seiri-wrap.pneumatica-theme:after{
+  width:190px;height:190px;right:auto;left:-65px;bottom:0;
+  background:#f59e0b;opacity:.16;filter:blur(65px);
+}
+.seiri-wrap.pneumatica-theme .seiri-heading{align-items:flex-start;text-align:left}
+.seiri-wrap.pneumatica-theme .seiri-kicker{
+  color:#67e8f9;background:#083344;border:1px solid #0e7490;
+  border-radius:4px;letter-spacing:.15em;
+}
+.seiri-wrap.pneumatica-theme .seiri-heading h2{color:#f0f9ff}
+.seiri-wrap.pneumatica-theme .seiri-heading p{color:#b7d2dc!important}
+.seiri-wrap.pneumatica-theme .seiri-start,
+.seiri-wrap.pneumatica-theme .seiri-game,
+.seiri-wrap.pneumatica-theme .seiri-result{
+  background:linear-gradient(145deg,#eaf2f4,#dce8eb);
+  border:1px solid #8baab4;border-radius:14px;
+  color:#173344;backdrop-filter:none;-webkit-backdrop-filter:none;
+  box-shadow:0 14px 35px rgba(2,20,30,.25);
+}
+.seiri-wrap.pneumatica-theme .seiri-icon{
+  position:relative;display:grid;place-items:center;
+  width:100px;height:100px;border-radius:18px;
+  background:linear-gradient(145deg,#0e7490,#155e75);
+  border:4px solid #a5f3fc;color:#fff;
+  box-shadow:0 0 0 7px rgba(8,145,178,.13),0 12px 25px rgba(8,47,73,.28);
+  transform:none;font-size:0;
+}
+.seiri-wrap.pneumatica-theme .seiri-icon:after{
+  content:"BAR";display:grid;place-items:center;width:62px;height:62px;
+  border:3px solid #cffafe;border-radius:50%;color:#cffafe;
+  font-size:19px;font-weight:900;letter-spacing:.04em;
+  box-shadow:inset 0 0 0 5px rgba(207,250,254,.12);
+}
+.seiri-wrap.pneumatica-theme .seiri-start h3,
+.seiri-wrap.pneumatica-theme .seiri-game h3,
+.seiri-wrap.pneumatica-theme .seiri-result h2{color:#123247}
+.seiri-wrap.pneumatica-theme .seiri-start p,
+.seiri-wrap.pneumatica-theme .seiri-result p{color:#496675}
+.seiri-wrap.pneumatica-theme .seiri-facts span{
+  background:#c8e3e9;border:1px solid #a4cbd4;color:#07566b;border-radius:7px;
+}
+.seiri-wrap.pneumatica-theme .seiri-start .btn,
+.seiri-wrap.pneumatica-theme .seiri-controls .btn-primary,
+.seiri-wrap.pneumatica-theme .seiri-result-actions .btn-primary{
+  background:linear-gradient(110deg,#0e7490,#0891b2);
+  color:#fff;border:1px solid #0e7490;border-radius:8px;
+  box-shadow:0 7px 18px rgba(8,145,178,.25);
+}
+.seiri-wrap.pneumatica-theme .seiri-status{color:#315365;border-color:#b8cdd2}
+.seiri-wrap.pneumatica-theme .seiri-status span{color:#315365}
+.seiri-wrap.pneumatica-theme .seiri-progress{background:#bfd0d5}
+.seiri-wrap.pneumatica-theme .seiri-progress>div{background:linear-gradient(90deg,#0e7490,#22d3ee)}
+.seiri-wrap.pneumatica-theme .seiri-timer{background:#123247;color:#67e8f9;border:1px solid #0e7490}
+.seiri-wrap.pneumatica-theme .seiri-option{
+  background:#f8fbfc;color:#173344;border:1px solid #b5cbd1;border-radius:8px;
+}
+.seiri-wrap.pneumatica-theme .seiri-option:hover:not(:disabled){
+  border-color:#0891b2;background:#e0f7fa;transform:translateX(3px);
+}
+.seiri-wrap.pneumatica-theme .seiri-letter{background:#d5edf1;color:#07566b;border:1px solid #a4cbd4;border-radius:6px}
+.seiri-wrap.pneumatica-theme .seiri-feedback{background:#d8e9ed;color:#173344;border-color:#a4cbd4}
+.seiri-wrap.pneumatica-theme .seiri-feedback.feedback-correct{background:#dcfce7;color:#166534;border-color:#86efac}
+.seiri-wrap.pneumatica-theme .seiri-feedback.feedback-wrong{background:#fff1f2;color:#9f1239;border-color:#fda4af}
+.seiri-wrap.pneumatica-theme .seiri-controls{border-color:#b8cdd2}
+.seiri-wrap.pneumatica-theme .seiri-controls span{color:#496675}
+.seiri-wrap.pneumatica-theme .seiri-result{color:#173344}
+.seiri-wrap.pneumatica-theme .seiri-final-stats{background:#c8e3e9;border:1px solid #a4cbd4}
+.seiri-wrap.pneumatica-theme .seiri-final-stats strong{color:#07566b}
+.seiri-wrap.pneumatica-theme .seiri-review{border-color:#b8cdd2}
+.seiri-wrap.pneumatica-theme .seiri-review-item{border-color:#b8cdd2}
