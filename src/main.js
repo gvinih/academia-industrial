@@ -566,7 +566,7 @@ async function deleteSubjectFile(kind, file) {
 async function renderQuiz(box) {
   box.innerHTML='<h2>Quizzes disponíveis</h2><p class="muted">Carregando avaliações desta matéria…</p>';
   const {data:catalog,error}=await supabase.from('quiz_catalog')
-    .select('id,title,description,questions_per_attempt,created_at,content_type')
+    .select('id,subject_id,title,description,questions_per_attempt,created_at,content_type')
     .eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:true}).order('id',{ascending:true});
   if(error){console.error(error);box.innerHTML='<h2>Quizzes</h2><div class="empty-state">Não foi possível carregar os quizzes publicados.</div>';return;}
   const themeClass=({'5s':'quiz-theme-5s','lubrificacao':'quiz-theme-lube','pneumatica':'quiz-theme-pneumatic','eletrica':'quiz-theme-electric'}[activeSubject.id]||'');
