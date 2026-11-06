@@ -49,7 +49,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
   }
   async function renderList(selectedSubject){
     const target=document.querySelector('#managed-quiz-list');
-    const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at,content_type,html_path').eq('subject_id',selectedSubject.id).is('html_path',null).order('created_at',{ascending:true});
+    const {data,error}=await supabase.from('quiz_catalog').select('id,subject_id,title,description,questions_per_attempt,is_published,created_at,content_type,html_path').eq('subject_id',selectedSubject.id).is('html_path',null).order('created_at',{ascending:true}).order('id',{ascending:true});
     if(error){target.innerHTML='<p class="muted">Não foi possível carregar os quizzes.</p>';toast(error.message,true);return;}
     if(!data?.length){target.innerHTML='<div class="empty-state">Nenhum quiz criado. Use o formulário acima para começar.</div>';return;}
     target.innerHTML=data.length?`<div class="managed-subject-count">${data.length} quiz(es) cadastrado(s)</div><div class="managed-quiz-list">${data.map(q=>`<article class="managed-quiz-card" data-quiz="${q.id}">
