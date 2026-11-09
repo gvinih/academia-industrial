@@ -129,7 +129,7 @@ export async function openQuizManager({supabase,subjects,onBack}) {
 }
 
 export async function renderManagedQuiz({supabase,quiz,box,onFinish}) {
-  const theme=themeFor(quiz.subject_id);
+  const theme=quiz.subject_id==='pneumatica'?'theme-exam-pneumatic':themeFor(quiz.subject_id);
   box.innerHTML='<p class="muted">Carregando perguntas…</p>';
   const {data:pool,error}=await supabase.from('quiz_questions').select('id,question_text,options,correct_option,explanation').eq('quiz_id',quiz.id).eq('is_active',true);
   if(error){box.innerHTML='<p class="muted">Não foi possível carregar este quiz.</p>';return;}
