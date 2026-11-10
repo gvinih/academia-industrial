@@ -34,11 +34,10 @@ function toast(message, isError=false) {
 }
 function shell(content) {
   app.innerHTML = `<header class="topbar"><a class="brand" href="#"><img class="brand-logo" src="/academia-industrial/progeral-logo.svg" alt="Progeral em Boas Mãos"><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
-  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?`<button class="btn btn-light btn-small" id="admin-monitoring-button">${icons.monitor} <span>Acompanhamento</span></button><button class="btn btn-light btn-small" id="admin-audits-button">${icons.clipboard} <span>Auditorias</span></button>`:''}<button class="btn btn-light btn-small" id="profile-button">${icons.user} <span>Perfil</span></button><span class="user-email">${esc(session.user.email)}</span><button class="btn btn-light btn-small" id="logout">${icons.logout} <span>Sair</span></button>`;
+  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-panel-button">'+icons.shield+' <span>Administrador</span></button>':''}<button class="btn btn-light btn-small" id="profile-button">${icons.user} <span>Perfil</span></button><button class="btn btn-light btn-small" id="logout">${icons.logout} <span>Sair</span></button>`;
   document.querySelector('#logout')?.addEventListener('click', logout);
   document.querySelector('#profile-button')?.addEventListener('click', openProfile);
-  document.querySelector('#admin-monitoring-button')?.addEventListener('click', openAdminMonitoring);
-  document.querySelector('#admin-audits-button')?.addEventListener('click', openAudits);
+  document.querySelector('#admin-panel-button')?.addEventListener('click', openAdminPanel);
 }
 function authView(mode='login', message='') {
   const isLogin = mode === 'login';
@@ -231,6 +230,27 @@ function renderAuditData() {
   history.querySelectorAll('.audit-history-detail').forEach(detail=>{
     detail.addEventListener('toggle',()=>{const label=detail.querySelector('.audit-detail-toggle');if(label)label.textContent=detail.open?'Ocultar detalhes −':'Ver detalhes +';});
   });
+}
+
+async function openAdminPanel() {
+  if (profile?.role !== 'admin') { toast('Acesso restrito aos administradores.', true); return; }
+  shell(`<button class="back-button" id="admin-hub-back">${icons.arrowLeft} <span>Voltar ao painel</span></button>
+    <section class="profile-heading"><div class="eyebrow">ÁREA EXCLUSIVA DE ADMINISTRAÇÃO</div><h1>Administrador</h1><p class="muted">Acesse as ferramentas de acompanhamento e controle em um único lugar.</p></section>
+    <section class="admin-hub-grid">
+      <button class="admin-hub-card" id="admin-hub-monitoring" type="button">
+        <span class="admin-hub-icon">${icons.monitor}</span>
+        <span class="admin-hub-copy"><strong>Acompanhamento dos alunos</strong><small>Consulte participação, desempenho, quizzes concluídos e evolução dos alunos.</small></span>
+        <span class="admin-hub-arrow">${icons.arrowRight}</span>
+      </button>
+      <button class="admin-hub-card" id="admin-hub-audits" type="button">
+        <span class="admin-hub-icon">${icons.clipboard}</span>
+        <span class="admin-hub-copy"><strong>Auditorias</strong><small>Registre auditorias, consulte divergências por setor e acesse o histórico.</small></span>
+        <span class="admin-hub-arrow">${icons.arrowRight}</span>
+      </button>
+    </section>`);
+  document.querySelector('#admin-hub-back').addEventListener('click', dashboard);
+  document.querySelector('#admin-hub-monitoring').addEventListener('click', openAdminMonitoring);
+  document.querySelector('#admin-hub-audits').addEventListener('click', openAudits);
 }
 
 async function openAdminMonitoring() {
