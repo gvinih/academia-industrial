@@ -1,9 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff34a"/><stop offset=".45" stop-color="#ffbd00"/><stop offset="1" stop-color="#f07800"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#38415c"/><stop offset="1" stop-color="#10182e"/></linearGradient></defs>
-<path d="M27 17H101V33C101 53 88 68 64 72 40 68 27 53 27 33Z" fill="url(#g)" stroke="#c65a00" stroke-width="3"/>
-<path d="M27 24H12C10 44 22 57 43 60M101 24h15c2 20-10 33-31 36" fill="none" stroke="#f5a000" stroke-width="9" stroke-linecap="round"/>
-<path d="M27 24H12C10 44 22 57 43 60M101 24h15c2 20-10 33-31 36" fill="none" stroke="#ffd83d" stroke-width="4" stroke-linecap="round"/>
-<path d="M64 29l6 12 13 2-9 9 2 13-12-6-12 6 2-13-9-9 13-2Z" fill="#fff34a" stroke="#d76b00" stroke-width="2" stroke-linejoin="round"/>
-<path d="M56 70h16v13H56z" fill="url(#g)" stroke="#c65a00" stroke-width="2"/><path d="M45 83h38l8 13H37z" fill="url(#g)" stroke="#c65a00" stroke-width="2"/>
-<path d="M25 96h78l8 21H17z" fill="url(#b)" stroke="#11182d" stroke-width="3"/><path d="M37 101h54v10H37z" rx="3" fill="url(#g)" stroke="#d66a00" stroke-width="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="goldGrad" x1="16" y1="8" x2="48" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="0.5" stop-color="#D97706"/>
+      <stop offset="1" stop-color="#B45309"/>
+    </linearGradient>
+    <linearGradient id="baseGrad" x1="20" y1="46" x2="44" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E3A8A"/>
+      <stop offset="1" stop-color="#0E4596"/>
+    </linearGradient>
+  </defs>
+  <!-- Handles -->
+  <path d="M19 14H13C10.2386 14 8 16.2386 8 19C8 25 12 30 19 31" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M45 14H51C53.7614 14 56 16.2386 56 19C56 25 52 30 45 31" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Cup Body -->
+  <path d="M18 10H46V24C46 31.732 39.732 38 32 38C24.268 38 18 31.732 18 24V10Z" fill="url(#goldGrad)"/>
+  <!-- Inner Rim Highlight -->
+  <ellipse cx="32" cy="11" rx="14" ry="2.5" fill="#FDE68A"/>
+  <!-- Stem -->
+  <path d="M28 38H36V46H28V38Z" fill="url(#goldGrad)"/>
+  <!-- Pedestal Base -->
+  <rect x="20" y="46" width="24" height="6" rx="2" fill="url(#baseGrad)"/>
+  <rect x="16" y="52" width="32" height="4" rx="2" fill="#0A2540"/>
+  <!-- Star emblem on cup -->
+  <path d="M32 18L33.3 21.6L37 21.8L34.1 24.1L35 27.6L32 25.6L29 27.6L29.9 24.1L27 21.8L30.7 21.6L32 18Z" fill="#FFFBEB" opacity="0.95"/>
 </svg>

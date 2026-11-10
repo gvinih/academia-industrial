@@ -1,4 +1,5 @@
 import './style.css';
+import { icons } from './icons.js';
 
 const esc = (s='') => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const shuffle = items => {
@@ -20,11 +21,11 @@ export async function openQuizManager({supabase,subjects,onBack}) {
     currentSubject=selectedSubject;
     if(!selectedSubject){
       shell(`<section class="profile-heading"><div class="eyebrow">ADMINISTRAÇÃO</div><h1>Gerenciador de quizzes</h1><p class="muted">Selecione uma matéria para visualizar, criar e administrar seus quizzes.</p></section>
-      <section class="quiz-manager-subject-grid">${subjects.map(s=>`<button type="button" class="quiz-manager-subject-card" data-subject="${s.id}"><span class="eyebrow">MATÉRIA</span><strong>${esc(s.name)}</strong><span>Gerenciar quizzes <b aria-hidden="true">→</b></span></button>`).join('')}</section>`);
+      <section class="quiz-manager-subject-grid">${subjects.map(s=>`<button type="button" class="quiz-manager-subject-card" data-subject="${s.id}"><span class="eyebrow">MATÉRIA</span><strong>${esc(s.name)}</strong><span>Gerenciar quizzes ${icons.arrowRight}</span></button>`).join('')}</section>`);
       document.querySelectorAll('[data-subject]').forEach(b=>b.addEventListener('click',()=>load(subjects.find(s=>s.id===b.dataset.subject))));
       return;
     }
-    shell(`<button class="back-button" id="quiz-subject-back">← Todas as matérias</button>
+    shell(`<button class="back-button" id="quiz-subject-back">${icons.arrowLeft} <span>Todas as matérias</span></button>
     <section class="profile-heading"><div class="eyebrow">GERENCIAMENTO POR MATÉRIA</div><h1>${esc(selectedSubject.name)}</h1><p class="muted">Crie e gerencie somente os quizzes desta matéria.</p></section>
     <section class="panel quiz-builder-panel"><div class="section-title"><h2>Novo quiz · ${esc(selectedSubject.name)}</h2><span class="muted">Banco de questões independente</span></div>
     <form id="new-managed-quiz" class="quiz-builder-form">
@@ -175,7 +176,7 @@ export async function renderManagedQuiz({supabase,quiz,box,onFinish}) {
       });
       const correction=field.querySelector('.managed-exam-correction');
       correction.hidden=false;
-      correction.innerHTML='<strong>'+(isCorrect?'✓ Resposta correta':'✕ Resposta incorreta')+'</strong><p><b>Alternativa correta:</b> '+esc(q.options[q.correct_option])+'</p>'+(q.explanation?'<p>'+esc(q.explanation)+'</p>':'');
+      correction.innerHTML='<strong>'+(isCorrect?icons.checkCircle+' Resposta correta':icons.xCircle+' Resposta incorreta')+'</strong><p><b>Alternativa correta:</b> '+esc(q.options[q.correct_option])+'</p>'+(q.explanation?'<p>'+esc(q.explanation)+'</p>':'');
     });
     submit.remove();
     form.querySelector('.managed-exam-instructions').textContent='Prova corrigida. Confira abaixo o resultado de cada questão.';

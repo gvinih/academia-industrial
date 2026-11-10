@@ -160,6 +160,315 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   }
 }
 
+/* ======================================================
+   SISTEMA DE ÍCONES PROFISSIONAIS (Corporate SaaS / Industrial)
+   ====================================================== */
+.app-icon{
+  display:inline-block;
+  vertical-align:middle;
+  width:1.15em;
+  height:1.15em;
+  stroke-width:2.2;
+  flex-shrink:0;
+}
+
+/* Título com ícone alinhado */
+.title-with-icon{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+}
+.title-with-icon .title-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#0E4596;
+}
+.title-with-icon .title-icon .app-icon{
+  width:22px;
+  height:22px;
+}
+.title-with-icon h2{
+  margin:0;
+}
+
+/* Header de estatísticas com ícone elegante */
+.stat-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  width:100%;
+}
+.stat-icon{
+  width:28px;
+  height:28px;
+  border-radius:8px;
+  background:#F0F4FA;
+  color:#0E4596;
+  display:grid;
+  place-items:center;
+}
+.stat-icon .app-icon{
+  width:15px;
+  height:15px;
+}
+
+/* Badge de ícone em cada card de matéria */
+.subject-card-topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  margin-bottom:4px;
+}
+.subject-badge-icon{
+  width:32px;
+  height:32px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  background:#F0F4FA;
+  color:#0E4596;
+  transition:transform .2s ease,background .2s ease;
+}
+.subject-card:hover .subject-badge-icon{
+  transform:scale(1.08);
+}
+.subject-5s .subject-badge-icon{background:#EFF6FF;color:#0E4596}
+.subject-lubrificacao .subject-badge-icon{background:#FEF3C7;color:#D97706}
+.subject-pneumatica .subject-badge-icon{background:#E0F2FE;color:#0284C7}
+.subject-eletrica .subject-badge-icon{background:#FEE2E2;color:#DC2626}
+.subject-badge-icon .app-icon{
+  width:18px;
+  height:18px;
+}
+
+/* Ícone de destaque ao abrir uma matéria */
+.subject-icon-large{
+  width:65px;
+  height:65px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:#EAF2FB;
+  color:#0E4596;
+}
+.subject-icon-large .app-icon{
+  width:34px;
+  height:34px;
+  stroke-width:2.2;
+}
+
+/* Botão voltar com ícone */
+.back-button{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  transition:color .15s ease,transform .15s ease;
+}
+.back-button:hover{
+  transform:translateX(-2px);
+}
+.back-button .app-icon{
+  width:16px;
+  height:16px;
+}
+
+/* Botões com ícones */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.btn .app-icon{
+  width:14px;
+  height:14px;
+}
+.subject-open .app-icon{
+  margin-left:4px;
+}
+
+/* Abas de estudo com ícones */
+.tab{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+.tab .icon-tab{
+  width:15px;
+  height:15px;
+}
+
+/* Badges de Medalha profissionais para o Ranking (substituindo emojis) */
+.medal-slot{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+.rank-badge{
+  position:relative;
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-weight:850;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.rank-badge .app-icon{
+  width:22px;
+  height:22px;
+}
+.rank-badge .rank-pos{
+  position:absolute;
+  top:5px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:8px;
+  font-weight:900;
+  line-height:1;
+}
+.rank-gold{
+  background:linear-gradient(135deg,#FEF3C7,#FDE68A);
+  color:#92400E;
+  border:1px solid #FCD34D;
+}
+.rank-gold .rank-pos{color:#78350F}
+.rank-silver{
+  background:linear-gradient(135deg,#F8FAFC,#E2E8F0);
+  color:#475569;
+  border:1px solid #CBD5E1;
+}
+.rank-silver .rank-pos{color:#334155}
+.rank-bronze{
+  background:linear-gradient(135deg,#FFEDD5,#FED7AA);
+  color:#9A3412;
+  border:1px solid #FDBA74;
+}
+.rank-bronze .rank-pos{color:#7C2D12}
+.rank-number{
+  font-size:11px;
+  font-weight:800;
+  color:#64748B;
+  background:#E2E8F0;
+  padding:3px 6px;
+  border-radius:6px;
+  min-width:24px;
+  text-align:center;
+}
+
+/* Medalhas de resultado de quiz profissionais (substituindo emojis 🏆 ⭐ 📘) */
+.result-badge-wrap{
+  width:72px;
+  height:72px;
+  border-radius:20px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+.result-badge-wrap .app-icon{
+  width:38px;
+  height:38px;
+}
+.result-gold{
+  background:linear-gradient(135deg,#FEF3C7,#FDE047);
+  color:#854D0E;
+  border:2px solid #FACC15;
+}
+.result-silver{
+  background:linear-gradient(135deg,#F8FAFC,#CBD5E1);
+  color:#334155;
+  border:2px solid #94A3B8;
+}
+.result-blue{
+  background:linear-gradient(135deg,#EFF6FF,#BAE6FD);
+  color:#0369A1;
+  border:2px solid #38BDF8;
+}
+
+/* Ícones de acerto e erro nos gabaritos */
+.review-good, .admin-answer-correct{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#15803D!important;
+}
+.review-bad, .admin-answer-wrong{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#B91C1C!important;
+}
+.icon-correct{
+  color:#15803D;
+  width:16px;
+  height:16px;
+}
+.icon-incorrect{
+  color:#B91C1C;
+  width:16px;
+  height:16px;
+}
+
+/* Ícone de PDF na lista de materiais */
+.material-row .pdf-icon{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:#FEF2F2;
+  color:#B91C1C;
+  border:1px solid #FECACA;
+  font-size:11px;
+  font-weight:800;
+  border-radius:8px;
+  padding:8px 10px;
+}
+.material-row .pdf-icon .app-icon{
+  width:16px;
+  height:16px;
+}
+
+/* Ícone do quiz interativo */
+.seiri-icon{
+  display:grid;
+  place-items:center;
+  width:64px;
+  height:64px;
+  border-radius:18px;
+  background:#EAF2FB;
+  color:#0E4596;
+  margin:0 auto 16px;
+}
+.seiri-icon .app-icon{
+  width:32px;
+  height:32px;
+}
+.seiri-facts span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.seiri-facts .app-icon{
+  width:14px;
+  height:14px;
+}
+.hero-pills span{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.hero-pills .app-icon{
+  width:14px;
+  height:14px;
+}
+
 /* Cards de matérias — hierarquia clara, títulos com espaço e alinhamento consistente */
 .subject-grid{align-items:stretch;gap:16px}
 .subject-card{
