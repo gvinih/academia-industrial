@@ -34,7 +34,7 @@ function toast(message, isError=false) {
 }
 function shell(content) {
   app.innerHTML = `<header class="topbar"><a class="brand" href="#"><img class="brand-logo" src="/academia-industrial/progeral-logo.svg" alt="Progeral em Boas Mãos"><span>${APP_NAME}<small>Aprender • Praticar • Evoluir</small></span></a><div id="header-actions"></div></header><main>${content}</main><footer>Academia Industrial · Treinamento e desenvolvimento</footer><div id="toast" class="toast"></div>`;
-  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-panel-button">'+icons.shield+' <span>Administrador</span></button>':''}<button class="btn btn-light btn-small" id="profile-button">${icons.user} <span>Perfil</span></button><button class="btn btn-light btn-small" id="logout">${icons.logout} <span>Sair</span></button>`;
+  if (session) document.querySelector('#header-actions').innerHTML = `${profile?.role==='admin'?'<button class="btn btn-light btn-small" id="admin-panel-button">'+icons.monitor+' <span>Administrador</span></button>':''}<button class="btn btn-light btn-small" id="profile-button">${icons.user} <span>Perfil</span></button><button class="btn btn-light btn-small" id="logout">${icons.logout} <span>Sair</span></button>`;
   document.querySelector('#logout')?.addEventListener('click', logout);
   document.querySelector('#profile-button')?.addEventListener('click', openProfile);
   document.querySelector('#admin-panel-button')?.addEventListener('click', openAdminPanel);
