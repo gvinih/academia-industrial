@@ -1,37 +1,48 @@
 @echo off
 chcp 65001 > nul
 set "GIT_PATH=%LOCALAPPDATA%\Programs\Git\cmd"
-if exist "%GIT_PATH%\git.exe" (
-    set "PATH=%GIT_PATH%;%PATH%"
-)
+set "GH_PATH=%LOCALAPPDATA%\Programs\GitHub CLI\bin"
+if exist "%GIT_PATH%\git.exe" set "PATH=%GIT_PATH%;%PATH%"
+if exist "%GH_PATH%\gh.exe" set "PATH=%GH_PATH%;%PATH%"
 
 echo ======================================================
-echo    Sincronizar e Publicar no GitHub (Web)
+echo    Academia Industrial - Publicar no GitHub / Web
 echo ======================================================
 echo.
 
 git status -s
 echo.
 
-set /p MSG="Digite a mensagem da alteracao (ou Enter para 'Atualizacao do app'): "
+for /f %%i in ('git status --porcelain') do set HAS_CHANGES=1
+
+if not defined HAS_CHANGES (
+    echo [INFO] Nenhuma alteracao pendente detectada no projeto.
+    echo Tudo ja esta sincronizado com o GitHub!
+    echo.
+    pause
+    exit /b 0
+)
+
+set /p MSG="Digite o que foi alterado (ou Enter para 'Atualizacao do app'): "
 if "%MSG%"=="" set MSG=Atualizacao do app
 
 echo.
-echo Adicionando arquivos...
+echo 1/3 - Adicionando arquivos modificados...
 git add .
 
-echo Criando versao...
+echo 2/3 - Registrando versao...
 git commit -m "%MSG%"
 
 echo.
-echo Enviando para o GitHub...
+echo 3/3 - Enviando para o GitHub (main)...
 git push origin main
 
 if %ERRORLEVEL% EQU 0 (
     echo.
     echo ======================================================
-    echo   Sucesso! As alteracoes foram enviadas para o GitHub.
-    echo   O site na web sera atualizado em cerca de 1 a 2 min.
+    echo   [SUCESSO] Alteracoes enviadas com exito!
+    echo   O GitHub Actions esta gerando o deploy agora.
+    echo   Em cerca de 1 a 2 minutos seu site estara atualizado.
     echo ======================================================
 ) else (
     echo.
@@ -39,5 +50,5 @@ if %ERRORLEVEL% EQU 0 (
     echo Verifique sua conexao ou permissoes.
 )
 
+echo.
 pause
-
