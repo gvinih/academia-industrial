@@ -124,6 +124,42 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:560px){.subject-card{min-height:280px}}
 
 
+/* Alinhamento estrutural do painel: matérias e ranking geral perfeitamente alinhados */
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:32px;
+  margin:0 0 14px;
+}
+.section-title h2{
+  margin:0;
+  line-height:1.25;
+}
+.ranking-section{
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:14px;
+}
+.ranking-panel{
+  border:1px solid #d7e1e7;
+  border-radius:12px;
+  background:#fff;
+  padding:22px;
+  box-shadow:0 5px 22px #28264a05;
+  position:static;
+}
+.ranking-panel .small{
+  margin:0 0 14px;
+}
+@media(max-width:900px){
+  .ranking-section{
+    position:static;
+  }
+}
+
 /* Cards de matérias — hierarquia clara, títulos com espaço e alinhamento consistente */
 .subject-grid{align-items:stretch;gap:16px}
 .subject-card{
