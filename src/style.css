@@ -1576,3 +1576,36 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .admin-hub-arrow{color:#0e4596;display:grid;place-items:center}
 .admin-hub-arrow svg{width:20px;height:20px}
 @media(max-width:680px){.admin-hub-grid{grid-template-columns:minmax(0,1fr);gap:12px}.admin-hub-card{padding:18px;grid-template-columns:48px minmax(0,1fr) 20px}.admin-hub-icon{width:48px;height:48px}}
+
+
+/* Boas-vindas — selo de gamificação alinhado e refinado em todos os tamanhos */
+.welcome{align-items:center;gap:22px}
+.welcome-badge{
+  display:flex;align-items:center;gap:13px;
+  min-width:260px;padding:12px 18px 12px 12px;
+  border:1px solid #cbdced;border-radius:16px;
+  background:linear-gradient(135deg,#f4f8fd 0%,#e7f0fa 100%);
+  box-shadow:0 7px 20px #0a34720d;
+}
+.welcome-trophy-wrap{
+  width:54px;height:54px;flex:0 0 54px;
+  display:grid;place-items:center;border-radius:14px;
+  background:#fff;box-shadow:0 3px 10px #0a347214;
+}
+.welcome-trophy{width:38px;height:38px;object-fit:contain}
+.welcome-badge-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.welcome-badge-copy small{font-size:9px;font-weight:850;letter-spacing:1.2px;color:#66809a}
+.welcome-badge-copy strong{font-size:13px;line-height:1.35;color:#0e4596}
+.welcome-badge-copy em{font-size:10px;font-style:normal;color:#647586}
+@media(max-width:560px){
+  .welcome{flex-direction:column;align-items:stretch;gap:17px;margin-bottom:22px}
+  .welcome>div:first-child{text-align:center;width:100%}
+  .welcome>div:first-child .eyebrow{letter-spacing:1.4px}
+  .welcome>div:first-child h1{margin:7px 0;font-size:29px}
+  .welcome>div:first-child p{max-width:300px;margin:0 auto;font-size:13px;line-height:1.5}
+  .welcome-badge{width:min(100%,340px);min-width:0;align-self:center;justify-content:center;padding:11px 15px;gap:12px}
+  .welcome-trophy-wrap{width:48px;height:48px;flex-basis:48px}
+  .welcome-trophy{width:34px;height:34px}
+  .welcome-badge-copy{text-align:left}
+  .welcome-badge-copy strong{font-size:12px}
+}
