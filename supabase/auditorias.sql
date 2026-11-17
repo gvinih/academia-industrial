@@ -7,7 +7,8 @@ create table if not exists public.audit_records (
   sector text not null check (sector in (
     'Bihler','Forno','Jato','Pintura','Seleção Visual','Acabamento','Ajan',
     'Estampagem RSFI','Montagem Final RSFI','Estampagem Combinada',
-    'Montagem Final Combinada','Parafuso','Laminação','Automática',
+    'Montagem Final Combinada','Parafuso','Laminação Parafuso',
+    'Estampagem Parafuso','Laminação','Componentes','Automática',
     'Montagem Final RSFC','Estampagem Tucho','Montagem Final Tucho','Mangote'
   )),
   audit_type text not null check (audit_type in ('escalonada','manutencao_autonoma')),
