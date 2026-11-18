@@ -288,12 +288,13 @@ async function refreshGamification() {
   if(weeklyEl) weeklyEl.innerHTML = weekly.length ? weekly.map(card).join('') : '<p class="muted">Nenhum desafio ativo no momento.</p>';
 
   const earned=new Set((data.achievements||[]).map(a=>a.key));
+  const medalSvg=(symbol)=>`<svg class="medal-art" viewBox="0 0 72 82" aria-hidden="true"><path class="medal-ribbon ribbon-left" d="M19 3H33L28 37 13 32Z"/><path class="medal-ribbon ribbon-right" d="M39 3H53L59 32 44 37Z"/><circle class="medal-disc" cx="36" cy="39" r="27"/><circle class="medal-ring" cx="36" cy="39" r="21"/><text class="medal-symbol" x="36" y="47" text-anchor="middle">${symbol}</text></svg>`;
   const badges=[
-    {key:'first_quiz',icon:icons.target,name:'Primeiro passo'},
-    {key:'quizzes_10',icon:icons.starBadge,name:'Estudioso'},
-    {key:'streak_3',icon:icons.fire,name:'3 dias seguidos'},
-    {key:'streak_7',icon:icons.sparkles,name:'Semana perfeita'},
-    {key:'xp_500',icon:icons.bolt,name:'500 XP'}
+    {key:'first_quiz',icon:medalSvg('★'),name:'Primeiro passo',tone:'bronze'},
+    {key:'quizzes_10',icon:medalSvg('✦'),name:'Estudioso',tone:'silver'},
+    {key:'streak_3',icon:medalSvg('3'),name:'3 dias seguidos',tone:'gold'},
+    {key:'streak_7',icon:medalSvg('7'),name:'Semana perfeita',tone:'blue'},
+    {key:'xp_500',icon:medalSvg('500'),name:'500 XP',tone:'purple'}
   ];
   const achEl = document.querySelector('#gm-achievements');
   if(achEl) {
