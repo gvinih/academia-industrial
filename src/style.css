@@ -1609,3 +1609,70 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .welcome-badge-copy{text-align:left}
   .welcome-badge-copy strong{font-size:12px}
 }
+
+/* Academia Industrial — trilha gamificada experimental */
+.gm-dashboard{display:flex;flex-direction:column;gap:22px;max-width:1440px;margin:0 auto}
+.gm-hero{background:linear-gradient(125deg,#0E4596,#2563b8);border-radius:25px;padding:28px;color:white;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(14,69,150,.13)}
+.gm-eyebrow{font-size:11px;font-weight:800;letter-spacing:.13em;color:#5d8fce;display:block;margin-bottom:8px}
+.gm-hero .gm-eyebrow{color:#d6e7ff}
+.gm-hero h1{font-size:clamp(25px,3vw,36px);margin:0 0 8px;color:white}
+.gm-hero p{margin:0;color:#e5efff}
+.gm-hero-actions{display:flex;flex-direction:column;align-items:center;gap:10px}
+.gm-hero-mascot{font-size:60px;line-height:1}
+.gm-version-switch,.gm-back-to-new{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);color:white;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer}
+.gm-back-to-new{margin-bottom:15px;background:#eef4fb;color:#0E4596;border-color:#d6e4f5}
+.gm-level-panel{border:1px solid #dbe6f4;border-radius:22px;background:#fff;padding:22px 24px}
+.gm-level-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gm-level-label{font-size:11px;font-weight:900;color:#0E4596;letter-spacing:.12em}
+.gm-level-top h2{margin:5px 0 0;font-size:19px}
+.gm-xp-total{color:#0E4596;font-size:18px;white-space:nowrap}
+.gm-xp-track,.gm-mission-progress{height:10px;background:#eaf0f7;border-radius:20px;overflow:hidden;margin-top:15px}
+.gm-xp-track span,.gm-mission-progress span{display:block;height:100%;background:linear-gradient(90deg,#0E4596,#66a3e6);border-radius:inherit;transition:width .3s}
+.gm-xp-caption{font-size:12px;color:#6d7c90;margin:9px 0 0}
+.gm-quick-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gm-quick-stat{border:1px solid #e1eaf4;border-radius:19px;background:#fff;padding:17px;display:flex;align-items:center;gap:13px}
+.gm-stat-symbol{width:45px;height:45px;border-radius:14px;background:#f1f6fc;display:grid;place-items:center;font-size:22px}
+.gm-quick-stat strong{display:block;font-size:24px;color:#17283e}
+.gm-quick-stat span{font-size:12px;color:#748399}
+.gm-section-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.gm-section-heading h2{margin:0;font-size:21px}
+.gm-reset-note,.gm-ranking-rule{font-size:12px;color:#78879a}
+.gm-mission-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.gm-week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gm-mission-card{display:flex;align-items:flex-start;gap:11px;padding:16px;border:1px solid #e1eaf4;border-radius:18px;background:#fff;min-height:125px}
+.gm-mission-card.is-complete{border-color:#a6d8bd;background:#f4fbf6}
+.gm-mission-icon{width:35px;height:35px;border-radius:11px;background:#eff5fc;color:#0E4596;display:grid;place-items:center;font-weight:900;flex-shrink:0}
+.gm-mission-card.is-complete .gm-mission-icon{background:#d8f1e2;color:#20834b}
+.gm-mission-info{min-width:0;flex:1}
+.gm-mission-info strong{font-size:14px;display:block;color:#203149}
+.gm-mission-info p{font-size:12px;color:#7a8797;margin:5px 0}
+.gm-mission-progress{height:6px;margin:10px 0 5px}
+.gm-mission-info small{font-size:11px;color:#8290a0}
+.gm-mission-reward{font-size:11px;font-weight:800;color:#0E4596;white-space:nowrap}
+.gm-mission-card.is-complete .gm-mission-reward{color:#22854b}
+.gm-main-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;align-items:start}
+.gm-subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.gm-subject-card{display:flex;gap:13px;border:1px solid #e1eaf4;background:#fff;border-radius:19px;padding:17px;min-height:175px}
+.gm-subject-icon{width:46px;height:46px;border-radius:14px;background:#f1f6fc;display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.gm-subject-copy{min-width:0;flex:1}
+.gm-module{font-size:10px;font-weight:800;color:#7f91a8;letter-spacing:.1em}
+.gm-subject-card h3{font-size:17px;margin:6px 0}
+.gm-subject-card p{font-size:12px;color:#7c899a;margin:0 0 12px}
+.gm-subject-card .subject-progress{font-size:11px;color:#7b8a9c;margin:0 0 10px}
+.gm-subject-open{width:100%;border:0;border-radius:12px;padding:10px 12px;background:#0E4596;color:white;font-weight:700;font-size:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.gm-achievements-area{background:#fff;border:1px solid #e1eaf4;border-radius:21px;padding:17px}
+.gm-achievements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.gm-achievement{display:flex;flex-direction:column;align-items:center;text-align:center;padding:11px 6px;border:1px solid #e5ebf3;border-radius:14px;min-height:105px}
+.gm-achievement.locked{opacity:.48;filter:grayscale(1)}
+.gm-achievement-emoji{font-size:25px;margin-bottom:6px}
+.gm-achievement strong{font-size:11px}
+.gm-achievement small{font-size:10px;color:#7a8797;margin-top:4px}
+.gm-ranking-card{border:1px solid #e1eaf4;border-radius:20px;background:#fff;padding:17px}
+.gm-ranking-note{font-size:11px;color:#77869a;margin:14px 0 0}
+.gm-loading{padding:15px;color:#77869a;font-size:13px}
+.gm-dashboard .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.gm-dashboard .stat{border:1px solid #e1eaf4;border-radius:18px;padding:14px;background:#fff}
+.gm-dashboard .leader-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eef2f7}
+.gm-dashboard .leader-row:last-child{border-bottom:0}
+@media(max-width:1000px){.gm-mission-grid{grid-template-columns:repeat(2,minmax(0,1fr)}.gm-main-grid{grid-template-columns:1fr}.gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:640px){.gm-dashboard{gap:15px}.gm-hero{padding:19px 17px;border-radius:20px;align-items:flex-start}.gm-hero-actions{gap:7px}.gm-hero-mascot{font-size:39px}.gm-version-switch{font-size:10px;padding:8px 10px}.gm-hero h1{font-size:24px}.gm-hero p{font-size:12px}.gm-level-panel{padding:16px;border-radius:18px}.gm-level-top h2{font-size:16px}.gm-xp-total{font-size:15px}.gm-quick-stats{gap:8px}.gm-quick-stat{padding:11px 8px;gap:7px;border-radius:14px}.gm-stat-symbol{width:30px;height:30px;border-radius:9px;font-size:17px}.gm-quick-stat strong{font-size:18px}.gm-quick-stat span{font-size:10px;line-height:1.2;display:block}.gm-section-heading h2{font-size:18px}.gm-reset-note,.gm-ranking-rule{font-size:10px}.gm-mission-grid,.gm-week-grid{grid-template-columns:1fr;gap:9px}.gm-mission-card{min-height:0;padding:13px;border-radius:16px}.gm-mission-info strong{font-size:13px}.gm-mission-info p{font-size:11px}.gm-subject-grid{grid-template-columns:1fr}.gm-subject-card{padding:13px;border-radius:16px;min-height:0}.gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.gm-achievement{min-height:90px;padding:8px 4px}.gm-achievement strong{font-size:10px}.gm-ranking-card{padding:12px}.gm-dashboard .stats{grid-template-columns:1fr}}
