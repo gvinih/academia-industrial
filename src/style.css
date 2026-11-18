@@ -1676,3 +1676,136 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .gm-dashboard .leader-row:last-child{border-bottom:0}
 @media(max-width:1000px){.gm-mission-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gm-main-grid{grid-template-columns:1fr}.gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:640px){.gm-dashboard{gap:15px}.gm-hero{padding:19px 17px;border-radius:20px;align-items:flex-start}.gm-hero-actions{gap:7px}.gm-hero-mascot{font-size:39px}.gm-version-switch{font-size:10px;padding:8px 10px}.gm-hero h1{font-size:24px}.gm-hero p{font-size:12px}.gm-level-panel{padding:16px;border-radius:18px}.gm-level-top h2{font-size:16px}.gm-xp-total{font-size:15px}.gm-quick-stats{gap:8px}.gm-quick-stat{padding:11px 8px;gap:7px;border-radius:14px}.gm-stat-symbol{width:30px;height:30px;border-radius:9px;font-size:17px}.gm-quick-stat strong{font-size:18px}.gm-quick-stat span{font-size:10px;line-height:1.2;display:block}.gm-section-heading h2{font-size:18px}.gm-reset-note,.gm-ranking-rule{font-size:10px}.gm-mission-grid,.gm-week-grid{grid-template-columns:1fr;gap:9px}.gm-mission-card{min-height:0;padding:13px;border-radius:16px}.gm-mission-info strong{font-size:13px}.gm-mission-info p{font-size:11px}.gm-subject-grid{grid-template-columns:1fr}.gm-subject-card{padding:13px;border-radius:16px;min-height:0}.gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.gm-achievement{min-height:90px;padding:8px 4px}.gm-achievement strong{font-size:10px}.gm-ranking-card{padding:12px}.gm-dashboard .stats{grid-template-columns:1fr}}
+
+
+/* Dashboard gamificado — refinamento visual premium */
+.gm-dashboard{gap:28px;padding:4px 0 28px}
+.gm-hero{position:relative;overflow:hidden;min-height:200px;padding:36px 40px;border-radius:28px;background:linear-gradient(115deg,#092f69 0%,#0e4596 52%,#2867b8 100%);box-shadow:0 18px 42px rgba(14,69,150,.18)}
+.gm-hero:before{content:"";position:absolute;width:330px;height:330px;border:1px solid rgba(255,255,255,.1);border-radius:50%;right:-105px;top:-145px;box-shadow:0 0 0 32px rgba(255,255,255,.035),0 0 0 68px rgba(255,255,255,.025)}
+.gm-hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:110px;bottom:-125px;background:rgba(255,255,255,.055)}
+.gm-hero>div:first-child,.gm-hero-actions{position:relative;z-index:1}
+.gm-eyebrow{font-size:12px;letter-spacing:.16em;margin-bottom:11px}
+.gm-hero h1{font-size:clamp(30px,3.5vw,44px);letter-spacing:-.035em;margin-bottom:10px}
+.gm-hero p{font-size:15px;line-height:1.6;max-width:580px;color:#e0edff}
+.gm-hero-actions{gap:14px}
+.gm-hero-mascot{font-size:78px;filter:drop-shadow(0 7px 10px rgba(0,0,0,.14))}
+.gm-version-switch{background:rgba(255,255,255,.13);backdrop-filter:blur(8px);border-color:rgba(255,255,255,.3);padding:11px 17px;font-size:12px;transition:background .2s,transform .2s}
+.gm-version-switch:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
+.gm-level-panel{position:relative;overflow:hidden;padding:28px 32px;border-radius:24px;border-color:#d9e5f2;box-shadow:0 9px 28px rgba(25,57,91,.045)}
+.gm-level-panel:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180,#0e4596,#6cb0ef)}
+.gm-level-top h2{font-size:24px;letter-spacing:-.02em;margin-top:8px}
+.gm-level-label{font-size:12px;letter-spacing:.14em}
+.gm-xp-total{font-size:23px;font-weight:900}
+.gm-xp-track{height:14px;margin-top:22px;background:#edf2f8}
+.gm-xp-track span{background:linear-gradient(90deg,#0e4596,#3b83d5,#79b5f0);box-shadow:0 0 12px rgba(56,130,213,.22)}
+.gm-xp-caption{font-size:13px;margin-top:11px}
+.gm-quick-stats{gap:18px}
+.gm-quick-stat{padding:22px;border-radius:22px;gap:16px;box-shadow:0 8px 24px rgba(25,57,91,.035);transition:transform .18s,box-shadow .18s}
+.gm-quick-stat:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(25,57,91,.07)}
+.gm-stat-symbol{width:56px;height:56px;border-radius:17px;font-size:27px;background:linear-gradient(145deg,#f4f8fd,#e7f0fa)}
+.gm-quick-stat strong{font-size:30px;letter-spacing:-.03em;line-height:1.1}
+.gm-quick-stat span{font-size:13px;margin-top:5px;display:block}
+.gm-section-heading{margin-bottom:17px}
+.gm-section-heading h2{font-size:25px;letter-spacing:-.025em;margin-top:4px}
+.gm-reset-note,.gm-ranking-rule{font-size:13px}
+.gm-mission-grid{gap:15px}
+.gm-mission-card{position:relative;min-height:145px;padding:19px;border-radius:21px;gap:14px;box-shadow:0 6px 20px rgba(25,57,91,.025);transition:transform .18s,box-shadow .18s,border-color .18s}
+.gm-mission-card:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(25,57,91,.06);border-color:#c8d9ec}
+.gm-mission-icon{width:46px;height:46px;border-radius:15px;font-size:20px;background:linear-gradient(145deg,#eff6ff,#e3eefb)}
+.gm-mission-info strong{font-size:15px;line-height:1.4}
+.gm-mission-info p{font-size:13px;line-height:1.55;margin:6px 0}
+.gm-mission-progress{height:8px;margin:12px 0 7px}
+.gm-mission-info small{font-size:12px}
+.gm-mission-reward{font-size:13px}
+.gm-mission-card.is-complete{background:linear-gradient(130deg,#f3fbf6,#f9fdfb);border-color:#b8dfc8}
+.gm-main-grid{grid-template-columns:minmax(0,1fr) 330px;gap:24px}
+.gm-subject-grid{gap:16px}
+.gm-subject-card{position:relative;overflow:hidden;min-height:210px;padding:22px;border-radius:23px;gap:17px;box-shadow:0 8px 24px rgba(25,57,91,.035);transition:transform .2s,box-shadow .2s,border-color .2s}
+.gm-subject-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(25,57,91,.08);border-color:#c7d8ec}
+.gm-subject-card:after{content:"";position:absolute;right:-38px;top:-38px;width:112px;height:112px;border-radius:50%;background:rgba(14,69,150,.035);pointer-events:none}
+.gm-subject-icon{width:62px;height:62px;border-radius:19px;font-size:29px;background:linear-gradient(145deg,#f3f8fd,#e6eff9);box-shadow:inset 0 0 0 1px rgba(14,69,150,.035)}
+.gm-module{font-size:11px;letter-spacing:.14em}
+.gm-subject-card h3{font-size:20px;letter-spacing:-.025em;margin:7px 0}
+.gm-subject-card p{font-size:13px;line-height:1.55;margin-bottom:14px}
+.gm-subject-card .subject-progress{font-size:12px;margin-bottom:12px}
+.gm-subject-open{border-radius:13px;padding:12px 14px;font-size:13px;box-shadow:0 5px 12px rgba(14,69,150,.12);transition:filter .15s,transform .15s}
+.gm-subject-open:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.gm-achievements-area{border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(25,57,91,.035)}
+.gm-achievements{gap:11px}
+.gm-achievement{min-height:120px;padding:13px 8px;border-radius:17px;background:linear-gradient(145deg,#fff,#f9fbfd);transition:transform .18s,border-color .18s}
+.gm-achievement:hover{transform:translateY(-2px);border-color:#c9d9eb}
+.gm-achievement-emoji{font-size:31px;margin-bottom:8px}
+.gm-achievement strong{font-size:12px;line-height:1.4}
+.gm-achievement small{font-size:11px;margin-top:5px}
+.gm-achievement.earned{background:linear-gradient(145deg,#fff,#f1f8ff);border-color:#c4d9ef}
+.gm-achievement.locked{opacity:.55}
+.gm-ranking-card{border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(25,57,91,.035)}
+.gm-ranking-note{font-size:12px;line-height:1.6}
+.gm-loading{font-size:14px;padding:18px}
+.gm-dashboard .leader-row{padding:14px 4px}
+.gm-dashboard .stats{gap:16px}
+.gm-dashboard .stat{border-radius:20px;padding:18px}
+@media(max-width:1000px){
+ .gm-dashboard{gap:23px}
+ .gm-main-grid{grid-template-columns:1fr}
+ .gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .gm-subject-card{min-height:195px}
+}
+@media(max-width:640px){
+ .gm-dashboard{gap:18px;padding-bottom:18px}
+ .gm-hero{min-height:0;padding:24px 20px;border-radius:22px;align-items:center;gap:14px}
+ .gm-hero:before{width:230px;height:230px;right:-90px;top:-110px;box-shadow:0 0 0 24px rgba(255,255,255,.035),0 0 0 52px rgba(255,255,255,.025)}
+ .gm-hero h1{font-size:28px;line-height:1.16;margin-bottom:8px}
+ .gm-hero p{font-size:13px;line-height:1.5}
+ .gm-eyebrow{font-size:10px;letter-spacing:.13em}
+ .gm-hero-actions{gap:9px}
+ .gm-hero-mascot{font-size:48px}
+ .gm-version-switch{font-size:10px;padding:8px 11px}
+ .gm-level-panel{padding:19px 18px;border-radius:20px}
+ .gm-level-top h2{font-size:19px}
+ .gm-level-label{font-size:10px}
+ .gm-xp-total{font-size:18px}
+ .gm-xp-track{height:11px;margin-top:17px}
+ .gm-xp-caption{font-size:11px}
+ .gm-quick-stats{gap:9px}
+ .gm-quick-stat{padding:13px 10px;border-radius:16px;gap:8px;flex-direction:column;align-items:flex-start}
+ .gm-stat-symbol{width:38px;height:38px;border-radius:12px;font-size:21px}
+ .gm-quick-stat strong{font-size:22px}
+ .gm-quick-stat span{font-size:10px;line-height:1.3}
+ .gm-section-heading{align-items:center;margin-bottom:13px}
+ .gm-section-heading h2{font-size:20px}
+ .gm-reset-note,.gm-ranking-rule{font-size:10px}
+ .gm-mission-grid,.gm-week-grid{grid-template-columns:1fr;gap:10px}
+ .gm-mission-card{padding:15px;border-radius:17px;min-height:0;gap:12px}
+ .gm-mission-icon{width:40px;height:40px;border-radius:13px;font-size:17px}
+ .gm-mission-info strong{font-size:14px}
+ .gm-mission-info p{font-size:12px;line-height:1.45}
+ .gm-mission-progress{height:7px;margin:10px 0 6px}
+ .gm-mission-info small{font-size:11px}
+ .gm-mission-reward{font-size:11px}
+ .gm-subject-grid{grid-template-columns:1fr;gap:11px}
+ .gm-subject-card{padding:17px;border-radius:19px;min-height:0;gap:13px}
+ .gm-subject-icon{width:52px;height:52px;border-radius:16px;font-size:25px}
+ .gm-module{font-size:10px}
+ .gm-subject-card h3{font-size:18px}
+ .gm-subject-card p{font-size:12px;line-height:1.45}
+ .gm-subject-open{padding:11px 12px;font-size:12px}
+ .gm-achievements-area{padding:16px;border-radius:20px}
+ .gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .gm-achievement{min-height:104px;padding:10px 5px;border-radius:14px}
+ .gm-achievement-emoji{font-size:26px}
+ .gm-achievement strong{font-size:10px}
+ .gm-achievement small{font-size:9px}
+ .gm-ranking-card{padding:15px;border-radius:20px}
+ .gm-ranking-note{font-size:11px;line-height:1.5}
+ .gm-dashboard .stats{grid-template-columns:1fr}
+}
+@media(max-width:380px){
+ .gm-hero{padding:19px 15px}
+ .gm-hero-mascot{font-size:39px}
+ .gm-quick-stat{padding:11px 7px}
+ .gm-quick-stat strong{font-size:19px}
+ .gm-quick-stat span{font-size:9px}
+ .gm-section-heading h2{font-size:18px}
+ .gm-reset-note,.gm-ranking-rule{max-width:105px;text-align:right}
+}
