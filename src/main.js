@@ -84,8 +84,9 @@ async function dashboard(){
         <p>Pequenos passos todos os dias geram grandes resultados. Vamos avançar?</p>
       </div>
       <div class="gm-hero-badge">
-        <div class="gm-hero-icon-wrap">${icons.target}</div>
+        <div class="gm-hero-mascot" aria-label="Meta do Dia" title="Meta do Dia">🎯</div>
         <div class="gm-hero-badge-text">
+          <span class="gm-hero-badge-tag">FOCO DE HOJE</span>
           <strong>Meta do Dia</strong>
           <span>Conclua um quiz para manter o ritmo!</span>
         </div>
@@ -188,15 +189,18 @@ async function dashboard(){
         </div>
       </section>
 
-      <aside class="gm-achievements-area">
+      <aside class="gm-achievements-column">
         <div class="gm-section-heading">
           <div>
             <span class="gm-eyebrow">CONQUISTAS</span>
             <h2>Medalhas</h2>
           </div>
+          <span class="gm-reset-note">5 insígnias</span>
         </div>
-        <div class="gm-achievements" id="gm-achievements">
-          <div class="gm-loading">Carregando conquistas…</div>
+        <div class="gm-achievements-card">
+          <div class="gm-achievements" id="gm-achievements">
+            <div class="gm-loading">Carregando conquistas…</div>
+          </div>
         </div>
       </aside>
     </section>

@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#192033;background:#f6f6fb;font-synthesis:none;text-rendering:optimizeLegibility;--purple:#0E4596;--purple2:#1D63B5;--muted:#687086;--line:#e6e7ef;--white:#fff}
 *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}a{color:inherit}.loading{padding:50px;text-align:center;color:var(--muted)}
 .topbar{height:auto;min-height:78px;padding:14px max(20px,calc((100vw - 1200px)/2));background:linear-gradient(110deg,#0A3472,#1D63B5);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.brand{display:flex;gap:11px;align-items:center;text-decoration:none;font-weight:800;font-size:19px;letter-spacing:-.5px}.brand small{display:block;font-size:11px;font-weight:500;letter-spacing:.3px;color:#D6E5F7;margin-top:3px}.brand-mark{width:43px;height:43px;border-radius:13px;background:#ffffff22;display:grid;place-items:center;font-size:24px}.user-email{font-size:12px;margin-right:10px;color:#f3e8ff}.btn{border:0;border-radius:11px;padding:12px 16px;font-size:13px;font-weight:750;transition:transform .15s,opacity .15s}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--purple);color:#fff}.btn-light{background:#E5EEF9;color:var(--purple)}.btn-small{padding:9px 12px;font-size:12px}.full{width:100%;margin-top:8px}
@@ -1638,22 +1638,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .gm-hero p{font-size:14px;line-height:1.55;color:#e2edfd;margin:0}
 
 .gm-hero-badge{
-  position:relative;z-index:1;display:flex;align-items:center;gap:14px;
-  padding:14px 18px;border-radius:18px;
-  background:rgba(255,255,255,.12);backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,.24);box-shadow:0 6px 18px rgba(0,0,0,.08);
-  flex-shrink:0;max-width:290px;
+  position:relative;z-index:1;display:flex;align-items:center;gap:18px;
+  padding:16px 22px;border-radius:20px;
+  background:rgba(255,255,255,.14);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.28);box-shadow:0 8px 24px rgba(0,0,0,.12);
+  flex-shrink:0;max-width:320px;
 }
-.gm-hero-icon-wrap{
-  width:44px;height:44px;border-radius:13px;
-  background:#fff;color:#0e4596;
-  display:grid;place-items:center;flex-shrink:0;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
+.gm-hero-mascot{
+  font-size:52px;line-height:1;display:grid;place-items:center;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.25));
+  animation:gm-float 3.5s ease-in-out infinite alternate;
+  flex-shrink:0;user-select:none;
 }
-.gm-hero-icon-wrap svg{width:22px;height:22px}
-.gm-hero-badge-text{display:flex;flex-direction:column;gap:2px;min-width:0}
-.gm-hero-badge-text strong{font-size:13px;font-weight:800;color:#fff}
-.gm-hero-badge-text span{font-size:11px;line-height:1.4;color:#dbeafe}
+@keyframes gm-float{
+  0%{transform:translateY(0) scale(1)}
+  100%{transform:translateY(-5px) scale(1.08)}
+}
+.gm-hero-badge-text{display:flex;flex-direction:column;gap:3px;min-width:0}
+.gm-hero-badge-tag{
+  font-size:10px;font-weight:850;letter-spacing:.12em;
+  color:#93c5fd;text-transform:uppercase;
+}
+.gm-hero-badge-text strong{font-size:14px;font-weight:850;color:#fff}
+.gm-hero-badge-text span{font-size:11px;line-height:1.45;color:#e0edfd}
 
 /* Painel de Nível e Barra de XP */
 .gm-level-panel{
@@ -1791,12 +1798,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .gm-mission-meta{display:flex;justify-content:flex-end;margin-top:4px}
 .gm-mission-meta small{font-size:11px;font-weight:700;color:#94a3b8}
 
-/* Layout Principal: Cursos + Conquistas */
-.gm-main-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
-.gm-courses-column{min-width:0}
+/* Layout Principal: Cursos + Conquistas perfeitamente alinhados */
+.gm-main-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 340px;
+  gap:24px;align-items:stretch;margin-top:4px;
+}
+.gm-courses-column{display:flex;flex-direction:column;min-width:0}
+.gm-achievements-column{display:flex;flex-direction:column;min-width:0}
 
 /* Cards das Matérias */
-.gm-subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.gm-subject-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;flex:1;
+}
 .gm-subject-card{
   display:flex;gap:16px;border:1px solid #e2e8f0;border-bottom:3.5px solid #cbd5e1;
   background:#fff;border-radius:20px;padding:20px;min-height:190px;
@@ -1848,12 +1862,16 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .gm-subject-open:active{transform:translateY(2px);border-bottom-width:1.5px}
 .gm-subject-open svg{width:16px;height:16px}
 
-/* Conquistas (Medalhas) */
-.gm-achievements-area{
-  background:#fff;border:1px solid #e2e8f0;border-radius:20px;
-  padding:20px;box-shadow:0 4px 16px rgba(0,0,0,.025);
+/* Card de Conquistas (Medalhas) — Alinhamento total com as matérias */
+.gm-achievements-card{
+  background:#fff;border:1px solid #e2e8f0;border-bottom:3.5px solid #cbd5e1;
+  border-radius:20px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.025);
+  flex:1;display:flex;flex-direction:column;
 }
-.gm-achievements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gm-achievements{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+  flex:1;align-content:space-between;
+}
 .gm-achievement{
   display:flex;flex-direction:column;align-items:center;text-align:center;
   padding:14px 8px;border:1px solid #e2e8f0;border-bottom:3px solid #cbd5e1;
@@ -1861,6 +1879,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   transition:transform .18s,border-color .18s;
 }
 .gm-achievement:hover{transform:translateY(-2px);border-color:#bfdbfe}
+
+/* A 5ª medalha ganha destaque elegante preenchendo as 2 colunas */
+.gm-achievement:nth-child(5){
+  grid-column:span 2;flex-direction:row;justify-content:flex-start;
+  align-items:center;text-align:left;gap:14px;padding:12px 16px;
+  min-height:64px;
+}
+.gm-achievement:nth-child(5) .gm-achievement-icon-wrap{margin-bottom:0}
+.gm-achievement:nth-child(5) .gm-achievement-state{margin-top:2px}
 
 .gm-achievement.earned{
   background:linear-gradient(145deg,#fff 0%,#f0fdf4 100%);
@@ -1870,7 +1897,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 .gm-achievement-icon-wrap{
   width:44px;height:44px;border-radius:13px;
-  display:grid;place-items:center;margin-bottom:8px;
+  display:grid;place-items:center;margin-bottom:8px;flex-shrink:0;
 }
 .gm-achievement.earned .gm-achievement-icon-wrap{background:#ecfdf5;color:#059669}
 .gm-achievement.locked .gm-achievement-icon-wrap{background:#f1f5f9;color:#94a3b8}
