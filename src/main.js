@@ -77,17 +77,151 @@ async function boot() {
 }
 async function dashboard(){
   shell(`<main class="gm-dashboard">
-    <section class="gm-hero"><div><span class="gm-eyebrow">SUA TRILHA DE APRENDIZAGEM</span><h1>Olá, ${esc(profile?.display_name || session.user.email?.split('@')[0])}!</h1><p>Pequenos passos todos os dias. Vamos avançar?</p></div><div class="gm-hero-actions"><div class="gm-hero-mascot">🎯</div><button class="gm-version-switch" id="gm-to-old">Versão atual do app</button></div></section>
-    <section class="gm-level-panel" id="gm-level"><div class="gm-level-top"><div><span class="gm-level-label">NÍVEL 1</span><h2>Aprendiz em evolução</h2></div><strong class="gm-xp-total">0 XP</strong></div><div class="gm-xp-track"><span id="gm-xp-bar" style="width:0%"></span></div><p class="gm-xp-caption" id="gm-xp-caption">0 / 500 XP para o próximo nível</p></section>
-    <section class="gm-quick-stats"><article class="gm-quick-stat"><div class="gm-stat-symbol">🔥</div><div><strong id="gm-streak">0</strong><span>dias de sequência</span></div></article><article class="gm-quick-stat"><div class="gm-stat-symbol">🏆</div><div><strong id="gm-knowledge-points">0</strong><span>pontos de conhecimento</span></div></article><article class="gm-quick-stat"><div class="gm-stat-symbol">📚</div><div><strong id="gm-quizcount">0</strong><span>quizzes concluídos</span></div></article></section>
-    <section><div class="gm-section-heading"><div><span class="gm-eyebrow">HOJE</span><h2>Missões diárias</h2></div><span class="gm-reset-note">Renovam à meia-noite</span></div><div class="gm-mission-grid" id="gm-daily"><div class="gm-loading">Preparando missões…</div></div></section>
-    <section><div class="gm-section-heading"><div><span class="gm-eyebrow">DESAFIO DA SEMANA</span><h2>Desafios semanais</h2></div><span class="gm-reset-note">Até domingo</span></div><div class="gm-mission-grid gm-week-grid" id="gm-weekly"><div class="gm-loading">Carregando desafios…</div></div></section>
-    <section class="gm-main-grid"><section><div class="gm-section-heading"><div><span class="gm-eyebrow">CONTINUE APRENDENDO</span><h2>Suas matérias</h2></div><span class="gm-reset-note">4 cursos</span></div><div class="gm-subject-grid subject-grid" id="subject-grid">${subjects.map((s,i)=>`<article class="gm-subject-card subject-card subject-${s.id}"><div class="gm-subject-icon">${icons[s.id]||'📘'}</div><div class="gm-subject-copy"><span class="gm-module">MÓDULO 0${i+1}</span><h3>${s.name}</h3><p>${s.description}</p><div class="subject-progress"><span>Carregando…</span></div><button class="gm-subject-open subject-open" data-id="${s.id}">Estudar agora <span>↗</span></button></div></article>`).join('')}</div></section>
-    <aside class="gm-achievements-area"><div class="gm-section-heading"><div><span class="gm-eyebrow">CONQUISTAS</span><h2>Medalhas</h2></div></div><div class="gm-achievements" id="gm-achievements"><div class="gm-loading">Carregando conquistas…</div></div></aside></section>
-    <section><div class="gm-section-heading"><div><span class="gm-eyebrow">COMPETIÇÃO SAUDÁVEL</span><h2>Ranking de conhecimento</h2></div><span class="gm-ranking-rule">Pontos dos quizzes</span></div><div class="gm-ranking-card"><p class="muted small">XP de engajamento não altera este ranking.</p><div id="leaderboard" class="leaderboard"><div class="gm-loading">Carregando ranking…</div></div><p class="gm-ranking-note">Os três primeiros colocados serão premiados conforme as regras da organização.</p></div></section>
+    <section class="gm-hero">
+      <div class="gm-hero-content">
+        <span class="gm-eyebrow">SUA TRILHA DE APRENDIZAGEM</span>
+        <h1>Olá, ${esc(profile?.display_name || session.user.email?.split('@')[0])}!</h1>
+        <p>Pequenos passos todos os dias geram grandes resultados. Vamos avançar?</p>
+      </div>
+      <div class="gm-hero-badge">
+        <div class="gm-hero-icon-wrap">${icons.target}</div>
+        <div class="gm-hero-badge-text">
+          <strong>Meta do Dia</strong>
+          <span>Conclua um quiz para manter o ritmo!</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="gm-level-panel" id="gm-level">
+      <div class="gm-level-top">
+        <div class="gm-level-info">
+          <span class="gm-level-badge">${icons.award} NÍVEL 1</span>
+          <h2>Aprendiz em evolução</h2>
+        </div>
+        <div class="gm-xp-badge">
+          <span class="gm-xp-icon">${icons.bolt}</span>
+          <strong class="gm-xp-total">0 XP</strong>
+        </div>
+      </div>
+      <div class="gm-xp-track"><span id="gm-xp-bar" style="width:0%"></span></div>
+      <div class="gm-xp-bottom">
+        <p class="gm-xp-caption" id="gm-xp-caption">0 / 500 XP para o próximo nível</p>
+        <span class="gm-xp-percent" id="gm-xp-percent">0%</span>
+      </div>
+    </section>
+
+    <section class="gm-quick-stats">
+      <article class="gm-quick-stat stat-streak">
+        <div class="gm-stat-symbol">${icons.fire}</div>
+        <div class="gm-stat-data">
+          <strong id="gm-streak">0</strong>
+          <span>dias de sequência</span>
+        </div>
+      </article>
+      <article class="gm-quick-stat stat-knowledge">
+        <div class="gm-stat-symbol">${icons.trophy}</div>
+        <div class="gm-stat-data">
+          <strong id="gm-knowledge-points">0</strong>
+          <span>pontos de ranking</span>
+        </div>
+      </article>
+      <article class="gm-quick-stat stat-quizzes">
+        <div class="gm-stat-symbol">${icons.checkBadge}</div>
+        <div class="gm-stat-data">
+          <strong id="gm-quizcount">0</strong>
+          <span>quizzes concluídos</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="gm-missions-section">
+      <div class="gm-section-heading">
+        <div>
+          <span class="gm-eyebrow">HOJE</span>
+          <h2>Missões diárias</h2>
+        </div>
+        <span class="gm-reset-note">Renovam à meia-noite</span>
+      </div>
+      <div class="gm-mission-grid" id="gm-daily">
+        <div class="gm-loading">Preparando missões…</div>
+      </div>
+    </section>
+
+    <section class="gm-missions-section">
+      <div class="gm-section-heading">
+        <div>
+          <span class="gm-eyebrow">DESAFIO DA SEMANA</span>
+          <h2>Desafios semanais</h2>
+        </div>
+        <span class="gm-reset-note">Até domingo</span>
+      </div>
+      <div class="gm-mission-grid gm-week-grid" id="gm-weekly">
+        <div class="gm-loading">Carregando desafios…</div>
+      </div>
+    </section>
+
+    <section class="gm-main-grid">
+      <section class="gm-courses-column">
+        <div class="gm-section-heading">
+          <div>
+            <span class="gm-eyebrow">CONTINUE APRENDENDO</span>
+            <h2>Suas matérias</h2>
+          </div>
+          <span class="gm-reset-note">4 módulos técnicos</span>
+        </div>
+        <div class="gm-subject-grid subject-grid" id="subject-grid">
+          ${subjects.map((s,i)=>`
+            <article class="gm-subject-card subject-card subject-${s.id}">
+              <div class="gm-subject-icon">${icons[s.id]||''}</div>
+              <div class="gm-subject-copy">
+                <span class="gm-module">MÓDULO 0${i+1}</span>
+                <h3>${s.name}</h3>
+                <p>${s.description}</p>
+                <div class="subject-progress"><span>Carregando progresso…</span></div>
+                <button class="gm-subject-open subject-open" data-id="${s.id}">
+                  <span>Estudar agora</span>
+                  ${icons.arrowRight}
+                </button>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </section>
+
+      <aside class="gm-achievements-area">
+        <div class="gm-section-heading">
+          <div>
+            <span class="gm-eyebrow">CONQUISTAS</span>
+            <h2>Medalhas</h2>
+          </div>
+        </div>
+        <div class="gm-achievements" id="gm-achievements">
+          <div class="gm-loading">Carregando conquistas…</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="gm-ranking-section">
+      <div class="gm-section-heading">
+        <div class="title-with-icon">
+          <span class="title-icon">${icons.trophy}</span>
+          <div>
+            <span class="gm-eyebrow">COMPETIÇÃO SAUDÁVEL</span>
+            <h2>Ranking geral de conhecimento</h2>
+          </div>
+        </div>
+        <span class="gm-ranking-rule">Pontos dos quizzes</span>
+      </div>
+      <div class="gm-ranking-card">
+        <p class="muted small">Conta a melhor pontuação de cada matéria. O XP de engajamento não altera a pontuação do ranking oficial.</p>
+        <div id="leaderboard" class="leaderboard">
+          <div class="gm-loading">Carregando ranking…</div>
+        </div>
+        <p class="gm-ranking-note">Os três primeiros colocados serão premiados conforme as regras definidas pela organização.</p>
+      </div>
+    </section>
   </main>`);
   document.querySelectorAll('.subject-open').forEach(b=>b.addEventListener('click',()=>openSubject(b.dataset.id)));
-  document.querySelector('#gm-to-old')?.addEventListener('click',dashboardLegacy);
   await refreshDashboard();
   await refreshGamification();
 }
@@ -96,22 +230,80 @@ async function refreshGamification() {
   const {data,error}=await supabase.rpc('get_gamification_dashboard');
   if(error){console.error('Gamification data:',error);const d=document.querySelector('#gm-daily');if(d)d.innerHTML='<p class="gm-loading">Missões não carregaram. Atualize a página.</p>';return;}
   const p=data?.profile||{},xp=Number(p.xp||0),level=Number(p.level||1),prog=Number(p.level_progress||0);
-  document.querySelector('#gm-level').innerHTML='<div class="gm-level-top"><div><span class="gm-level-label">NÍVEL '+level+'</span><h2>'+(level===1?'Aprendiz em evolução':level<5?'Operador em desenvolvimento':'Especialista em aprendizagem')+'</h2></div><strong class="gm-xp-total">'+xp.toLocaleString('pt-BR')+' XP</strong></div><div class="gm-xp-track"><span style="width:'+Math.min(100,prog/500*100)+'%"></span></div><p class="gm-xp-caption">'+prog+' / 500 XP para o próximo nível</p>';
-  document.querySelector('#gm-streak').textContent=Number(p.streak||0);
+  const percent = Math.min(100, Math.round(prog/500*100));
+  const levelTitle = level===1?'Aprendiz em evolução':level<5?'Operador em desenvolvimento':'Especialista em aprendizagem';
+  
+  const levelEl = document.querySelector('#gm-level');
+  if(levelEl) {
+    levelEl.innerHTML = `
+      <div class="gm-level-top">
+        <div class="gm-level-info">
+          <span class="gm-level-badge">${icons.award} NÍVEL ${level}</span>
+          <h2>${levelTitle}</h2>
+        </div>
+        <div class="gm-xp-badge">
+          <span class="gm-xp-icon">${icons.bolt}</span>
+          <strong class="gm-xp-total">${xp.toLocaleString('pt-BR')} XP</strong>
+        </div>
+      </div>
+      <div class="gm-xp-track"><span style="width:${percent}%"></span></div>
+      <div class="gm-xp-bottom">
+        <p class="gm-xp-caption">${prog} / 500 XP para o próximo nível</p>
+        <span class="gm-xp-percent">${percent}%</span>
+      </div>
+    `;
+  }
+  
+  const streakEl = document.querySelector('#gm-streak');
+  if(streakEl) streakEl.textContent = Number(p.streak||0);
+  
   const daily=data.daily||[],weekly=data.weekly||[];
-  const card=m=>'<article class="gm-mission-card '+(m.completed?'is-complete':'')+'"><div class="gm-mission-icon">'+(m.completed?'✓':'✦')+'</div><div class="gm-mission-info"><strong>'+m.title+'</strong><p>'+m.description+'</p><div class="gm-mission-progress"><span style="width:'+Math.min(100,Number(m.progress||0)/Math.max(1,Number(m.goal||1))*100)+'%"></span></div><small>'+Math.min(Number(m.progress||0),Number(m.goal||1))+' / '+m.goal+'</small></div><div class="gm-mission-reward">'+(m.completed?'✓':'+ '+m.xp+' XP')+'</div></article>';
-  document.querySelector('#gm-daily').innerHTML=daily.map(card).join('');
-  document.querySelector('#gm-weekly').innerHTML=weekly.map(card).join('');
-  const earned=new Set((data.achievements||[]).map(a=>a.key));
-  const badges=[{key:'first_quiz',emoji:'🚀',name:'Primeiro passo'},{key:'quizzes_10',emoji:'📘',name:'Estudioso'},{key:'streak_3',emoji:'🔥',name:'3 dias seguidos'},{key:'streak_7',emoji:'🌟',name:'Semana perfeita'},{key:'xp_500',emoji:'⚡',name:'500 XP'}];
-  document.querySelector('#gm-achievements').innerHTML=badges.map(b=>'<div class="gm-achievement '+(earned.has(b.key)?'earned':'locked')+'"><span class="gm-achievement-emoji">'+b.emoji+'</span><strong>'+b.name+'</strong><small>'+(earned.has(b.key)?'Conquistada':'Bloqueada')+'</small></div>').join('');
-}
+  const card=m=>`
+    <article class="gm-mission-card ${m.completed?'is-complete':''}">
+      <div class="gm-mission-icon">${m.completed?icons.check:icons.target}</div>
+      <div class="gm-mission-info">
+        <div class="gm-mission-topline">
+          <strong>${esc(m.title)}</strong>
+          <span class="gm-mission-reward ${m.completed?'is-done':''}">
+            ${m.completed ? icons.check + ' <span>Feito</span>' : '+ ' + m.xp + ' XP'}
+          </span>
+        </div>
+        <p>${esc(m.description)}</p>
+        <div class="gm-mission-progress">
+          <span style="width:${Math.min(100,Number(m.progress||0)/Math.max(1,Number(m.goal||1))*100)}%"></span>
+        </div>
+        <div class="gm-mission-meta">
+          <small>${Math.min(Number(m.progress||0),Number(m.goal||1))} / ${m.goal}</small>
+        </div>
+      </div>
+    </article>
+  `;
+  const dailyEl = document.querySelector('#gm-daily');
+  if(dailyEl) dailyEl.innerHTML = daily.length ? daily.map(card).join('') : '<p class="muted">Nenhuma missão ativa para hoje.</p>';
+  const weeklyEl = document.querySelector('#gm-weekly');
+  if(weeklyEl) weeklyEl.innerHTML = weekly.length ? weekly.map(card).join('') : '<p class="muted">Nenhum desafio ativo no momento.</p>';
 
-async function dashboardLegacy() {
-  shell(`<button class="gm-back-to-new" id="gm-back-to-new">← Ver nova trilha de aprendizagem</button><section class="welcome"><div><div class="eyebrow">SUA TRILHA DE APRENDIZAGEM</div><h1>Olá, ${esc(profile?.display_name || session.user.email?.split('@')[0])}!</h1><p>Estude, responda aos quizzes e acompanhe sua evolução.</p></div><div class="welcome-badge"><span class="welcome-trophy-wrap"><img src="/academia-industrial/trophy.svg" alt="" class="welcome-trophy"></span><span class="welcome-badge-copy"><strong>O conhecimento vale pontos</strong><em>Aprenda • evolua • conquiste</em></span></div></section><section class="stats" id="stats"><div class="stat"><div class="stat-header"><span>Pontos no ranking</span><span class="stat-icon">${icons.starBadge}</span></div><strong>—</strong></div><div class="stat"><div class="stat-header"><span>Quizzes concluídos</span><span class="stat-icon">${icons.checkBadge}</span></div><strong>—</strong></div><div class="stat"><div class="stat-header"><span>Sua posição</span><span class="stat-icon">${icons.chartBar}</span></div><strong>—</strong></div></section><div class="dashboard-grid"><section class="subjects-section"><div class="section-title"><h2>Matérias</h2><span class="muted">4 módulos</span></div><div class="subject-grid" id="subject-grid">${subjects.map((s,i)=>`<article class="subject-card subject-${s.id}"><div class="subject-body"><div class="subject-card-heading"><div class="subject-card-topline"><span class="subject-index">MÓDULO 0${i+1}</span><span class="subject-badge-icon">${icons[s.id]||''}</span></div><h3>${s.name}</h3></div><p class="subject-description">${s.description}</p><div class="subject-progress"><span>Carregando progresso…</span></div><button class="btn btn-primary subject-open" data-id="${s.id}"><span>Abrir matéria</span> ${icons.arrowRight}</button></div></article>`).join('')}</div></section><aside class="ranking-section"><div class="section-title"><div class="title-with-icon"><span class="title-icon">${icons.trophy}</span><h2>Ranking geral</h2></div><span class="top-three">TOP 3</span></div><div class="panel ranking-panel"><p class="muted small">Conta a melhor pontuação de cada matéria.</p><div id="leaderboard" class="leaderboard"><div class="skeleton">Carregando ranking…</div></div><div class="ranking-note">Os três primeiros colocados serão os premiados conforme as regras definidas pela organização.</div></div></aside></div>`);
-  document.querySelectorAll('.subject-open').forEach(b=>b.addEventListener('click',()=>openSubject(b.dataset.id)));
-  document.querySelector('#gm-back-to-new')?.addEventListener('click',dashboard);
-  await refreshDashboard();
+  const earned=new Set((data.achievements||[]).map(a=>a.key));
+  const badges=[
+    {key:'first_quiz',icon:icons.target,name:'Primeiro passo'},
+    {key:'quizzes_10',icon:icons.starBadge,name:'Estudioso'},
+    {key:'streak_3',icon:icons.fire,name:'3 dias seguidos'},
+    {key:'streak_7',icon:icons.sparkles,name:'Semana perfeita'},
+    {key:'xp_500',icon:icons.bolt,name:'500 XP'}
+  ];
+  const achEl = document.querySelector('#gm-achievements');
+  if(achEl) {
+    achEl.innerHTML = badges.map(b => {
+      const isEarned = earned.has(b.key);
+      return `
+        <div class="gm-achievement ${isEarned?'earned':'locked'}">
+          <div class="gm-achievement-icon-wrap">${b.icon}</div>
+          <strong>${esc(b.name)}</strong>
+          <small class="gm-achievement-state">${isEarned ? icons.check + ' <span>Conquistada</span>' : icons.lock + ' <span>Bloqueada</span>'}</small>
+        </div>
+      `;
+    }).join('');
+  }
 }
 
 const auditSectors = ['Bihler','Forno','Jato','Pintura','Seleção Visual','Acabamento','Ajan','Estampagem RSFI','Montagem Final RSFI','Estampagem Combinada','Montagem Final Combinada','Laminação Parafuso','Estampagem Parafuso','Laminação','Componentes','Automática','Montagem Final RSFC','Estampagem Tucho','Montagem Final Tucho','Mangote'];

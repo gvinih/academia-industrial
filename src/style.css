@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#192033;background:#f6f6fb;font-synthesis:none;text-rendering:optimizeLegibility;--purple:#0E4596;--purple2:#1D63B5;--muted:#687086;--line:#e6e7ef;--white:#fff}
 *{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}a{color:inherit}.loading{padding:50px;text-align:center;color:var(--muted)}
 .topbar{height:auto;min-height:78px;padding:14px max(20px,calc((100vw - 1200px)/2));background:linear-gradient(110deg,#0A3472,#1D63B5);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.brand{display:flex;gap:11px;align-items:center;text-decoration:none;font-weight:800;font-size:19px;letter-spacing:-.5px}.brand small{display:block;font-size:11px;font-weight:500;letter-spacing:.3px;color:#D6E5F7;margin-top:3px}.brand-mark{width:43px;height:43px;border-radius:13px;background:#ffffff22;display:grid;place-items:center;font-size:24px}.user-email{font-size:12px;margin-right:10px;color:#f3e8ff}.btn{border:0;border-radius:11px;padding:12px 16px;font-size:13px;font-weight:750;transition:transform .15s,opacity .15s}.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--purple);color:#fff}.btn-light{background:#E5EEF9;color:var(--purple)}.btn-small{padding:9px 12px;font-size:12px}.full{width:100%;margin-top:8px}
@@ -13,7 +13,7 @@ main{max-width:1200px;margin:28px auto;padding:0 20px;min-height:calc(100vh - 15
 @media(max-width:560px){main{padding:0 13px;margin:21px auto}.topbar{padding:13px}.brand{font-size:16px}.brand-mark{width:38px;height:38px}.user-email{display:none}.stats{gap:8px}.stat{padding:13px}.stat span{font-size:10px}.stat strong{font-size:22px}.subject-grid{grid-template-columns:1fr}.subject-card{min-height:unset}.subject-art{height:55px}.subject-body{padding:14px}.subject-body p{margin-bottom:12px}.welcome-badge{font-size:11px}.lesson-panel{padding:17px}.material-row{flex-wrap:wrap}.material-row>div{min-width:120px}.upload-form{grid-template-columns:1fr}.upload-form .field:nth-child(n){grid-column:1}.subject-header{align-items:flex-start}.subject-icon-large{width:53px;height:53px;font-size:28px}.tabs{gap:6px}.tab{padding:9px 11px}.question{padding:12px}}
 
 
-/* Academia Industrial — identidade visual industrial inspirada na Progeral */
+/* Academia Industrial â€” identidade visual industrial inspirada na Progeral */
 :root{
   color:#172b3c;background:#f3f6f8;
   --purple:#0E4596;--purple2:#1D63B5;--muted:#647586;--line:#dce4e9;--white:#fff;
@@ -111,20 +111,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Títulos das matérias no lugar dos ícones */
+/* TÃ­tulos das matÃ©rias no lugar dos Ã­cones */
 .subject-art{font-size:16px;font-weight:800;letter-spacing:.1px;color:#0E4596;line-height:1.25}
 .subject-icon-large{width:auto;min-width:65px;max-width:240px;padding:0 17px;font-size:15px;font-weight:800;letter-spacing:0;color:#0E4596;line-height:1.3;text-align:center;overflow-wrap:anywhere}
 @media(max-width:560px){.subject-icon-large{min-width:53px;max-width:180px;padding:0 12px;font-size:12px}}
 
 
-/* Cards de matérias: título único e um pouco mais de altura */
+/* Cards de matÃ©rias: tÃ­tulo Ãºnico e um pouco mais de altura */
 .subject-card{min-height:300px}
 .subject-card .subject-body{padding-top:24px;padding-bottom:22px}
 .subject-card .subject-body h3{margin-top:0}
 @media(max-width:560px){.subject-card{min-height:280px}}
 
 
-/* Alinhamento estrutural do painel: matérias e ranking geral perfeitamente alinhados */
+/* Alinhamento estrutural do painel: matÃ©rias e ranking geral perfeitamente alinhados */
 .section-title{
   display:flex;
   align-items:center;
@@ -161,7 +161,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 /* ======================================================
-   SISTEMA DE ÍCONES PROFISSIONAIS (Corporate SaaS / Industrial)
+   SISTEMA DE ÃCONES PROFISSIONAIS (Corporate SaaS / Industrial)
    ====================================================== */
 .app-icon{
   display:inline-block;
@@ -172,7 +172,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   flex-shrink:0;
 }
 
-/* Título com ícone alinhado */
+/* TÃ­tulo com Ã­cone alinhado */
 .title-with-icon{
   display:inline-flex;
   align-items:center;
@@ -192,7 +192,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   margin:0;
 }
 
-/* Header de estatísticas com ícone elegante */
+/* Header de estatÃ­sticas com Ã­cone elegante */
 .stat-header{
   display:flex;
   align-items:center;
@@ -214,7 +214,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   height:15px;
 }
 
-/* Badge de ícone em cada card de matéria */
+/* Badge de Ã­cone em cada card de matÃ©ria */
 .subject-card-topline{
   display:flex;
   align-items:center;
@@ -244,7 +244,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   height:18px;
 }
 
-/* Ícone de destaque ao abrir uma matéria */
+/* Ãcone de destaque ao abrir uma matÃ©ria */
 .subject-icon-large{
   width:65px;
   height:65px;
@@ -260,7 +260,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   stroke-width:2.2;
 }
 
-/* Botão voltar com ícone */
+/* BotÃ£o voltar com Ã­cone */
 .back-button{
   display:inline-flex;
   align-items:center;
@@ -276,7 +276,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   height:16px;
 }
 
-/* Botões com ícones */
+/* BotÃµes com Ã­cones */
 .btn{
   display:inline-flex;
   align-items:center;
@@ -291,7 +291,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   margin-left:4px;
 }
 
-/* Abas de estudo com ícones */
+/* Abas de estudo com Ã­cones */
 .tab{
   display:inline-flex;
   align-items:center;
@@ -363,7 +363,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   text-align:center;
 }
 
-/* Medalhas de resultado de quiz profissionais (substituindo emojis 🏆 ⭐ 📘) */
+/* Medalhas de resultado de quiz profissionais (substituindo emojis ðŸ† â­ ðŸ“˜) */
 .result-badge-wrap{
   width:72px;
   height:72px;
@@ -393,7 +393,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   border:2px solid #38BDF8;
 }
 
-/* Ícones de acerto e erro nos gabaritos */
+/* Ãcones de acerto e erro nos gabaritos */
 .review-good, .admin-answer-correct{
   display:flex;
   align-items:center;
@@ -417,7 +417,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   height:16px;
 }
 
-/* Ícone de PDF na lista de materiais */
+/* Ãcone de PDF na lista de materiais */
 .material-row .pdf-icon{
   display:inline-flex;
   align-items:center;
@@ -435,7 +435,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   height:16px;
 }
 
-/* Ícone do quiz interativo */
+/* Ãcone do quiz interativo */
 .seiri-icon{
   display:grid;
   place-items:center;
@@ -469,7 +469,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   height:14px;
 }
 
-/* Cards de matérias — hierarquia clara, títulos com espaço e alinhamento consistente */
+/* Cards de matÃ©rias â€” hierarquia clara, tÃ­tulos com espaÃ§o e alinhamento consistente */
 .subject-grid{align-items:stretch;gap:16px}
 .subject-card{
   min-height:0;
@@ -564,7 +564,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Player de vídeo responsivo: mantém o MP4 dentro dos limites da página */
+/* Player de vÃ­deo responsivo: mantÃ©m o MP4 dentro dos limites da pÃ¡gina */
 .lesson-panel,
 #lesson-content,
 .training-video-list,
@@ -593,7 +593,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Administração: formulários organizados em coluna no desktop também */
+/* AdministraÃ§Ã£o: formulÃ¡rios organizados em coluna no desktop tambÃ©m */
 .admin-panel {
   grid-template-columns: minmax(0, 1fr) !important;
   gap: 22px;
@@ -627,7 +627,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Exclusão administrativa deliberadamente discreta e destacada como ação destrutiva */
+/* ExclusÃ£o administrativa deliberadamente discreta e destacada como aÃ§Ã£o destrutiva */
 .admin-delete-content {
   margin-top: .75rem;
   color: #9f1239;
@@ -643,11 +643,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   cursor: wait;
 }
 
-/* Logo Progeral e suporte à instalação PWA */
+/* Logo Progeral e suporte Ã  instalaÃ§Ã£o PWA */
 .brand-logo{width:54px;height:54px;object-fit:contain;border-radius:12px;background:#fff;flex-shrink:0}.brand{gap:12px}.auth-brand-logo{display:block;width:min(220px,70%);height:auto;object-fit:contain;margin:0 0 22px;border-radius:28px;box-shadow:0 12px 32px #102f491a}@media(max-width:560px){.brand-logo{width:46px;height:46px}.auth-brand-logo{width:160px;margin-bottom:15px}}
 
 
-/* Quiz interativo 5S — Seiri */
+/* Quiz interativo 5S â€” Seiri */
 .seiri-wrap{max-width:900px;margin:0 auto;color:#192033}
 .seiri-heading{margin-bottom:20px}
 .seiri-kicker{display:inline-block;color:#0E4596;font-size:10px;font-weight:850;letter-spacing:1.3px;margin-bottom:8px}
@@ -705,7 +705,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Quiz Seiri — atualização visual inspirada no layout enviado */
+/* Quiz Seiri â€” atualizaÃ§Ã£o visual inspirada no layout enviado */
 .seiri-wrap{position:relative;isolation:isolate;max-width:940px;margin:0 auto;padding:18px;border-radius:24px;background:radial-gradient(circle at 50% 0%,#1e1b4b,#0f172a 72%);color:#f1f5f9;overflow:hidden;box-shadow:0 24px 70px #0f172a30}
 .seiri-wrap:before,.seiri-wrap:after{content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(45px);opacity:.5}
 .seiri-wrap:before{width:230px;height:230px;left:35%;top:90px;background:#4f46e5}
@@ -761,7 +761,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:560px){.seiri-wrap{padding:10px;border-radius:18px}.seiri-heading{padding:5px 3px 14px}.seiri-start,.seiri-game,.seiri-result{padding:17px 12px}.seiri-icon{width:80px;height:80px;font-size:36px}.seiri-facts{gap:6px}.seiri-facts span{padding:11px 4px;font-size:9px}.seiri-status{gap:5px;flex-wrap:wrap}.seiri-status span{font-size:9px}.seiri-option{padding:11px 9px;gap:9px;font-size:12px}.seiri-controls{align-items:flex-start}.seiri-controls span{max-width:52%;padding-top:4px}.seiri-controls .btn{padding:11px 13px}.seiri-final-stats{gap:2px;padding:6px}.seiri-final-stats>div{padding:7px 2px}.seiri-final-stats small{font-size:8px}}
 
 
-/* Quiz de Lubrificação — tema âmbar/laranja inspirado no HTML fornecido */
+/* Quiz de LubrificaÃ§Ã£o â€” tema Ã¢mbar/laranja inspirado no HTML fornecido */
 
 .pneumatica-theme{position:relative;isolation:isolate;overflow:hidden;max-width:100%;padding:clamp(18px,4vw,34px);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,rgba(217,119,6,.2),transparent 48%),linear-gradient(145deg,#21170c,#2a1b0b 58%,#422006);color:#fff7ed;box-shadow:0 24px 65px #43140730}
 .seiri-wrap.pneumatica-theme:before,.seiri-wrap.pneumatica-theme:after{content:"";position:absolute;z-index:-1;width:230px;height:230px;border-radius:50%;filter:blur(65px);pointer-events:none;opacity:.35}
@@ -790,7 +790,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:560px){.lubrificacao-theme .seiri-timer-row{justify-content:flex-end}}
 
 
-/* Vídeos de treinamento: lista cronológica com título clicável e cartões separados */
+/* VÃ­deos de treinamento: lista cronolÃ³gica com tÃ­tulo clicÃ¡vel e cartÃµes separados */
 .video-order-note{
   margin: -3px 0 18px;
   color: var(--muted);
@@ -888,7 +888,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Perfil do participante e visão geral do progresso */
+/* Perfil do participante e visÃ£o geral do progresso */
 #header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .profile-heading{margin:12px 0 22px}
 .profile-heading h1{margin:7px 0;font-size:clamp(26px,4vw,36px);color:var(--ink,#173b55)}
@@ -945,7 +945,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:480px){.admin-monitor-panel{padding:14px}.admin-attempt-card summary{grid-template-columns:minmax(0,1fr) auto;gap:8px}.admin-attempt-points{grid-column:2}.admin-student-row{gap:6px;padding:10px}.admin-student-main small{overflow-wrap:anywhere}}
 
 
-/* Módulo administrativo de auditorias */
+/* MÃ³dulo administrativo de auditorias */
 .audit-entry-panel{padding:22px;margin:18px 0}
 .audit-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .audit-form .field{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700;color:#536b7a}
@@ -984,7 +984,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:520px){.audit-entry-panel{padding:15px}.audit-form{grid-template-columns:1fr}.audit-observations-field,.audit-evidence-field{grid-column:1}.audit-bar-row{grid-template-columns:105px minmax(35px,1fr) 22px;gap:8px;font-size:11px}.audit-filters{grid-template-columns:1fr 1fr}}
 
 
-/* Auditorias — alinhamento dos controles OK/NOK em telas pequenas */
+/* Auditorias â€” alinhamento dos controles OK/NOK em telas pequenas */
 .audit-status-field{
   min-width:0;
   width:100%;
@@ -1035,7 +1035,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Histórico de auditorias — detalhes expansíveis */
+/* HistÃ³rico de auditorias â€” detalhes expansÃ­veis */
 .audit-history-detail{padding:0;overflow:hidden}
 .audit-history-detail>summary{padding:14px;cursor:pointer;list-style:none}
 .audit-history-detail>summary::-webkit-details-marker{display:none}
@@ -1075,7 +1075,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:560px){.audit-image-viewer{padding:8px}.audit-image-viewer-content{padding:10px;border-radius:12px}.audit-image-viewer-content img{max-height:calc(100dvh - 105px)}}
 
 
-/* Dashboard mobile — alinhar os três indicadores mesmo quando os títulos quebram linha */
+/* Dashboard mobile â€” alinhar os trÃªs indicadores mesmo quando os tÃ­tulos quebram linha */
 @media(max-width:560px){
   .stats .stat{
     display:flex;
@@ -1096,7 +1096,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* NR-10 — restauração da identidade visual do Ele.html */
+/* NR-10 â€” restauraÃ§Ã£o da identidade visual do Ele.html */
 .seiri-wrap.eletrica-theme{position:relative;isolation:isolate;overflow:hidden;max-width:100%;padding:clamp(18px,4vw,34px);border-radius:24px;background:radial-gradient(ellipse at 50% 0%,rgba(8,145,178,.2),transparent 48%),linear-gradient(145deg,#081426,#0b172b 58%,#101a32);color:#f1f5f9;box-shadow:0 24px 65px #07142640;font-family:'Plus Jakarta Sans',Inter,system-ui,sans-serif}
 .seiri-wrap.eletrica-theme:before,.seiri-wrap.eletrica-theme:after{content:"";position:absolute;z-index:-1;width:230px;height:230px;border-radius:50%;filter:blur(65px);pointer-events:none;opacity:.45}
 .seiri-wrap.eletrica-theme:before{top:80px;left:30%;background:#0891b2}.seiri-wrap.eletrica-theme:after{right:-90px;bottom:10px;background:#1d4ed8}
@@ -1118,11 +1118,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:560px){.seiri-wrap.eletrica-theme{padding:14px 10px;border-radius:16px}.eletrica-theme .seiri-start,.eletrica-theme .seiri-game,.eletrica-theme .seiri-result{padding:19px 14px;border-radius:18px}.eletrica-theme .seiri-icon{width:82px;height:82px;font-size:44px}.eletrica-theme .seiri-final-stats strong{font-size:20px}.eletrica-theme .seiri-controls{align-items:flex-end}.eletrica-theme .seiri-controls>span{max-width:48%}}
 
 
-/* Acompanhamento: cursos e tentativas em níveis separados */
+/* Acompanhamento: cursos e tentativas em nÃ­veis separados */
 .admin-course-instructions{margin:0 0 16px;font-size:13px;line-height:1.5}.admin-course-list{display:grid;gap:12px}.admin-course-card{border:1px solid #dce5eb;border-radius:14px;background:#fff;overflow:hidden}.admin-course-card>summary{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:14px;padding:17px 18px;cursor:pointer;list-style:none}.admin-course-card>summary::-webkit-details-marker{display:none}.admin-course-card>summary strong{font-size:15px;color:#173b55}.admin-course-meta{font-size:12px;color:#718391;text-align:right}.admin-course-chevron{font-size:18px;font-weight:700;color:#0e4596}.admin-course-card[open]>summary{background:#f5f8fc;border-bottom:1px solid #e6edf2}.admin-course-card[open] .admin-course-chevron{transform:rotate(45deg)}.admin-course-attempts{display:grid;gap:9px;padding:14px;background:#fafbfd}.admin-course-attempts .admin-attempt-card{border-color:#e5ebf0}.admin-course-attempts .admin-attempt-card summary{padding:13px 15px}.admin-course-attempts .admin-attempt-review{padding:0 14px 14px}@media(max-width:600px){.admin-course-card>summary{grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding:14px}.admin-course-meta{grid-column:1;text-align:left}.admin-course-chevron{grid-column:2;grid-row:1/3}.admin-course-attempts{padding:9px}.admin-course-attempts .admin-attempt-card summary{grid-template-columns:minmax(0,1fr) auto;gap:8px}}
 
 
-/* Gerenciador de quizzes — criação, edição e publicação */
+/* Gerenciador de quizzes â€” criaÃ§Ã£o, ediÃ§Ã£o e publicaÃ§Ã£o */
 .quiz-builder-panel{padding:22px;margin:18px 0}
 .quiz-builder-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:end}
 .quiz-builder-form .field,.managed-question-form .field{display:grid;gap:7px;font-size:12px;font-weight:700;color:#536b7a;min-width:0}
@@ -1173,7 +1173,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .managed-quiz-player.theme-pneumatic{--quiz-accent:#c26a12;--quiz-bg:#fff7ed}
 .managed-quiz-player.theme-electric{--quiz-accent:#0891b2;--quiz-bg:#ecfeff}
 
-/* Modo interativo: mantém a estrutura visual da matéria, separado do modelo prova */
+/* Modo interativo: mantÃ©m a estrutura visual da matÃ©ria, separado do modelo prova */
 .managed-quiz-player.mode-interactive{border:1px solid #dce7f5;box-shadow:0 12px 35px #0e459610}
 .managed-quiz-player.mode-interactive.theme-5s{background:linear-gradient(145deg,#fff,#f0f5fb);border-color:#dce7f5}
 .managed-quiz-player.mode-interactive.theme-lube{background:radial-gradient(circle at 50% 0%,#3b2814,#172033 75%);border-color:#92400e;color:#fff}
@@ -1203,7 +1203,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .managed-result-card p{color:#536b7a;font-size:13px;line-height:1.6}
 @media(max-width:650px){.quiz-builder-panel{padding:15px}.quiz-builder-form,.managed-options-grid,.quiz-catalog-grid{grid-template-columns:1fr}.quiz-builder-wide{grid-column:1}.managed-quiz-summary{flex-direction:column}.managed-quiz-actions{align-items:flex-start}.managed-question-row{grid-template-columns:minmax(0,1fr) auto}.managed-question-row button:last-child{grid-column:2}.managed-question-form{padding:12px}.managed-player-controls .btn{min-width:0}.managed-quiz-player{padding:10px;border-radius:14px}}
 
-/* Exibição dos quizzes HTML personalizados sem alterar seu conteúdo visual */
+/* ExibiÃ§Ã£o dos quizzes HTML personalizados sem alterar seu conteÃºdo visual */
 .html-quiz-shell{display:grid;gap:14px;width:100%;min-width:0}
 .html-quiz-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 16px;border:1px solid #dce5eb;border-radius:14px;background:#fff}
 .html-quiz-toolbar h2{margin:0;color:#173b55;font-size:18px}
@@ -1214,7 +1214,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:650px){.html-quiz-toolbar{align-items:flex-start}.html-quiz-actions{width:100%}.html-quiz-actions .btn{flex:1;text-align:center;justify-content:center}.html-quiz-frame{height:82vh;min-height:650px;border-radius:12px}}
 
 
-/* Gerenciador de quizzes — seleção inicial por matéria */
+/* Gerenciador de quizzes â€” seleÃ§Ã£o inicial por matÃ©ria */
 .quiz-manager-subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0}
 .quiz-manager-subject-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-height:138px;padding:22px;border:1px solid #dce5eb;border-radius:15px;background:#fff;text-align:left;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
 .quiz-manager-subject-card:hover{border-color:#0e4596;box-shadow:0 8px 24px #0e459614;transform:translateY(-2px)}
@@ -1225,7 +1225,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:600px){.quiz-manager-subject-grid{grid-template-columns:1fr;gap:10px}.quiz-manager-subject-card{min-height:110px;padding:18px}}
 
 
-/* Modo Prova: todas as questões na mesma página, com correção após o envio */
+/* Modo Prova: todas as questÃµes na mesma pÃ¡gina, com correÃ§Ã£o apÃ³s o envio */
 .managed-quiz-player.mode-exam{max-width:980px;background:#f4f7fb;border:1px solid #dce5eb}
 .managed-quiz-player.mode-exam .managed-player-head{align-items:flex-start}
 .managed-exam-title{margin:8px 0 4px;color:#173b55;font-size:clamp(22px,3vw,30px)}
@@ -1258,7 +1258,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .admin-quiz-management{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px;border:1px solid var(--border,#e3e8ef);border-radius:12px;background:var(--surface,#fff)}.admin-quiz-management h3{margin:0 0 5px}.admin-quiz-management p{margin:0}@media(max-width:560px){.admin-quiz-management{align-items:stretch;flex-direction:column}.admin-quiz-management .btn{width:100%}}
 
 
-/* Cards da área de administração: apostilas, vídeos e quizzes */
+/* Cards da Ã¡rea de administraÃ§Ã£o: apostilas, vÃ­deos e quizzes */
 .admin-panel{display:flex;flex-direction:column;gap:18px!important}
 .admin-section-heading h2{margin:4px 0 6px}
 .admin-section-heading p{margin:0}
@@ -1275,7 +1275,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:680px){.admin-tools-grid{grid-template-columns:minmax(0,1fr)}.admin-tool-card{padding:17px}.admin-tool-card .upload-form button,.admin-tool-card.admin-quiz-management .btn{width:100%}}
 
 
-/* Correção do cabeçalho dos cards de questão no modo Prova */
+/* CorreÃ§Ã£o do cabeÃ§alho dos cards de questÃ£o no modo Prova */
 .managed-quiz-player.mode-exam .managed-exam-question{min-inline-size:0;padding:20px;}
 .managed-quiz-player.mode-exam .managed-exam-question legend{float:left;width:100%;margin:0 0 14px;padding:0;}
 .managed-quiz-player.mode-exam .managed-exam-question legend + *{clear:both;}
@@ -1284,7 +1284,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:650px){.managed-quiz-player.mode-exam .managed-exam-question{padding:15px;}}
 
 
-/* Progresso de reprodução dos vídeos de treinamento */
+/* Progresso de reproduÃ§Ã£o dos vÃ­deos de treinamento */
 .training-video-status{align-self:center;white-space:nowrap;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800}
 .training-video-status.is-done{background:#eaf7ef;color:#187342}
 .training-video-status.is-pending{background:#eef3f8;color:#526779}
@@ -1295,7 +1295,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:600px){.training-video-status{font-size:10px;padding:5px 7px}.training-video-title{gap:8px}}
 
 
-/* Identidade visual exclusiva — Pneumática Básica */
+/* Identidade visual exclusiva â€” PneumÃ¡tica BÃ¡sica */
 .seiri-wrap.pneumatica-theme{
   position:relative;isolation:isolate;overflow:hidden;max-width:100%;
   padding:clamp(18px,4vw,36px);border:1px solid #24445c;border-radius:24px;
@@ -1383,7 +1383,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Pneumática Básica — identidade visual industrial própria (após os estilos genéricos do quiz) */
+/* PneumÃ¡tica BÃ¡sica â€” identidade visual industrial prÃ³pria (apÃ³s os estilos genÃ©ricos do quiz) */
 .seiri-wrap.pneumatica-theme{
   background:
     linear-gradient(rgba(34,211,238,.055) 1px,transparent 1px),
@@ -1471,7 +1471,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .seiri-wrap.pneumatica-theme .seiri-review-item{border-color:#b8cdd2}
 
 
-/* Correção definitiva: identidade Pneumática aplicada tanto ao quiz interativo quanto ao modelo prova */
+/* CorreÃ§Ã£o definitiva: identidade PneumÃ¡tica aplicada tanto ao quiz interativo quanto ao modelo prova */
 .seiri-wrap.theme-pneumatic,
 .seiri-wrap.pneumatica-theme.theme-pneumatic{
   background:linear-gradient(rgba(34,211,238,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.055) 1px,transparent 1px),radial-gradient(ellipse at 82% 12%,rgba(8,145,178,.28),transparent 38%),linear-gradient(145deg,#101d2b 0%,#142b3b 58%,#0b1724 100%) !important;
@@ -1513,7 +1513,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .managed-quiz-player.theme-pneumatic .btn-primary{background:linear-gradient(110deg,#0e7490,#0891b2) !important;color:#fff !important}
 
 
-/* Pneumática — modelo Prova: visual claro e independente do quiz interativo */
+/* PneumÃ¡tica â€” modelo Prova: visual claro e independente do quiz interativo */
 .managed-quiz-player.theme-exam-pneumatic.mode-exam{
   --quiz-accent:#0e4596;
   --quiz-bg:#edf3f9;
@@ -1564,7 +1564,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 
 
-/* Centralização das ferramentas administrativas */
+/* CentralizaÃ§Ã£o das ferramentas administrativas */
 .admin-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0}
 .admin-hub-card{display:grid;grid-template-columns:54px minmax(0,1fr) 22px;align-items:center;gap:16px;min-width:0;padding:24px;text-align:left;border:1px solid var(--line,#dce5eb);border-radius:16px;background:var(--surface,#fff);color:var(--text,#173b55);cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
 .admin-hub-card:hover{border-color:#8aa9ce;box-shadow:0 10px 28px rgba(14,69,150,.09);transform:translateY(-2px)}
@@ -1578,7 +1578,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:680px){.admin-hub-grid{grid-template-columns:minmax(0,1fr);gap:12px}.admin-hub-card{padding:18px;grid-template-columns:48px minmax(0,1fr) 20px}.admin-hub-icon{width:48px;height:48px}}
 
 
-/* Boas-vindas — selo de gamificação alinhado e refinado em todos os tamanhos */
+/* Boas-vindas â€” selo de gamificaÃ§Ã£o alinhado e refinado em todos os tamanhos */
 .welcome{align-items:center;gap:22px}
 .welcome-badge{
   display:flex;align-items:center;gap:13px;
@@ -1610,202 +1610,309 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .welcome-badge-copy strong{font-size:12px}
 }
 
-/* Academia Industrial — trilha gamificada experimental */
-.gm-dashboard{display:flex;flex-direction:column;gap:22px;max-width:1440px;margin:0 auto}
-.gm-hero{background:linear-gradient(125deg,#0E4596,#2563b8);border-radius:25px;padding:28px;color:white;display:flex;align-items:center;justify-content:space-between;gap:18px;box-shadow:0 12px 30px rgba(14,69,150,.13)}
-.gm-eyebrow{font-size:11px;font-weight:800;letter-spacing:.13em;color:#5d8fce;display:block;margin-bottom:8px}
-.gm-hero .gm-eyebrow{color:#d6e7ff}
-.gm-hero h1{font-size:clamp(25px,3vw,36px);margin:0 0 8px;color:white}
-.gm-hero p{margin:0;color:#e5efff}
-.gm-hero-actions{display:flex;flex-direction:column;align-items:center;gap:10px}
-.gm-hero-mascot{font-size:60px;line-height:1}
-.gm-version-switch,.gm-back-to-new{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);color:white;border-radius:999px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer}
-.gm-back-to-new{margin-bottom:15px;background:#eef4fb;color:#0E4596;border-color:#d6e4f5}
-.gm-level-panel{border:1px solid #dbe6f4;border-radius:22px;background:#fff;padding:22px 24px}
-.gm-level-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.gm-level-label{font-size:11px;font-weight:900;color:#0E4596;letter-spacing:.12em}
-.gm-level-top h2{margin:5px 0 0;font-size:19px}
-.gm-xp-total{color:#0E4596;font-size:18px;white-space:nowrap}
-.gm-xp-track,.gm-mission-progress{height:10px;background:#eaf0f7;border-radius:20px;overflow:hidden;margin-top:15px}
-.gm-xp-track span,.gm-mission-progress span{display:block;height:100%;background:linear-gradient(90deg,#0E4596,#66a3e6);border-radius:inherit;transition:width .3s}
-.gm-xp-caption{font-size:12px;color:#6d7c90;margin:9px 0 0}
-.gm-quick-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.gm-quick-stat{border:1px solid #e1eaf4;border-radius:19px;background:#fff;padding:17px;display:flex;align-items:center;gap:13px}
-.gm-stat-symbol{width:45px;height:45px;border-radius:14px;background:#f1f6fc;display:grid;place-items:center;font-size:22px}
-.gm-quick-stat strong{display:block;font-size:24px;color:#17283e}
-.gm-quick-stat span{font-size:12px;color:#748399}
-.gm-section-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
-.gm-section-heading h2{margin:0;font-size:21px}
-.gm-reset-note,.gm-ranking-rule{font-size:12px;color:#78879a}
-.gm-mission-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+/* Dashboard gamificado â€” refinamento visual premium */
+.gm-dashboard{display:flex;flex-direction:column;gap:26px;max-width:1240px;margin:0 auto;width:100%;padding:4px 0 32px}
+.gm-hero{
+  position:relative;overflow:hidden;
+  padding:34px 38px;border-radius:24px;
+  background:linear-gradient(130deg,#092f69 0%,#0e4596 55%,#1c68bf 100%);
+  color:#fff;display:flex;align-items:center;justify-content:space-between;gap:24px;
+  box-shadow:0 14px 34px rgba(14,69,150,.18);
+}
+.gm-hero:before{
+  content:"";position:absolute;width:340px;height:340px;
+  border:1px solid rgba(255,255,255,.1);border-radius:50%;
+  right:-90px;top:-130px;
+  box-shadow:0 0 0 32px rgba(255,255,255,.03),0 0 0 68px rgba(255,255,255,.02);
+  pointer-events:none;
+}
+.gm-hero:after{
+  content:"";position:absolute;width:180px;height:180px;border-radius:50%;
+  right:160px;bottom:-100px;background:rgba(255,255,255,.04);
+  pointer-events:none;
+}
+.gm-hero-content{position:relative;z-index:1;max-width:620px}
+.gm-eyebrow{font-size:11px;font-weight:850;letter-spacing:.14em;color:#4979ba;display:block;margin-bottom:8px}
+.gm-hero .gm-eyebrow{color:#bfdbfe}
+.gm-hero h1{font-size:clamp(26px,3.2vw,38px);font-weight:850;letter-spacing:-.03em;margin:0 0 8px;color:#fff;line-height:1.15}
+.gm-hero p{font-size:14px;line-height:1.55;color:#e2edfd;margin:0}
+
+.gm-hero-badge{
+  position:relative;z-index:1;display:flex;align-items:center;gap:14px;
+  padding:14px 18px;border-radius:18px;
+  background:rgba(255,255,255,.12);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.24);box-shadow:0 6px 18px rgba(0,0,0,.08);
+  flex-shrink:0;max-width:290px;
+}
+.gm-hero-icon-wrap{
+  width:44px;height:44px;border-radius:13px;
+  background:#fff;color:#0e4596;
+  display:grid;place-items:center;flex-shrink:0;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+.gm-hero-icon-wrap svg{width:22px;height:22px}
+.gm-hero-badge-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.gm-hero-badge-text strong{font-size:13px;font-weight:800;color:#fff}
+.gm-hero-badge-text span{font-size:11px;line-height:1.4;color:#dbeafe}
+
+/* Painel de Nível e Barra de XP */
+.gm-level-panel{
+  position:relative;overflow:hidden;
+  border:1px solid #dce6f2;border-radius:20px;
+  background:#fff;padding:22px 28px;
+  box-shadow:0 4px 18px rgba(14,69,150,.04);
+}
+.gm-level-panel:before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(180deg,#0e4596,#38bdf8);
+}
+.gm-level-top{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.gm-level-info{display:flex;flex-direction:column;gap:4px}
+.gm-level-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#eef4fb;color:#0e4596;border:1px solid #dbe6f5;
+  font-size:11px;font-weight:850;letter-spacing:.08em;
+  padding:4px 11px;border-radius:999px;width:fit-content;
+}
+.gm-level-badge svg{width:14px;height:14px}
+.gm-level-info h2{margin:3px 0 0;font-size:20px;font-weight:800;letter-spacing:-.02em;color:#0f172a}
+
+.gm-xp-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#fffbeb;border:1px solid #fef3c7;
+  padding:8px 14px;border-radius:999px;
+}
+.gm-xp-icon{color:#d97706;display:grid;place-items:center}
+.gm-xp-icon svg{width:18px;height:18px}
+.gm-xp-total{font-size:17px;font-weight:850;color:#92400e;white-space:nowrap}
+
+.gm-xp-track{
+  height:13px;background:#eef2f7;border-radius:999px;
+  overflow:hidden;margin-top:16px;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.06);
+}
+.gm-xp-track span{
+  display:block;height:100%;
+  background:linear-gradient(90deg,#0e4596 0%,#2563eb 55%,#38bdf8 100%);
+  border-radius:inherit;transition:width .4s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px rgba(37,99,235,.25);
+}
+.gm-xp-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;font-size:12px;font-weight:600;color:#64748b;
+}
+.gm-xp-caption{margin:0}
+.gm-xp-percent{font-weight:800;color:#0e4596}
+
+/* Indicadores Rápidos (Quick Stats) — Estilo tátil 3D */
+.gm-quick-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.gm-quick-stat{
+  border:1px solid #e2e8f0;border-bottom:3.5px solid;
+  border-radius:18px;background:#fff;padding:18px 20px;
+  display:flex;align-items:center;gap:16px;
+  box-shadow:0 4px 14px rgba(0,0,0,.03);
+  transition:transform .18s,box-shadow .18s;
+}
+.gm-quick-stat:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.06)}
+
+.gm-quick-stat.stat-streak{border-bottom-color:#f97316}
+.gm-quick-stat.stat-streak .gm-stat-symbol{background:#fff7ed;color:#ea580c}
+
+.gm-quick-stat.stat-knowledge{border-bottom-color:#0e4596}
+.gm-quick-stat.stat-knowledge .gm-stat-symbol{background:#eff6ff;color:#0e4596}
+
+.gm-quick-stat.stat-quizzes{border-bottom-color:#10b981}
+.gm-quick-stat.stat-quizzes .gm-stat-symbol{background:#ecfdf5;color:#059669}
+
+.gm-stat-symbol{
+  width:50px;height:50px;border-radius:15px;
+  display:grid;place-items:center;flex-shrink:0;
+}
+.gm-stat-symbol svg{width:26px;height:26px}
+.gm-stat-data{display:flex;flex-direction:column;gap:1px}
+.gm-stat-data strong{font-size:26px;font-weight:850;color:#0f172a;line-height:1.1;letter-spacing:-.02em}
+.gm-stat-data span{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em}
+
+/* Cabeçalhos de Seções */
+.gm-section-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:14px;margin-bottom:14px;
+}
+.gm-section-heading h2{margin:2px 0 0;font-size:20px;font-weight:850;letter-spacing:-.02em;color:#0f172a}
+.gm-reset-note,.gm-ranking-rule{font-size:12px;font-weight:600;color:#64748b}
+
+/* Missões Diárias e Semanais */
+.gm-mission-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .gm-week-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.gm-mission-card{display:flex;align-items:flex-start;gap:11px;padding:16px;border:1px solid #e1eaf4;border-radius:18px;background:#fff;min-height:125px}
-.gm-mission-card.is-complete{border-color:#a6d8bd;background:#f4fbf6}
-.gm-mission-icon{width:35px;height:35px;border-radius:11px;background:#eff5fc;color:#0E4596;display:grid;place-items:center;font-weight:900;flex-shrink:0}
-.gm-mission-card.is-complete .gm-mission-icon{background:#d8f1e2;color:#20834b}
-.gm-mission-info{min-width:0;flex:1}
-.gm-mission-info strong{font-size:14px;display:block;color:#203149}
-.gm-mission-info p{font-size:12px;color:#7a8797;margin:5px 0}
-.gm-mission-progress{height:6px;margin:10px 0 5px}
-.gm-mission-info small{font-size:11px;color:#8290a0}
-.gm-mission-reward{font-size:11px;font-weight:800;color:#0E4596;white-space:nowrap}
-.gm-mission-card.is-complete .gm-mission-reward{color:#22854b}
-.gm-main-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;align-items:start}
-.gm-subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.gm-subject-card{display:flex;gap:13px;border:1px solid #e1eaf4;background:#fff;border-radius:19px;padding:17px;min-height:175px}
-.gm-subject-icon{width:46px;height:46px;border-radius:14px;background:#f1f6fc;display:grid;place-items:center;font-size:20px;flex-shrink:0}
-.gm-subject-copy{min-width:0;flex:1}
-.gm-module{font-size:10px;font-weight:800;color:#7f91a8;letter-spacing:.1em}
-.gm-subject-card h3{font-size:17px;margin:6px 0}
-.gm-subject-card p{font-size:12px;color:#7c899a;margin:0 0 12px}
-.gm-subject-card .subject-progress{font-size:11px;color:#7b8a9c;margin:0 0 10px}
-.gm-subject-open{width:100%;border:0;border-radius:12px;padding:10px 12px;background:#0E4596;color:white;font-weight:700;font-size:12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.gm-achievements-area{background:#fff;border:1px solid #e1eaf4;border-radius:21px;padding:17px}
-.gm-achievements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.gm-achievement{display:flex;flex-direction:column;align-items:center;text-align:center;padding:11px 6px;border:1px solid #e5ebf3;border-radius:14px;min-height:105px}
-.gm-achievement.locked{opacity:.48;filter:grayscale(1)}
-.gm-achievement-emoji{font-size:25px;margin-bottom:6px}
-.gm-achievement strong{font-size:11px}
-.gm-achievement small{font-size:10px;color:#7a8797;margin-top:4px}
-.gm-ranking-card{border:1px solid #e1eaf4;border-radius:20px;background:#fff;padding:17px}
-.gm-ranking-note{font-size:11px;color:#77869a;margin:14px 0 0}
-.gm-loading{padding:15px;color:#77869a;font-size:13px}
-.gm-dashboard .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.gm-dashboard .stat{border:1px solid #e1eaf4;border-radius:18px;padding:14px;background:#fff}
-.gm-dashboard .leader-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eef2f7}
-.gm-dashboard .leader-row:last-child{border-bottom:0}
-@media(max-width:1000px){.gm-mission-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gm-main-grid{grid-template-columns:1fr}.gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}}
-@media(max-width:640px){.gm-dashboard{gap:15px}.gm-hero{padding:19px 17px;border-radius:20px;align-items:flex-start}.gm-hero-actions{gap:7px}.gm-hero-mascot{font-size:39px}.gm-version-switch{font-size:10px;padding:8px 10px}.gm-hero h1{font-size:24px}.gm-hero p{font-size:12px}.gm-level-panel{padding:16px;border-radius:18px}.gm-level-top h2{font-size:16px}.gm-xp-total{font-size:15px}.gm-quick-stats{gap:8px}.gm-quick-stat{padding:11px 8px;gap:7px;border-radius:14px}.gm-stat-symbol{width:30px;height:30px;border-radius:9px;font-size:17px}.gm-quick-stat strong{font-size:18px}.gm-quick-stat span{font-size:10px;line-height:1.2;display:block}.gm-section-heading h2{font-size:18px}.gm-reset-note,.gm-ranking-rule{font-size:10px}.gm-mission-grid,.gm-week-grid{grid-template-columns:1fr;gap:9px}.gm-mission-card{min-height:0;padding:13px;border-radius:16px}.gm-mission-info strong{font-size:13px}.gm-mission-info p{font-size:11px}.gm-subject-grid{grid-template-columns:1fr}.gm-subject-card{padding:13px;border-radius:16px;min-height:0}.gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.gm-achievement{min-height:90px;padding:8px 4px}.gm-achievement strong{font-size:10px}.gm-ranking-card{padding:12px}.gm-dashboard .stats{grid-template-columns:1fr}}
 
+.gm-mission-card{
+  display:flex;align-items:flex-start;gap:13px;
+  padding:16px 18px;border:1px solid #e2e8f0;border-bottom:3.5px solid #cbd5e1;
+  border-radius:18px;background:#fff;min-height:130px;
+  box-shadow:0 4px 14px rgba(0,0,0,.025);
+  transition:transform .18s,border-color .18s,box-shadow .18s;
+}
+.gm-mission-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(14,69,150,.06);border-color:#bfdbfe}
+.gm-mission-card.is-complete{
+  border-color:#bbf7d0;border-bottom-color:#10b981;
+  background:linear-gradient(145deg,#fff 0%,#f0fdf4 100%);
+}
 
-/* Dashboard gamificado — refinamento visual premium */
-.gm-dashboard{gap:28px;padding:4px 0 28px}
-.gm-hero{position:relative;overflow:hidden;min-height:200px;padding:36px 40px;border-radius:28px;background:linear-gradient(115deg,#092f69 0%,#0e4596 52%,#2867b8 100%);box-shadow:0 18px 42px rgba(14,69,150,.18)}
-.gm-hero:before{content:"";position:absolute;width:330px;height:330px;border:1px solid rgba(255,255,255,.1);border-radius:50%;right:-105px;top:-145px;box-shadow:0 0 0 32px rgba(255,255,255,.035),0 0 0 68px rgba(255,255,255,.025)}
-.gm-hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:110px;bottom:-125px;background:rgba(255,255,255,.055)}
-.gm-hero>div:first-child,.gm-hero-actions{position:relative;z-index:1}
-.gm-eyebrow{font-size:12px;letter-spacing:.16em;margin-bottom:11px}
-.gm-hero h1{font-size:clamp(30px,3.5vw,44px);letter-spacing:-.035em;margin-bottom:10px}
-.gm-hero p{font-size:15px;line-height:1.6;max-width:580px;color:#e0edff}
-.gm-hero-actions{gap:14px}
-.gm-hero-mascot{font-size:78px;filter:drop-shadow(0 7px 10px rgba(0,0,0,.14))}
-.gm-version-switch{background:rgba(255,255,255,.13);backdrop-filter:blur(8px);border-color:rgba(255,255,255,.3);padding:11px 17px;font-size:12px;transition:background .2s,transform .2s}
-.gm-version-switch:hover{background:rgba(255,255,255,.22);transform:translateY(-1px)}
-.gm-level-panel{position:relative;overflow:hidden;padding:28px 32px;border-radius:24px;border-color:#d9e5f2;box-shadow:0 9px 28px rgba(25,57,91,.045)}
-.gm-level-panel:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180,#0e4596,#6cb0ef)}
-.gm-level-top h2{font-size:24px;letter-spacing:-.02em;margin-top:8px}
-.gm-level-label{font-size:12px;letter-spacing:.14em}
-.gm-xp-total{font-size:23px;font-weight:900}
-.gm-xp-track{height:14px;margin-top:22px;background:#edf2f8}
-.gm-xp-track span{background:linear-gradient(90deg,#0e4596,#3b83d5,#79b5f0);box-shadow:0 0 12px rgba(56,130,213,.22)}
-.gm-xp-caption{font-size:13px;margin-top:11px}
-.gm-quick-stats{gap:18px}
-.gm-quick-stat{padding:22px;border-radius:22px;gap:16px;box-shadow:0 8px 24px rgba(25,57,91,.035);transition:transform .18s,box-shadow .18s}
-.gm-quick-stat:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(25,57,91,.07)}
-.gm-stat-symbol{width:56px;height:56px;border-radius:17px;font-size:27px;background:linear-gradient(145deg,#f4f8fd,#e7f0fa)}
-.gm-quick-stat strong{font-size:30px;letter-spacing:-.03em;line-height:1.1}
-.gm-quick-stat span{font-size:13px;margin-top:5px;display:block}
-.gm-section-heading{margin-bottom:17px}
-.gm-section-heading h2{font-size:25px;letter-spacing:-.025em;margin-top:4px}
-.gm-reset-note,.gm-ranking-rule{font-size:13px}
-.gm-mission-grid{gap:15px}
-.gm-mission-card{position:relative;min-height:145px;padding:19px;border-radius:21px;gap:14px;box-shadow:0 6px 20px rgba(25,57,91,.025);transition:transform .18s,box-shadow .18s,border-color .18s}
-.gm-mission-card:hover{transform:translateY(-2px);box-shadow:0 11px 24px rgba(25,57,91,.06);border-color:#c8d9ec}
-.gm-mission-icon{width:46px;height:46px;border-radius:15px;font-size:20px;background:linear-gradient(145deg,#eff6ff,#e3eefb)}
-.gm-mission-info strong{font-size:15px;line-height:1.4}
-.gm-mission-info p{font-size:13px;line-height:1.55;margin:6px 0}
-.gm-mission-progress{height:8px;margin:12px 0 7px}
-.gm-mission-info small{font-size:12px}
-.gm-mission-reward{font-size:13px}
-.gm-mission-card.is-complete{background:linear-gradient(130deg,#f3fbf6,#f9fdfb);border-color:#b8dfc8}
-.gm-main-grid{grid-template-columns:minmax(0,1fr) 330px;gap:24px}
-.gm-subject-grid{gap:16px}
-.gm-subject-card{position:relative;overflow:hidden;min-height:210px;padding:22px;border-radius:23px;gap:17px;box-shadow:0 8px 24px rgba(25,57,91,.035);transition:transform .2s,box-shadow .2s,border-color .2s}
-.gm-subject-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(25,57,91,.08);border-color:#c7d8ec}
-.gm-subject-card:after{content:"";position:absolute;right:-38px;top:-38px;width:112px;height:112px;border-radius:50%;background:rgba(14,69,150,.035);pointer-events:none}
-.gm-subject-icon{width:62px;height:62px;border-radius:19px;font-size:29px;background:linear-gradient(145deg,#f3f8fd,#e6eff9);box-shadow:inset 0 0 0 1px rgba(14,69,150,.035)}
-.gm-module{font-size:11px;letter-spacing:.14em}
-.gm-subject-card h3{font-size:20px;letter-spacing:-.025em;margin:7px 0}
-.gm-subject-card p{font-size:13px;line-height:1.55;margin-bottom:14px}
-.gm-subject-card .subject-progress{font-size:12px;margin-bottom:12px}
-.gm-subject-open{border-radius:13px;padding:12px 14px;font-size:13px;box-shadow:0 5px 12px rgba(14,69,150,.12);transition:filter .15s,transform .15s}
-.gm-subject-open:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.gm-achievements-area{border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(25,57,91,.035)}
-.gm-achievements{gap:11px}
-.gm-achievement{min-height:120px;padding:13px 8px;border-radius:17px;background:linear-gradient(145deg,#fff,#f9fbfd);transition:transform .18s,border-color .18s}
-.gm-achievement:hover{transform:translateY(-2px);border-color:#c9d9eb}
-.gm-achievement-emoji{font-size:31px;margin-bottom:8px}
-.gm-achievement strong{font-size:12px;line-height:1.4}
-.gm-achievement small{font-size:11px;margin-top:5px}
-.gm-achievement.earned{background:linear-gradient(145deg,#fff,#f1f8ff);border-color:#c4d9ef}
-.gm-achievement.locked{opacity:.55}
-.gm-ranking-card{border-radius:24px;padding:22px;box-shadow:0 8px 24px rgba(25,57,91,.035)}
-.gm-ranking-note{font-size:12px;line-height:1.6}
-.gm-loading{font-size:14px;padding:18px}
-.gm-dashboard .leader-row{padding:14px 4px}
-.gm-dashboard .stats{gap:16px}
-.gm-dashboard .stat{border-radius:20px;padding:18px}
-@media(max-width:1000px){
- .gm-dashboard{gap:23px}
- .gm-main-grid{grid-template-columns:1fr}
- .gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}
- .gm-subject-card{min-height:195px}
+.gm-mission-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:#f1f5f9;color:#0e4596;
+  display:grid;place-items:center;flex-shrink:0;
 }
-@media(max-width:640px){
- .gm-dashboard{gap:18px;padding-bottom:18px}
- .gm-hero{min-height:0;padding:24px 20px;border-radius:22px;align-items:center;gap:14px}
- .gm-hero:before{width:230px;height:230px;right:-90px;top:-110px;box-shadow:0 0 0 24px rgba(255,255,255,.035),0 0 0 52px rgba(255,255,255,.025)}
- .gm-hero h1{font-size:28px;line-height:1.16;margin-bottom:8px}
- .gm-hero p{font-size:13px;line-height:1.5}
- .gm-eyebrow{font-size:10px;letter-spacing:.13em}
- .gm-hero-actions{gap:9px}
- .gm-hero-mascot{font-size:48px}
- .gm-version-switch{font-size:10px;padding:8px 11px}
- .gm-level-panel{padding:19px 18px;border-radius:20px}
- .gm-level-top h2{font-size:19px}
- .gm-level-label{font-size:10px}
- .gm-xp-total{font-size:18px}
- .gm-xp-track{height:11px;margin-top:17px}
- .gm-xp-caption{font-size:11px}
- .gm-quick-stats{gap:9px}
- .gm-quick-stat{padding:13px 10px;border-radius:16px;gap:8px;flex-direction:column;align-items:flex-start}
- .gm-stat-symbol{width:38px;height:38px;border-radius:12px;font-size:21px}
- .gm-quick-stat strong{font-size:22px}
- .gm-quick-stat span{font-size:10px;line-height:1.3}
- .gm-section-heading{align-items:center;margin-bottom:13px}
- .gm-section-heading h2{font-size:20px}
- .gm-reset-note,.gm-ranking-rule{font-size:10px}
- .gm-mission-grid,.gm-week-grid{grid-template-columns:1fr;gap:10px}
- .gm-mission-card{padding:15px;border-radius:17px;min-height:0;gap:12px}
- .gm-mission-icon{width:40px;height:40px;border-radius:13px;font-size:17px}
- .gm-mission-info strong{font-size:14px}
- .gm-mission-info p{font-size:12px;line-height:1.45}
- .gm-mission-progress{height:7px;margin:10px 0 6px}
- .gm-mission-info small{font-size:11px}
- .gm-mission-reward{font-size:11px}
- .gm-subject-grid{grid-template-columns:1fr;gap:11px}
- .gm-subject-card{padding:17px;border-radius:19px;min-height:0;gap:13px}
- .gm-subject-icon{width:52px;height:52px;border-radius:16px;font-size:25px}
- .gm-module{font-size:10px}
- .gm-subject-card h3{font-size:18px}
- .gm-subject-card p{font-size:12px;line-height:1.45}
- .gm-subject-open{padding:11px 12px;font-size:12px}
- .gm-achievements-area{padding:16px;border-radius:20px}
- .gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
- .gm-achievement{min-height:104px;padding:10px 5px;border-radius:14px}
- .gm-achievement-emoji{font-size:26px}
- .gm-achievement strong{font-size:10px}
- .gm-achievement small{font-size:9px}
- .gm-ranking-card{padding:15px;border-radius:20px}
- .gm-ranking-note{font-size:11px;line-height:1.5}
- .gm-dashboard .stats{grid-template-columns:1fr}
+.gm-mission-icon svg{width:20px;height:20px}
+.gm-mission-card.is-complete .gm-mission-icon{background:#dcfce7;color:#16a34a}
+
+.gm-mission-info{min-width:0;flex:1;display:flex;flex-direction:column}
+.gm-mission-topline{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gm-mission-info strong{font-size:14px;font-weight:800;color:#0f172a;line-height:1.35}
+.gm-mission-info p{font-size:12px;color:#64748b;line-height:1.45;margin:4px 0 8px}
+
+.gm-mission-reward{
+  font-size:11px;font-weight:850;color:#0e4596;
+  background:#eff6ff;padding:3px 9px;border-radius:999px;
+  white-space:nowrap;display:inline-flex;align-items:center;gap:4px;
 }
-@media(max-width:380px){
- .gm-hero{padding:19px 15px}
- .gm-hero-mascot{font-size:39px}
- .gm-quick-stat{padding:11px 7px}
- .gm-quick-stat strong{font-size:19px}
- .gm-quick-stat span{font-size:9px}
- .gm-section-heading h2{font-size:18px}
- .gm-reset-note,.gm-ranking-rule{max-width:105px;text-align:right}
+.gm-mission-reward.is-done{color:#15803d;background:#dcfce7}
+.gm-mission-reward svg{width:12px;height:12px}
+
+.gm-mission-progress{
+  height:7px;background:#eef2f7;border-radius:999px;
+  overflow:hidden;margin-top:auto;
+}
+.gm-mission-progress span{
+  display:block;height:100%;
+  background:linear-gradient(90deg,#10b981,#34d399);
+  border-radius:inherit;transition:width .3s;
+}
+.gm-mission-meta{display:flex;justify-content:flex-end;margin-top:4px}
+.gm-mission-meta small{font-size:11px;font-weight:700;color:#94a3b8}
+
+/* Layout Principal: Cursos + Conquistas */
+.gm-main-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+.gm-courses-column{min-width:0}
+
+/* Cards das Matérias */
+.gm-subject-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.gm-subject-card{
+  display:flex;gap:16px;border:1px solid #e2e8f0;border-bottom:3.5px solid #cbd5e1;
+  background:#fff;border-radius:20px;padding:20px;min-height:190px;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,.025);
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.gm-subject-card:hover{
+  transform:translateY(-3px);border-color:#93c5fd;
+  box-shadow:0 12px 28px rgba(14,69,150,.08);
+}
+.gm-subject-card:after{
+  content:"";position:absolute;right:-35px;top:-35px;
+  width:105px;height:105px;border-radius:50%;
+  background:rgba(14,69,150,.03);pointer-events:none;
+}
+
+.gm-subject-icon{
+  width:56px;height:56px;border-radius:16px;
+  display:grid;place-items:center;flex-shrink:0;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.04);
+}
+.gm-subject-icon svg{width:28px;height:28px}
+
+.subject-5s .gm-subject-icon{background:#ecfdf5;color:#059669}
+.subject-lubrificacao .gm-subject-icon{background:#eff6ff;color:#0e4596}
+.subject-pneumatica .gm-subject-icon{background:#f0f9ff;color:#0284c7}
+.subject-eletrica .gm-subject-icon{background:#fffbeb;color:#d97706}
+
+.gm-subject-copy{min-width:0;flex:1;display:flex;flex-direction:column}
+.gm-module{font-size:10px;font-weight:850;color:#64748b;letter-spacing:.12em}
+.gm-subject-card h3{font-size:17px;font-weight:850;letter-spacing:-.02em;margin:5px 0 4px;color:#0f172a}
+.gm-subject-card p{font-size:12px;color:#64748b;line-height:1.5;margin:0 0 12px}
+
+.gm-subject-card .subject-progress{
+  font-size:11px;font-weight:700;color:#64748b;margin-bottom:12px;
+}
+.gm-subject-card .subject-progress .status-done{color:#059669}
+
+.gm-subject-open{
+  width:100%;border:none;border-bottom:3.5px solid #072b61;
+  border-radius:12px;padding:11px 14px;
+  background:#0e4596;color:#fff;font-weight:800;font-size:13px;
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  box-shadow:0 4px 12px rgba(14,69,150,.18);margin-top:auto;
+  transition:transform .12s,filter .12s,border-bottom-width .12s;
+}
+.gm-subject-open:hover{filter:brightness(1.08)}
+.gm-subject-open:active{transform:translateY(2px);border-bottom-width:1.5px}
+.gm-subject-open svg{width:16px;height:16px}
+
+/* Conquistas (Medalhas) */
+.gm-achievements-area{
+  background:#fff;border:1px solid #e2e8f0;border-radius:20px;
+  padding:20px;box-shadow:0 4px 16px rgba(0,0,0,.025);
+}
+.gm-achievements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gm-achievement{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:14px 8px;border:1px solid #e2e8f0;border-bottom:3px solid #cbd5e1;
+  border-radius:15px;background:#fff;min-height:115px;
+  transition:transform .18s,border-color .18s;
+}
+.gm-achievement:hover{transform:translateY(-2px);border-color:#bfdbfe}
+
+.gm-achievement.earned{
+  background:linear-gradient(145deg,#fff 0%,#f0fdf4 100%);
+  border-color:#bbf7d0;border-bottom-color:#10b981;
+}
+.gm-achievement.locked{opacity:.6;background:#f8fafc}
+
+.gm-achievement-icon-wrap{
+  width:44px;height:44px;border-radius:13px;
+  display:grid;place-items:center;margin-bottom:8px;
+}
+.gm-achievement.earned .gm-achievement-icon-wrap{background:#ecfdf5;color:#059669}
+.gm-achievement.locked .gm-achievement-icon-wrap{background:#f1f5f9;color:#94a3b8}
+.gm-achievement-icon-wrap svg{width:22px;height:22px}
+
+.gm-achievement strong{font-size:11px;font-weight:800;color:#0f172a;line-height:1.3}
+.gm-achievement-state{
+  font-size:10px;font-weight:750;margin-top:5px;
+  display:inline-flex;align-items:center;gap:3px;
+}
+.gm-achievement.earned .gm-achievement-state{color:#059669}
+.gm-achievement.locked .gm-achievement-state{color:#94a3b8}
+.gm-achievement-state svg{width:11px;height:11px}
+
+/* Ranking de Conhecimento */
+.gm-ranking-section{margin-top:6px}
+.gm-ranking-card{
+  border:1px solid #e2e8f0;border-radius:20px;
+  background:#fff;padding:22px;
+  box-shadow:0 4px 16px rgba(0,0,0,.025);
+}
+.gm-ranking-note{font-size:12px;color:#64748b;line-height:1.55;margin:16px 0 0}
+.gm-loading{padding:18px;color:#64748b;font-size:13px;font-weight:600;text-align:center}
+
+/* Responsividade refinada */
+@media(max-width:1024px){
+  .gm-mission-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gm-main-grid{grid-template-columns:1fr}
+  .gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media(max-width:768px){
+  .gm-hero{flex-direction:column;align-items:stretch;padding:24px;gap:16px}
+  .gm-hero-badge{max-width:none}
+  .gm-quick-stats{grid-template-columns:1fr;gap:10px}
+  .gm-mission-grid,.gm-week-grid{grid-template-columns:1fr;gap:10px}
+  .gm-subject-grid{grid-template-columns:1fr;gap:12px}
+  .gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:480px){
+  .gm-dashboard{gap:18px}
+  .gm-hero h1{font-size:24px}
+  .gm-level-panel{padding:18px}
+  .gm-level-top{flex-direction:column;align-items:flex-start}
+  .gm-achievements{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
