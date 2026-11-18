@@ -1943,3 +1943,28 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .gm-level-top{flex-direction:column;align-items:flex-start}
   .gm-achievements{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Conquistas: medalhas ilustradas, maiores e com o painel preenchido */
+.gm-main-grid{grid-template-columns:minmax(0,1fr) 390px;gap:22px}
+.gm-achievements-card{padding:18px;background:linear-gradient(155deg,#fff 0%,#f8fbff 100%)}
+.gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-content:start}
+.gm-achievement{min-height:148px;padding:10px 5px 12px;gap:3px;border-radius:16px;background:linear-gradient(180deg,#fff,#f8fafc)}
+.gm-achievement:nth-child(5){grid-column:auto;flex-direction:column;justify-content:center;text-align:center;align-items:center;padding:10px 5px;min-height:148px}
+.gm-achievement:nth-child(5) .gm-achievement-icon-wrap{margin-bottom:5px}
+.gm-achievement-icon-wrap{width:66px;height:72px;margin-bottom:3px;border-radius:0;background:transparent!important;overflow:visible}
+.gm-achievement-icon-wrap svg.medal-art{width:66px;height:72px;filter:drop-shadow(0 4px 3px rgba(15,23,42,.14));overflow:visible}
+.gm-achievement.earned .medal-disc{fill:#fff8dc;stroke:#e4a92f;stroke-width:3}
+.gm-achievement.locked .medal-disc{fill:#e8edf3;stroke:#aab8c7;stroke-width:3}
+.medal-ring{fill:none;stroke:#fff;stroke-width:2;opacity:.85}
+.medal-ribbon{stroke:none;fill:#64748b}
+.gm-achievement.earned .ribbon-left,.gm-achievement.earned .ribbon-right{fill:#d97706}
+.gm-achievement.locked .ribbon-left,.gm-achievement.locked .ribbon-right{fill:#94a3b8}
+.medal-symbol{font-family:Arial,sans-serif;font-size:22px;font-weight:900;fill:#a16207}
+.gm-achievement.locked .medal-symbol{fill:#64748b}
+.gm-achievement strong{font-size:12px;line-height:1.3;min-height:30px;display:flex;align-items:center;justify-content:center}
+.gm-achievement-state{font-size:10px;margin-top:4px}
+.gm-achievement.locked{opacity:.78}
+.gm-achievement.earned{border-color:#f4d58b;border-bottom-color:#e3a325;background:linear-gradient(160deg,#fffdf5,#fff7e1)}
+@media(max-width:1024px){.gm-main-grid{grid-template-columns:1fr}.gm-achievements{grid-template-columns:repeat(5,minmax(0,1fr))}.gm-achievement:nth-child(5){grid-column:auto}}
+@media(max-width:768px){.gm-achievements{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:480px){.gm-achievements{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.gm-achievement{min-height:150px}.gm-achievement-icon-wrap{width:70px;height:76px}.gm-achievement-icon-wrap svg.medal-art{width:70px;height:76px}}
