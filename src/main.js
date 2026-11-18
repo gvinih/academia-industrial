@@ -262,9 +262,28 @@ async function refreshGamification() {
   if(streakEl) streakEl.textContent = Number(p.streak||0);
   
   const daily=data.daily||[],weekly=data.weekly||[];
-  const card=m=>`
+  const missionIcon=(m,index,group)=>{
+    const text=`${m.title||''} ${m.description||''}`.toLocaleLowerCase('pt-BR');
+    const choices=[
+      {keys:['quiz','quest','prova','acert'],kind:'quiz',path:'<path d="M14 3h7l4 4v14H7V3h7Z"/><path d="M14 3v5h5M11 13h6M11 17h6"/>'},
+      {keys:['estud','apostila','leitura','material'],kind:'book',path:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z"/><path d="M4 18a2.5 2.5 0 0 1 2.5-2.5H20M9 7h7M9 11h7"/>'},
+      {keys:['video','assist','aula'],kind:'video',path:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z"/>'},
+      {keys:['sequ','dia','streak','consecut'],kind:'streak',path:'<path d="M12 22c4.5 0 8-3.2 8-7.5 0-3-1.8-5.3-4.5-7.5.2 2.4-1 3.5-2.2 4.2C13.7 7.5 11.8 4.8 9 2 9.5 6.8 4 9.5 4 14.5 4 18.8 7.5 22 12 22Z"/><path d="M12 22c-2.1 0-3.5-1.5-3.5-3.5 0-1.4.8-2.5 2.1-3.7.2 1.5 1.2 2.2 1.8 2.5.7-.8.9-1.5.8-2.5 1.5 1.2 2.3 2.4 2.3 3.8 0 2-1.4 3.4-3.5 3.4Z"/>'},
+      {keys:['xp','ponto','pontua'],kind:'star',path:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>'},
+      {keys:['perfil','cadastro','complet'],kind:'profile',path:'<circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/>'},
+      {keys:['meta','desafio','miss'],kind:'target',path:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'}
+    ];
+    const matched=choices.find(item=>item.keys.some(key=>text.includes(key)));
+    const fallback=[choices[6],choices[4],choices[0],choices[1],choices[2],choices[3],choices[5]];
+    const selected=matched||fallback[(index+(group==='weekly'?3:0))%fallback.length];
+    return `<svg class="gm-mission-svg ${selected.kind}" viewBox="0 0 24 24" aria-hidden="true">${selected.path}</svg>`;
+  };
+  const card=(m,index,group)=>`
     <article class="gm-mission-card ${m.completed?'is-complete':''}">
-      <div class="gm-mission-icon">${m.completed?icons.check:icons.target}</div>
+      <div class="gm-mission-icon ${m.completed?'has-completion':''}">
+        ${missionIcon(m,index,group)}
+        ${m.completed?'<span class="gm-mission-check">'+icons.check+'</span>':''}
+      </div>
       <div class="gm-mission-info">
         <div class="gm-mission-topline">
           <strong>${esc(m.title)}</strong>
@@ -283,9 +302,9 @@ async function refreshGamification() {
     </article>
   `;
   const dailyEl = document.querySelector('#gm-daily');
-  if(dailyEl) dailyEl.innerHTML = daily.length ? daily.map(card).join('') : '<p class="muted">Nenhuma missão ativa para hoje.</p>';
+  if(dailyEl) dailyEl.innerHTML = daily.length ? daily.map((m,i)=>card(m,i,'daily')).join('') : '<p class="muted">Nenhuma missão ativa para hoje.</p>';
   const weeklyEl = document.querySelector('#gm-weekly');
-  if(weeklyEl) weeklyEl.innerHTML = weekly.length ? weekly.map(card).join('') : '<p class="muted">Nenhum desafio ativo no momento.</p>';
+  if(weeklyEl) weeklyEl.innerHTML = weekly.length ? weekly.map((m,i)=>card(m,i,'weekly')).join('') : '<p class="muted">Nenhum desafio ativo no momento.</p>';
 
   const earned=new Set((data.achievements||[]).map(a=>a.key));
   const achievementIcon=(kind)=> {
@@ -312,8 +331,10 @@ async function refreshGamification() {
       return `
         <div class="gm-achievement ${isEarned?'earned':'locked'}">
           <div class="gm-achievement-icon-wrap">${b.icon}</div>
-          <strong>${esc(b.name)}</strong>
-          <small class="gm-achievement-state">${isEarned ? icons.check + ' <span>Conquistada</span>' : icons.lock + ' <span>Bloqueada</span>'}</small>
+          <div class="gm-achievement-copy">
+            <strong>${esc(b.name)}</strong>
+            <small class="gm-achievement-state">${isEarned ? icons.check + ' <span>Conquistada</span>' : icons.lock + ' <span>Bloqueada</span>'}</small>
+          </div>
         </div>
       `;
     }).join('');
