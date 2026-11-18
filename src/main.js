@@ -288,13 +288,22 @@ async function refreshGamification() {
   if(weeklyEl) weeklyEl.innerHTML = weekly.length ? weekly.map(card).join('') : '<p class="muted">Nenhum desafio ativo no momento.</p>';
 
   const earned=new Set((data.achievements||[]).map(a=>a.key));
-  const medalSvg=(symbol)=>`<svg class="medal-art" viewBox="0 0 72 82" aria-hidden="true"><path class="medal-ribbon ribbon-left" d="M19 3H33L28 37 13 32Z"/><path class="medal-ribbon ribbon-right" d="M39 3H53L59 32 44 37Z"/><circle class="medal-disc" cx="36" cy="39" r="27"/><circle class="medal-ring" cx="36" cy="39" r="21"/><text class="medal-symbol" x="36" y="47" text-anchor="middle">${symbol}</text></svg>`;
+  const achievementIcon=(kind)=> {
+    const paths={
+      rocket:'<path d="M36 7c-9 7-14 17-14 28l14 12 14-12C50 24 45 14 36 7Z"/><path d="m22 31-9 8-2 13 15-7M50 31l9 8 2 13-15-7M29 48l-3 13 10-7 10 7-3-13"/><circle cx="36" cy="29" r="5" class="icon-cut"/>',
+      trophy:'<path d="M24 10h24v12c0 11-5 18-12 18s-12-7-12-18V10Z"/><path d="M24 16H12v7c0 9 6 14 15 14M48 16h12v7c0 9-6 14-15 14M36 40v12M25 59h22M29 52h14"/>',
+      flame:'<path d="M38 7c3 12-8 15-4 25 3-4 8-7 9-13 11 10 15 22 9 33-4 8-11 12-20 12-13 0-22-9-22-21 0-10 6-18 16-26-1 10 2 13 5 15 5-8 4-16 7-25Z"/><path d="M36 39c6 7 8 11 5 17-2 4-5 6-9 6-6 0-10-5-9-11 1-4 5-8 9-11 0 5 1 7 4 9"/>',
+      crown:'<path d="m10 23 14 10 12-19 12 19 14-10-5 31H15l-5-31Z"/><path d="M15 60h42M10 23l-2-8M62 23l2-8M36 14V7"/>',
+      gem:'<path d="m20 12 32 0 12 16-28 34L8 28l12-16Z"/><path d="m20 12 4 16 12 34 12-34 4-16M8 28h56M24 28l12-16 12 16"/>'
+    };
+    return `<svg class="gm-achievement-art ${kind}" viewBox="0 0 72 72" aria-hidden="true">${paths[kind]}</svg>`;
+  };
   const badges=[
-    {key:'first_quiz',icon:medalSvg('★'),name:'Primeiro passo',tone:'bronze'},
-    {key:'quizzes_10',icon:medalSvg('✦'),name:'Estudioso',tone:'silver'},
-    {key:'streak_3',icon:medalSvg('3'),name:'3 dias seguidos',tone:'gold'},
-    {key:'streak_7',icon:medalSvg('7'),name:'Semana perfeita',tone:'blue'},
-    {key:'xp_500',icon:medalSvg('500'),name:'500 XP',tone:'purple'}
+    {key:'first_quiz',icon:achievementIcon('rocket'),name:'Primeiro passo',tone:'silver',detail:'Seu primeiro quiz'},
+    {key:'quizzes_10',icon:achievementIcon('trophy'),name:'Estudioso',tone:'gold',detail:'10 quizzes concluídos'},
+    {key:'streak_3',icon:achievementIcon('flame'),name:'Fogo aceso',tone:'orange',detail:'3 dias seguidos'},
+    {key:'streak_7',icon:achievementIcon('crown'),name:'Semana perfeita',tone:'blue',detail:'7 dias de sequência'},
+    {key:'xp_500',icon:achievementIcon('gem'),name:'Mestre do XP',tone:'purple',detail:'Acumule 500 XP'}
   ];
   const achEl = document.querySelector('#gm-achievements');
   if(achEl) {
