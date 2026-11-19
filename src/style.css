@@ -2081,3 +2081,51 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .gm-mission-icon{width:54px;height:54px;min-width:54px;border-radius:16px}
   .gm-mission-icon .gm-mission-svg{width:38px;height:38px}
 }
+
+
+/* Resumos das matérias — identidade visual Academia Industrial */
+.lesson-panel:has(.summary-view){padding:clamp(16px,3vw,30px);background:#f7f9fc;border:1px solid #e6ebf2;}
+.summary-view{max-width:1040px;margin:0 auto;color:#263449;}
+.summary-hero{display:flex;align-items:flex-start;gap:20px;padding:clamp(20px,3vw,30px);border-radius:22px;background:linear-gradient(125deg,#0e4596 0%,#155bb3 62%,#2875ca 100%);color:#fff;box-shadow:0 12px 28px rgba(14,69,150,.16);position:relative;overflow:hidden;}
+.summary-hero:after{content:"";position:absolute;width:210px;height:210px;border:34px solid rgba(255,255,255,.07);border-radius:50%;right:-65px;top:-105px;pointer-events:none;}
+.summary-hero-mark{width:54px;height:54px;flex:0 0 54px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;border:1px solid rgba(255,255,255,.22);}
+.summary-hero-mark svg{width:27px;height:27px;stroke:currentColor;}
+.summary-hero-copy{min-width:0;position:relative;z-index:1;}
+.summary-kicker{display:block;font-size:10px;font-weight:850;letter-spacing:.15em;color:#d8e8ff;margin:1px 0 8px;}
+.summary-hero h2{font-size:clamp(21px,3vw,29px);line-height:1.2;letter-spacing:-.035em;color:#fff;margin:0 0 9px;font-weight:850;}
+.summary-hero p{font-size:13px;line-height:1.7;color:rgba(255,255,255,.9);margin:0;max-width:790px;}
+.summary-section-heading{display:flex;align-items:center;gap:13px;margin:28px 2px 14px;color:#64748b;font-size:10px;font-weight:850;letter-spacing:.14em;}
+.summary-section-heading i{height:1px;background:#dfe6ef;flex:1;}
+.summary-topic-list{display:grid;gap:12px;}
+.summary-topic-card{display:flex;align-items:flex-start;gap:17px;padding:20px 21px;background:#fff;border:1px solid #e3eaf2;border-radius:17px;box-shadow:0 3px 12px rgba(15,35,65,.025);transition:border-color .18s,transform .18s,box-shadow .18s;}
+.summary-topic-card:hover{border-color:#bfd4ee;transform:translateY(-1px);box-shadow:0 8px 20px rgba(14,69,150,.055);}
+.summary-topic-index{width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:#eaf2fc;color:#0e4596;display:grid;place-items:center;font-size:12px;font-weight:900;letter-spacing:.02em;}
+.summary-topic-body{min-width:0;flex:1;font-size:13px;line-height:1.75;color:#526174;}
+.summary-topic-body h3{margin:1px 0 9px;color:#17365f;font-size:16px;line-height:1.35;font-weight:850;letter-spacing:-.015em;}
+.summary-topic-body p{margin:0 0 11px;}
+.summary-topic-body p:last-child{margin-bottom:0;}
+.summary-topic-body ul,.summary-topic-body ol{margin:9px 0 2px;padding-left:22px;}
+.summary-topic-body li{padding-left:3px;margin:7px 0;line-height:1.65;}
+.summary-topic-body li::marker{color:#0e4596;font-weight:800;}
+.summary-topic-body b,.summary-topic-body strong{color:#263f60;font-weight:800;}
+.summary-footer{display:flex;align-items:center;gap:12px;margin-top:18px;padding:15px 18px;border:1px solid #d9e7f7;border-radius:15px;background:#edf5ff;color:#45617f;}
+.summary-footer-icon{width:30px;height:30px;flex:0 0 30px;border-radius:9px;display:grid;place-items:center;background:#d8e9fc;color:#0e4596;}
+.summary-footer-icon svg{width:17px;height:17px;}
+.summary-footer p{font-size:12px;line-height:1.55;margin:0;}
+.summary-footer strong{color:#17477f;}
+@media(max-width:600px){
+ .lesson-panel:has(.summary-view){padding:12px;background:#f7f9fc;}
+ .summary-hero{gap:13px;padding:18px 16px;border-radius:17px;}
+ .summary-hero-mark{width:44px;height:44px;flex-basis:44px;border-radius:13px;}
+ .summary-hero-mark svg{width:23px;height:23px;}
+ .summary-kicker{font-size:9px;letter-spacing:.11em;}
+ .summary-hero h2{font-size:21px;}
+ .summary-hero p{font-size:12px;line-height:1.6;}
+ .summary-section-heading{margin:22px 2px 11px;font-size:9px;}
+ .summary-topic-card{gap:11px;padding:15px 13px;border-radius:14px;}
+ .summary-topic-index{width:30px;height:30px;flex-basis:30px;border-radius:9px;font-size:10px;}
+ .summary-topic-body{font-size:12px;line-height:1.7;}
+ .summary-topic-body h3{font-size:14px;margin-bottom:7px;}
+ .summary-topic-body li{margin:6px 0;}
+ .summary-footer{align-items:flex-start;padding:13px;border-radius:13px;}
+}
