@@ -754,9 +754,26 @@ const summaries = {
 <h4>Objetivo do aprendizado</h4>
 <p>Desenvolver conhecimentos fundamentais para compreender sistemas elétricos industriais, identificar componentes, interpretar comandos, utilizar instrumentos de medição e reconhecer situações anormais de funcionamento, contribuindo para uma operação mais segura e eficiente.</p>`
 };
+function renderSummaryView(markup) {
+  const template=document.createElement('template');
+  template.innerHTML=markup;
+  const nodes=Array.from(template.content.children);
+  const titleNode=nodes.find(node=>node.tagName==='H3');
+  const title=titleNode?.textContent?.trim()||'Resumo da matéria';
+  const titleIndex=titleNode?nodes.indexOf(titleNode):-1;
+  const introNode=nodes.find((node,index)=>index>titleIndex&&node.tagName==='P');
+  const intro=introNode?.innerHTML||'Revise os principais conceitos e aplicações deste módulo.';
+  const sections=[]; let current=null;
+  nodes.filter(node=>node!==titleNode&&node!==introNode).forEach(node=>{
+    if(node.tagName==='H4'){current={title:node.textContent.trim(),nodes:[]};sections.push(current);}
+    else {if(!current){current={title:'Pontos essenciais',nodes:[]};sections.push(current);}current.nodes.push(node);}
+  });
+  const sectionMarkup=sections.map((section,index)=>'<article class="summary-topic-card"><div class="summary-topic-index">'+String(index+1).padStart(2,'0')+'</div><div class="summary-topic-body">'+(section.title!=='Pontos essenciais'?'<h3>'+esc(section.title)+'</h3>':'')+section.nodes.map(node=>node.outerHTML).join('')+'</div></article>').join('');
+  return '<div class="summary-view"><header class="summary-hero"><div class="summary-hero-mark">'+icons.tabSummary+'</div><div class="summary-hero-copy"><span class="summary-kicker">GUIA DE ESTUDO · ACADEMIA INDUSTRIAL</span><h2>'+esc(title)+'</h2><p>'+intro+'</p></div></header><div class="summary-section-heading"><span>CONTEÚDO DO MÓDULO</span><i></i></div><div class="summary-topic-list">'+sectionMarkup+'</div><footer class="summary-footer"><span class="summary-footer-icon">'+icons.checkCircle+'</span><p><strong>Conecte teoria e prática.</strong> Observe como esses conceitos aparecem na rotina dos equipamentos e processos industriais.</p></footer></div>';
+}
 async function renderSubjectTab() {
   const box=document.querySelector('#lesson-content'); if(!box)return;
-  if(activeTab==='resumo'){box.innerHTML=`<div class="lesson-copy">${summaries[activeSubject.id]}</div>`;return;}
+  if(activeTab==='resumo'){box.innerHTML=renderSummaryView(summaries[activeSubject.id]||'');return;}
   if(activeTab==='apostila'){
     box.innerHTML='<h2>Apostilas oficiais</h2><p class="muted">Os PDFs enviados pelo administrador para esta matéria aparecerão aqui.</p><div class="skeleton">Buscando arquivos…</div>';
     const {data,error}=await supabase.from('materials').select('id,title,storage_path,created_at').eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:false});
