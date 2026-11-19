@@ -2014,3 +2014,40 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .gm-achievement:nth-child(5){width:calc((100% - 9px)/2);min-height:132px;flex-direction:column;text-align:center;padding:10px 6px}
   .gm-achievement:nth-child(5) .gm-achievement-icon-wrap{margin:0!important}
 }
+
+
+/* Missões: recompensas XP em destaque e iconografia vetorial consistente */
+.gm-mission-card{align-items:center;min-height:138px;padding:16px 18px;gap:14px}
+.gm-mission-icon{width:54px;height:54px;border-radius:16px;background:linear-gradient(145deg,#eff6ff,#dbeafe);color:#1d4ed8;box-shadow:inset 0 0 0 1px rgba(37,99,235,.10);}
+.gm-mission-icon .gm-mission-svg{width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.gm-mission-icon .gm-mission-svg.quiz{color:#2563eb}
+.gm-mission-icon .gm-mission-svg.book{color:#0e7490}
+.gm-mission-icon .gm-mission-svg.video{color:#7c3aed}
+.gm-mission-icon .gm-mission-svg.streak{color:#ea580c}
+.gm-mission-icon .gm-mission-svg.star{color:#ca8a04}
+.gm-mission-icon .gm-mission-svg.profile{color:#0f766e}
+.gm-mission-icon .gm-mission-svg.target{color:#0e4596}
+.gm-mission-icon:has(.gm-mission-svg.quiz){background:linear-gradient(145deg,#eff6ff,#dbeafe)}
+.gm-mission-icon:has(.gm-mission-svg.book){background:linear-gradient(145deg,#ecfeff,#cffafe)}
+.gm-mission-icon:has(.gm-mission-svg.video){background:linear-gradient(145deg,#f5f3ff,#ede9fe)}
+.gm-mission-icon:has(.gm-mission-svg.streak){background:linear-gradient(145deg,#fff7ed,#ffedd5)}
+.gm-mission-icon:has(.gm-mission-svg.star){background:linear-gradient(145deg,#fefce8,#fef3c7)}
+.gm-mission-icon:has(.gm-mission-svg.profile){background:linear-gradient(145deg,#f0fdfa,#ccfbf1)}
+.gm-mission-icon:has(.gm-mission-svg.target){background:linear-gradient(145deg,#eff6ff,#dbeafe)}
+.gm-mission-reward{min-width:66px;min-height:42px;padding:5px 10px;border-radius:12px;background:linear-gradient(145deg,#fff7d6,#ffedaa);color:#925b00;display:inline-flex;flex-direction:column;justify-content:center;align-items:center;gap:0;box-shadow:inset 0 0 0 1px rgba(202,138,4,.16)}
+.gm-mission-reward b{font-size:19px;line-height:1;font-weight:900;letter-spacing:-.5px}
+.gm-mission-reward small{font-size:9px;line-height:1.2;font-weight:900;letter-spacing:1.1px;text-transform:uppercase;color:#a16207}
+.gm-mission-reward.is-done{min-height:30px;min-width:74px;flex-direction:row;padding:6px 9px;gap:4px;background:#dcfce7;color:#15803d;box-shadow:none}
+.gm-mission-reward.is-done span{font-size:10px;font-weight:800}
+.gm-mission-reward.is-done svg{width:13px;height:13px}
+.gm-mission-card.is-complete .gm-mission-icon{background:#ecfdf5;color:#059669;box-shadow:inset 0 0 0 1px #bbf7d0}
+.gm-mission-card.is-complete .gm-mission-svg{color:#059669}
+.gm-mission-check{right:-4px;top:-4px;width:18px;height:18px}
+@media(max-width:600px){
+ .gm-mission-card{padding:13px 12px;gap:10px;min-height:126px}
+ .gm-mission-icon{width:46px;height:46px;border-radius:14px}
+ .gm-mission-icon .gm-mission-svg{width:27px;height:27px}
+ .gm-mission-reward{min-width:58px;min-height:38px;padding:4px 8px}
+ .gm-mission-reward b{font-size:17px}
+ .gm-mission-info strong{font-size:13px}
+}
