@@ -264,19 +264,18 @@ async function refreshGamification() {
   const daily=data.daily||[],weekly=data.weekly||[];
   const missionIcon=(m,index,group)=>{
     const text=`${m.title||''} ${m.description||''}`.toLocaleLowerCase('pt-BR');
-    const iconsList=[
-      {keys:['quiz','quest','prova','acert'],kind:'quiz',svg:'<path d="M8 3.5h6l4 4V20H6V3.5h2Z"/><path d="M14 3.5V8h4M9 12h6M9 15.5h4"/><circle cx="17.5" cy="17.5" r="3.5"/><path d="m16.3 17.5 1 1 1.7-2"/>'},
-      {keys:['estud','apostila','leitura','material'],kind:'book',svg:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z"/><path d="M4 18a2.5 2.5 0 0 1 2.5-2.5H20M9 7h7M9 10.5h7"/><path d="m9 13.5 2 1 2-1"/>'},
-      {keys:['video','assist','aula'],kind:'video',svg:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z"/><path d="M7 2.5h10"/>'},
-      {keys:['sequ','dia','streak','consecut'],kind:'streak',svg:'<path d="M13 2.8c.8 3.1-.6 4.7-2.2 6.1C9.2 10.4 8 11.8 8 14a4 4 0 0 0 8 0c0-1.2-.4-2.3-1.4-3.6 3.2 1.3 5.4 4.1 5.4 7.1a8 8 0 0 1-16 0c0-4.4 3.1-7.2 5.4-9.7C11.1 6.8 12.2 5.2 13 2.8Z"/><path d="M12 21a3 3 0 0 0 3-3c0-1.1-.6-2-1.6-2.9-.1 1.1-.7 1.7-1.4 2.1-.4-.7-.9-1.1-1.4-1.5A3.5 3.5 0 0 0 9 18a3 3 0 0 0 3 3Z"/>'},
-      {keys:['xp','ponto','pontua'],kind:'star',svg:'<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.4l6.2-.9L12 2.8Z"/><path d="m9.5 12.5 1.7 1.7 3.5-3.6"/>'},
-      {keys:['perfil','cadastro','complet'],kind:'profile',svg:'<circle cx="12" cy="8" r="3.7"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/><path d="m16.5 5.5 1.2 1.2 2.2-2.2"/>'},
-      {keys:['meta','desafio','miss'],kind:'target',svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/><path d="m14 10 6-6M16 4h4v4"/>'}
+    const types=[
+      {keys:['quiz','quest','prova','acert'],kind:'quiz',art:'<rect x="8" y="5" width="11" height="15" rx="2.5" fill="#fff" stroke="#2456d8" stroke-width="1.8"/><path d="M11 5.5V4.2A1.2 1.2 0 0 1 12.2 3h2.6A1.2 1.2 0 0 1 16 4.2v1.3" fill="#ffcf4a" stroke="#2456d8" stroke-width="1.6"/><path d="m10.5 12 1.6 1.6 3.5-3.8" fill="none" stroke="#16a36a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 16.5h5" stroke="#9bb4ee" stroke-width="1.8" stroke-linecap="round"/>'},
+      {keys:['estud','apostila','leitura','material'],kind:'book',art:'<path d="M4 7.2C7.2 5.8 10 6.2 12 8v12c-2-1.8-4.8-2.2-8-0.8z" fill="#fff" stroke="#087e8b" stroke-width="1.8" stroke-linejoin="round"/><path d="M20 7.2C16.8 5.8 14 6.2 12 8v12c2-1.8 4.8-2.2 8-.8z" fill="#b9f1e8" stroke="#087e8b" stroke-width="1.8" stroke-linejoin="round"/><path d="M7 10.5 9.5 11M7 14l2.5.5M17 10.5l-2.5.5M17 14l-2.5.5" stroke="#087e8b" stroke-width="1.4" stroke-linecap="round"/>'},
+      {keys:['video','assist','aula'],kind:'video',art:'<rect x="3.5" y="6" width="17" height="12.5" rx="3" fill="#fff" stroke="#7045d6" stroke-width="1.8"/><path d="m10 9.2 5.5 3-5.5 3.2z" fill="#ffbd45" stroke="#7045d6" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 21h8" stroke="#7045d6" stroke-width="2" stroke-linecap="round"/><path d="M12 18.8V21" stroke="#7045d6" stroke-width="1.8"/>'},
+      {keys:['sequ','dia','streak','consecut'],kind:'streak',art:'<path d="M13.8 2.8c1.1 4-1.4 5.7-3 7.6-1.1 1.3-1.7 2.5-1.4 4.1.3 1.4 1.3 2.2 2.5 2.5-.2-2.2 1.3-3.4 2.5-4.5 3.2 2.2 4.9 4.6 4.4 7.2-.5 2.8-3.1 4.5-6.6 4.5-4.5 0-7.4-2.8-7.4-6.8 0-3.3 1.8-5.7 4.2-8.2 1.9-2 3.5-3.8 4.8-6.4z" fill="#ff8b35" stroke="#d84b24" stroke-width="1.5" stroke-linejoin="round"/><path d="M12.7 15.1c1.8 1.4 2.6 2.7 2.3 4.1-.2 1.2-1.2 2-2.6 2-1.7 0-2.8-1.1-2.7-2.6.1-1.2 1.2-2.4 3-3.5z" fill="#ffdf69"/>'},
+      {keys:['xp','ponto','pontua'],kind:'star',art:'<path d="m12 2.8 2.7 5.6 6.2.9-4.5 4.4 1.1 6.2-5.5-2.9-5.5 2.9 1.1-6.2-4.5-4.4 6.2-.9z" fill="#ffd34e" stroke="#c58a12" stroke-width="1.6" stroke-linejoin="round"/><path d="m9.4 12.4 1.8 1.8 3.6-3.8" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'},
+      {keys:['perfil','cadastro','complet'],kind:'profile',art:'<circle cx="12" cy="8" r="4" fill="#ffd3a6" stroke="#087f78" stroke-width="1.7"/><path d="M4.2 20.5c.6-4 3.4-6.2 7.8-6.2s7.2 2.2 7.8 6.2" fill="#62d5b5" stroke="#087f78" stroke-width="1.8" stroke-linecap="round"/><path d="m16.5 5.5 1.2 1.2 2.1-2.2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'},
+      {keys:['meta','desafio','miss'],kind:'target',art:'<circle cx="12" cy="12" r="9" fill="#ffddd5" stroke="#df5d48" stroke-width="1.7"/><circle cx="12" cy="12" r="5.8" fill="#fff" stroke="#df5d48" stroke-width="1.6"/><circle cx="12" cy="12" r="2.5" fill="#ff9a54" stroke="#df5d48" stroke-width="1.2"/><path d="m13.8 10.2 6.1-6.1M16.5 4.1h3.4v3.4" fill="none" stroke="#2456d8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'}
     ];
-    const found=iconsList.find(item=>item.keys.some(key=>text.includes(key)));
-    const fallback=[iconsList[0],iconsList[1],iconsList[2],iconsList[3],iconsList[4],iconsList[5],iconsList[6]];
-    const selected=found||fallback[(index+(group==='weekly'?2:0))%fallback.length];
-    return `<svg class="gm-mission-svg ${selected.kind}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${selected.svg}</svg>`;
+    const found=types.find(item=>item.keys.some(key=>text.includes(key)));
+    const selected=found||types[(index+(group==='weekly'?2:0))%types.length];
+    return `<svg class="gm-mission-svg ${selected.kind}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${selected.art}</svg>`;
   };
   const card=(m,index,group)=>`
     <article class="gm-mission-card ${m.completed?'is-complete':''}">
