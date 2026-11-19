@@ -2051,3 +2051,33 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .gm-mission-reward b{font-size:17px}
  .gm-mission-info strong{font-size:13px}
 }
+
+
+/* Desafios: iconografia ilustrada, vibrante e amigável inspirada em apps de aprendizagem */
+.gm-mission-icon{
+  width:62px;height:62px;min-width:62px;border-radius:19px;
+  display:grid;place-items:center;position:relative;overflow:visible;
+  background:linear-gradient(150deg,#f4f8ff,#e7efff);
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 4px 0 rgba(36,86,216,.10),0 7px 15px rgba(31,64,120,.08);
+}
+.gm-mission-icon .gm-mission-svg{
+  width:43px;height:43px;overflow:visible;
+  filter:drop-shadow(0 2px 1px rgba(20,35,70,.10));
+}
+.gm-mission-icon:has(.gm-mission-svg.quiz){background:linear-gradient(145deg,#e8f0ff,#cddcff);box-shadow:0 4px 0 #b5c9f4,0 7px 15px rgba(36,86,216,.10)}
+.gm-mission-icon:has(.gm-mission-svg.book){background:linear-gradient(145deg,#e2fbf5,#c4f2e8);box-shadow:0 4px 0 #a5e4d8,0 7px 15px rgba(8,126,139,.10)}
+.gm-mission-icon:has(.gm-mission-svg.video){background:linear-gradient(145deg,#f1eaff,#dfd2ff);box-shadow:0 4px 0 #c9b8f4,0 7px 15px rgba(112,69,214,.10)}
+.gm-mission-icon:has(.gm-mission-svg.streak){background:linear-gradient(145deg,#fff0df,#ffdbb7);box-shadow:0 4px 0 #f4c18e,0 7px 15px rgba(216,75,36,.10)}
+.gm-mission-icon:has(.gm-mission-svg.star){background:linear-gradient(145deg,#fff8d9,#ffedaa);box-shadow:0 4px 0 #f0d77e,0 7px 15px rgba(197,138,18,.10)}
+.gm-mission-icon:has(.gm-mission-svg.profile){background:linear-gradient(145deg,#e1faf4,#c1eee2);box-shadow:0 4px 0 #a3dfd0,0 7px 15px rgba(8,127,120,.10)}
+.gm-mission-icon:has(.gm-mission-svg.target){background:linear-gradient(145deg,#ffebe5,#ffd2c6);box-shadow:0 4px 0 #f2b5a6,0 7px 15px rgba(223,93,72,.10)}
+.gm-mission-card.is-complete .gm-mission-icon{
+  background:linear-gradient(145deg,#e5f9e9,#c9f0d1);
+  box-shadow:0 4px 0 #a9dfb5,0 7px 15px rgba(22,163,74,.10);
+}
+.gm-mission-card.is-complete .gm-mission-svg{filter:drop-shadow(0 2px 1px rgba(20,35,70,.08))}
+@media(max-width:600px){
+  .gm-mission-icon{width:54px;height:54px;min-width:54px;border-radius:16px}
+  .gm-mission-icon .gm-mission-svg{width:38px;height:38px}
+}
