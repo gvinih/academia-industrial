@@ -264,19 +264,19 @@ async function refreshGamification() {
   const daily=data.daily||[],weekly=data.weekly||[];
   const missionIcon=(m,index,group)=>{
     const text=`${m.title||''} ${m.description||''}`.toLocaleLowerCase('pt-BR');
-    const choices=[
-      {keys:['quiz','quest','prova','acert'],kind:'quiz',path:'<path d="M14 3h7l4 4v14H7V3h7Z"/><path d="M14 3v5h5M11 13h6M11 17h6"/>'},
-      {keys:['estud','apostila','leitura','material'],kind:'book',path:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z"/><path d="M4 18a2.5 2.5 0 0 1 2.5-2.5H20M9 7h7M9 11h7"/>'},
-      {keys:['video','assist','aula'],kind:'video',path:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z"/>'},
-      {keys:['sequ','dia','streak','consecut'],kind:'streak',path:'<path d="M12 22c4.5 0 8-3.2 8-7.5 0-3-1.8-5.3-4.5-7.5.2 2.4-1 3.5-2.2 4.2C13.7 7.5 11.8 4.8 9 2 9.5 6.8 4 9.5 4 14.5 4 18.8 7.5 22 12 22Z"/><path d="M12 22c-2.1 0-3.5-1.5-3.5-3.5 0-1.4.8-2.5 2.1-3.7.2 1.5 1.2 2.2 1.8 2.5.7-.8.9-1.5.8-2.5 1.5 1.2 2.3 2.4 2.3 3.8 0 2-1.4 3.4-3.5 3.4Z"/>'},
-      {keys:['xp','ponto','pontua'],kind:'star',path:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>'},
-      {keys:['perfil','cadastro','complet'],kind:'profile',path:'<circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/>'},
-      {keys:['meta','desafio','miss'],kind:'target',path:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'}
+    const iconsList=[
+      {keys:['quiz','quest','prova','acert'],kind:'quiz',svg:'<path d="M8 3.5h6l4 4V20H6V3.5h2Z"/><path d="M14 3.5V8h4M9 12h6M9 15.5h4"/><circle cx="17.5" cy="17.5" r="3.5"/><path d="m16.3 17.5 1 1 1.7-2"/>'},
+      {keys:['estud','apostila','leitura','material'],kind:'book',svg:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22V5.5Z"/><path d="M4 18a2.5 2.5 0 0 1 2.5-2.5H20M9 7h7M9 10.5h7"/><path d="m9 13.5 2 1 2-1"/>'},
+      {keys:['video','assist','aula'],kind:'video',svg:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z"/><path d="M7 2.5h10"/>'},
+      {keys:['sequ','dia','streak','consecut'],kind:'streak',svg:'<path d="M13 2.8c.8 3.1-.6 4.7-2.2 6.1C9.2 10.4 8 11.8 8 14a4 4 0 0 0 8 0c0-1.2-.4-2.3-1.4-3.6 3.2 1.3 5.4 4.1 5.4 7.1a8 8 0 0 1-16 0c0-4.4 3.1-7.2 5.4-9.7C11.1 6.8 12.2 5.2 13 2.8Z"/><path d="M12 21a3 3 0 0 0 3-3c0-1.1-.6-2-1.6-2.9-.1 1.1-.7 1.7-1.4 2.1-.4-.7-.9-1.1-1.4-1.5A3.5 3.5 0 0 0 9 18a3 3 0 0 0 3 3Z"/>'},
+      {keys:['xp','ponto','pontua'],kind:'star',svg:'<path d="m12 2.8 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.4l6.2-.9L12 2.8Z"/><path d="m9.5 12.5 1.7 1.7 3.5-3.6"/>'},
+      {keys:['perfil','cadastro','complet'],kind:'profile',svg:'<circle cx="12" cy="8" r="3.7"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/><path d="m16.5 5.5 1.2 1.2 2.2-2.2"/>'},
+      {keys:['meta','desafio','miss'],kind:'target',svg:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/><path d="m14 10 6-6M16 4h4v4"/>'}
     ];
-    const matched=choices.find(item=>item.keys.some(key=>text.includes(key)));
-    const fallback=[choices[6],choices[4],choices[0],choices[1],choices[2],choices[3],choices[5]];
-    const selected=matched||fallback[(index+(group==='weekly'?3:0))%fallback.length];
-    return `<svg class="gm-mission-svg ${selected.kind}" viewBox="0 0 24 24" aria-hidden="true">${selected.path}</svg>`;
+    const found=iconsList.find(item=>item.keys.some(key=>text.includes(key)));
+    const fallback=[iconsList[0],iconsList[1],iconsList[2],iconsList[3],iconsList[4],iconsList[5],iconsList[6]];
+    const selected=found||fallback[(index+(group==='weekly'?2:0))%fallback.length];
+    return `<svg class="gm-mission-svg ${selected.kind}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${selected.svg}</svg>`;
   };
   const card=(m,index,group)=>`
     <article class="gm-mission-card ${m.completed?'is-complete':''}">
@@ -288,7 +288,7 @@ async function refreshGamification() {
         <div class="gm-mission-topline">
           <strong>${esc(m.title)}</strong>
           <span class="gm-mission-reward ${m.completed?'is-done':''}">
-            ${m.completed ? icons.check + ' <span>Feito</span>' : '+ ' + m.xp + ' XP'}
+            ${m.completed ? icons.check + ' <span>Concluída</span>' : '<b>+' + Number(m.xp||0) + '</b><small>XP</small>'}
           </span>
         </div>
         <p>${esc(m.description)}</p>
