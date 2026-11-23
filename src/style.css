@@ -2268,3 +2268,43 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .training-video-title{flex-wrap:wrap}
  .training-video-title-text{flex:1;min-width:100px}
 }
+
+
+/* Academia Industrial v2: refinement layer (branch preview) */
+.gm-dashboard{max-width:1240px;margin:0 auto;padding:clamp(14px,2.8vw,32px)}
+.gm-dashboard .gm-hero{border-radius:24px;overflow:hidden;box-shadow:0 14px 36px rgba(14,69,150,.12)}
+.gm-dashboard .gm-level-panel{border:1px solid #dce8f6;border-radius:20px;box-shadow:0 8px 24px rgba(20,49,90,.05)}
+.gm-dashboard .gm-quick-stats{gap:14px}
+.gm-dashboard .gm-quick-stat{border:1px solid #e3eaf3;border-radius:18px;box-shadow:0 5px 18px rgba(15,35,65,.035);transition:transform .18s ease,box-shadow .18s ease}
+.gm-dashboard .gm-quick-stat:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,35,65,.08)}
+.gm-dashboard .gm-section-heading{align-items:center;gap:12px;margin:28px 0 15px}
+.gm-dashboard .gm-section-heading h2{letter-spacing:-.025em}
+.gm-dashboard .gm-subject-grid{gap:16px}
+.gm-dashboard .gm-subject-card{border-radius:20px;border:1px solid #e2eaf3;box-shadow:0 7px 22px rgba(15,35,65,.045);transition:transform .2s ease,box-shadow .2s ease}
+.gm-dashboard .gm-subject-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(15,35,65,.09)}
+.gm-dashboard .subject-progress{min-height:26px}
+.gm-dashboard .gm-ranking-card,.gm-dashboard .gm-achievements-card{border-radius:20px;border:1px solid #e3eaf3;box-shadow:0 7px 22px rgba(15,35,65,.035)}
+.gm-dashboard .leader-row{border-radius:12px;transition:background .15s ease}
+.gm-dashboard .leader-row:hover{background:#f5f8fc}
+.gm-dashboard .gm-mission-card{border-radius:17px;border:1px solid #e3eaf3;box-shadow:0 5px 16px rgba(15,35,65,.035)}
+.gm-dashboard .gm-mission-card.is-complete{border-color:#cdebd9}
+.topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:rgba(255,255,255,.93)}
+.back-button{border-radius:12px}
+.profile-heading h1,.subject-header h1{letter-spacing:-.035em}
+.admin-hub-card,.admin-tool-card,.profile-data-card,.profile-course{border-radius:18px;transition:transform .18s ease,box-shadow .18s ease}
+.admin-hub-card:hover,.admin-tool-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,35,65,.075)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(14,69,150,.35);outline-offset:2px}
+@media(max-width:760px){
+ .gm-dashboard{padding:12px}
+ .gm-dashboard .gm-hero{border-radius:19px}
+ .gm-dashboard .gm-quick-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .gm-dashboard .gm-quick-stat{padding:12px 9px;border-radius:14px}
+ .gm-dashboard .gm-section-heading{margin:22px 0 12px}
+ .gm-dashboard .gm-subject-grid{gap:11px}
+ .gm-dashboard .gm-subject-card{border-radius:16px}
+ .gm-dashboard .gm-ranking-card,.gm-dashboard .gm-achievements-card{border-radius:16px}
+}
+@media(prefers-reduced-motion:reduce){
+ .gm-dashboard .gm-quick-stat,.gm-dashboard .gm-subject-card,.admin-hub-card,.admin-tool-card{transition:none}
+ .gm-dashboard .gm-quick-stat:hover,.gm-dashboard .gm-subject-card:hover,.admin-hub-card:hover,.admin-tool-card:hover{transform:none}
+}
