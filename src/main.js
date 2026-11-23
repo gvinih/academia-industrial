@@ -643,39 +643,32 @@ async function openProfile() {
   shell(`<button class="back-button" id="profile-back">${icons.arrowLeft} <span>Voltar ao painel</span></button>
     <section class="profile-heading"><div class="eyebrow">ÁREA DO PARTICIPANTE</div><h1>Meu perfil</h1><p class="muted">Seus dados e seu progresso geral na Academia Industrial.</p></section>
     <section class="profile-summary" id="profile-summary"><div class="skeleton">Carregando seus dados…</div></section>
-    <section class="panel profile-progress"><div class="section-title"><h2>Andamento dos cursos</h2><span class="muted">Visão geral</span></div><div id="profile-courses" class="profile-course-list"><div class="skeleton">Carregando cursos…</div></div></section>`);
+    <section class="panel student-evolution" id="student-evolution"><div class="skeleton">Calculando sua evolução…</div></section>
+    <section class="panel profile-progress"><div class="section-title"><h2>Andamento dos cursos</h2><span class="muted">Visão geral</span></div><div id="profile-courses" class="profile-course-list"><div class="skeleton">Carregando cursos…</div></div></section>
+    <section class="panel profile-history"><div class="section-title"><h2>Histórico de avaliações</h2><span class="muted">Mais recentes</span></div><div id="profile-history-list"><div class="skeleton">Carregando histórico…</div></div></section>`);
   document.querySelector('#profile-back').addEventListener('click',dashboard);
   try {
-    const [{data: attempts,error:aErr},{data: p,error:pErr}] = await Promise.all([
-      supabase.from('quiz_attempts').select('subject_id,quiz_key,points,submitted_at').eq('user_id',session.user.id).order('submitted_at',{ascending:true}),
-      supabase.from('profiles').select('display_name,department,created_at').eq('id',session.user.id).single()
+    const [{data: attempts,error:aErr},{data: p,error:pErr},{data: videos,error:vErr}] = await Promise.all([
+      supabase.from('quiz_attempts').select('subject_id,quiz_key,points,score,total_questions,submitted_at').eq('user_id',session.user.id).order('submitted_at',{ascending:false}),
+      supabase.from('profiles').select('display_name,department,created_at').eq('id',session.user.id).single(),
+      supabase.from('video_progress').select('watched_seconds,completed_at').eq('user_id',session.user.id)
     ]);
-    if(aErr) throw aErr;
-    if(pErr) throw pErr;
-    const rows=attempts||[];
-    const totalPoints=rows.reduce((sum,a)=>sum+Number(a.points||0),0);
-    const quizzes=new Set(rows.map(a=>a.subject_id+':'+(a.quiz_key||'normal')));
-    const completedSubjects=new Set(rows.map(a=>a.subject_id));
-    const created=p.created_at?new Date(p.created_at).toLocaleDateString('pt-BR'):'—';
+    if(aErr) throw aErr;if(pErr) throw pErr;
+    const rows=attempts||[],totalPoints=rows.reduce((sum,a)=>sum+Number(a.points||0),0);
+    const quizzes=new Set(rows.map(a=>a.subject_id+':'+(a.quiz_key||'normal'))),completedSubjects=new Set(rows.map(a=>a.subject_id));
+    const scored=rows.filter(a=>Number(a.total_questions)>0),overall= scored.length?Math.round(scored.reduce((sum,a)=>sum+Number(a.score||0),0)/scored.reduce((sum,a)=>sum+Number(a.total_questions||0),0)*100):null;
+    const studySeconds=(videos||[]).reduce((sum,v)=>sum+Number(v.watched_seconds||0),0),created=p.created_at?new Date(p.created_at).toLocaleDateString('pt-BR'):'—';
     document.querySelector('#profile-summary').innerHTML=`
-      <article class="profile-data-card"><span>Nome</span><strong>${esc(p.display_name||'—')}</strong></article>
-      <article class="profile-data-card"><span>E-mail</span><strong>${esc(session.user.email||'—')}</strong></article>
-      <article class="profile-data-card"><span>Setor</span><strong>${esc(p.department||'Não informado')}</strong></article>
-      <article class="profile-data-card"><span>Membro desde</span><strong>${created}</strong></article>
-      <article class="profile-data-card"><span>Pontos acumulados</span><strong>${totalPoints} pts</strong></article>
-      <article class="profile-data-card"><span>Quizzes concluídos</span><strong>${quizzes.size}</strong></article>`;
-    document.querySelector('#profile-courses').innerHTML=subjects.map(subject=>{
-      const subjectAttempts=rows.filter(a=>a.subject_id===subject.id);
-      const subjectQuizCount=new Set(subjectAttempts.map(a=>a.quiz_key||'normal')).size;
-      const points=subjectAttempts.reduce((sum,a)=>sum+Number(a.points||0),0);
-      const done=completedSubjects.has(subject.id);
-      return `<article class="profile-course"><div class="profile-course-top"><div><h3>${esc(subject.name)}</h3><p>${esc(subject.description)}</p></div><span class="profile-course-status ${done?'is-done':''}">${done?'Em andamento':'Não iniciado'}</span></div><div class="profile-course-metrics"><span>${subjectQuizCount} quiz(es) concluído(s)</span><strong>${points} pontos</strong></div></article>`;
-    }).join('');
+      <article class="profile-data-card"><span>Nome</span><strong>${esc(p.display_name||'—')}</strong></article><article class="profile-data-card"><span>E-mail</span><strong>${esc(session.user.email||'—')}</strong></article><article class="profile-data-card"><span>Setor</span><strong>${esc(p.department||'Não informado')}</strong></article><article class="profile-data-card"><span>Membro desde</span><strong>${created}</strong></article><article class="profile-data-card"><span>Pontos acumulados</span><strong>${totalPoints} pts</strong></article><article class="profile-data-card"><span>Quizzes concluídos</span><strong>${quizzes.size}</strong></article>`;
+    const subjectStats=subjects.map(subject=>{const ss=rows.filter(a=>a.subject_id===subject.id&&Number(a.total_questions)>0),count=ss.reduce((sum,a)=>sum+Number(a.total_questions||0),0),correct=ss.reduce((sum,a)=>sum+Number(a.score||0),0);return {...subject,attempts:ss,average:count?Math.round(correct/count*100):null,correct,count,points:rows.filter(a=>a.subject_id===subject.id).reduce((sum,a)=>sum+Number(a.points||0),0),quizCount:new Set(rows.filter(a=>a.subject_id===subject.id).map(a=>a.quiz_key||'normal')).size};});
+    const chart=subjectStats.map(s=>'<div class="evolution-subject"><div class="evolution-subject-head"><strong>'+esc(s.name)+'</strong><span>'+(s.average===null?'Sem notas':s.average+'%')+'</span></div><div class="evolution-bar"><span style="width:'+Math.max(0,s.average||0)+'%"></span></div><small>'+s.correct+' acertos / '+s.count+' questões · '+s.quizCount+' avaliação(ões)</small></div>').join('');
+    document.querySelector('#student-evolution').innerHTML='<div class="evolution-heading"><div><span class="eyebrow">DESEMPENHO ACADÊMICO</span><h2>Minha evolução</h2><p>Acompanhe seu aproveitamento nas avaliações.</p></div><div class="evolution-overall">'+(overall===null?'—':overall+'%')+'<small>aproveitamento geral</small></div></div><div class="evolution-kpis"><article><strong>'+rows.length+'</strong><span>tentativas registradas</span></article><article><strong>'+subjectStats.filter(s=>s.average!==null).length+'/4</strong><span>matérias avaliadas</span></article><article><strong>'+Math.floor(studySeconds/3600)+'h '+Math.floor((studySeconds%3600)/60)+'min</strong><span>vídeos acompanhados*</span></article></div><div class="evolution-chart-title">Aproveitamento por matéria</div><div class="evolution-bars">'+chart+'</div><small class="evolution-disclaimer">*Tempo estimado a partir dos segundos acompanhados registrados pelo player. O aproveitamento é calculado por acertos / questões nas tentativas registradas.</small>';
+    document.querySelector('#profile-courses').innerHTML=subjectStats.map(s=>'<article class="profile-course"><div class="profile-course-top"><div><h3>'+esc(s.name)+'</h3><p>'+esc(s.description)+'</p></div><span class="profile-course-status '+(completedSubjects.has(s.id)?'is-done':'')+'">'+(completedSubjects.has(s.id)?'Em andamento':'Não iniciado')+'</span></div><div class="profile-course-metrics"><span>'+s.quizCount+' quiz(es) · '+(s.average===null?'Sem nota':s.average+'% de aproveitamento')+'</span><strong>'+s.points+' pontos</strong></div></article>').join('');
+    const historyNode=document.querySelector('#profile-history-list');
+    historyNode.innerHTML=rows.length?rows.slice(0,20).map(a=>{const subject=subjects.find(s=>s.id===a.subject_id),score=Number(a.total_questions)>0?Math.round(Number(a.score||0)/Number(a.total_questions)*100):null;return '<article class="profile-history-row"><div class="profile-history-main"><strong>'+esc(subject?.name||a.subject_id)+' · '+esc(a.quiz_key||'Quiz')+'</strong><small>'+ (a.submitted_at?new Date(a.submitted_at).toLocaleString('pt-BR'):'Data indisponível')+'</small></div><div class="profile-history-score">'+(score===null?'—':score+'%')+'<small>'+Number(a.score||0)+'/'+Number(a.total_questions||0)+' acertos</small></div></article>';}).join(''):'<p class="muted">Você ainda não possui avaliações registradas.</p>';
   } catch(err) {
-    console.error('Falha ao carregar perfil:',err);
-    toast(err.message||'Não foi possível carregar seu perfil.',true);
-    document.querySelector('#profile-summary').innerHTML='<p class="muted">Não foi possível carregar os dados do perfil.</p>';
-    document.querySelector('#profile-courses').innerHTML='<p class="muted">Não foi possível carregar o andamento dos cursos.</p>';
+    console.error('Falha ao carregar perfil:',err);toast(err.message||'Não foi possível carregar seu perfil.',true);
+    document.querySelector('#profile-summary').innerHTML='<p class="muted">Não foi possível carregar os dados do perfil.</p>';document.querySelector('#student-evolution').innerHTML='<p class="muted">Não foi possível calcular sua evolução.</p>';document.querySelector('#profile-courses').innerHTML='<p class="muted">Não foi possível carregar o andamento dos cursos.</p>';document.querySelector('#profile-history-list').innerHTML='<p class="muted">Não foi possível carregar o histórico.</p>';
   }
 }
 async function refreshDashboard() {
