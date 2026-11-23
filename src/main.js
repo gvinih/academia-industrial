@@ -715,9 +715,32 @@ async function refreshDashboard() {
 }
 async function openSubject(id) {
   activeSubject=subjects.find(s=>s.id===id); activeTab='resumo';
-  shell(`<button class="back-button" id="back">${icons.arrowLeft} <span>Voltar ao painel</span></button><section class="subject-header"><div class="subject-icon-large">${icons[activeSubject.id]||''}</div><div class="subject-heading-copy"><div class="eyebrow">TRILHA DE APRENDIZAGEM · MÓDULO ${String(subjects.findIndex(s=>s.id===id)+1).padStart(2,'0')}</div><h1>${activeSubject.name}</h1><p>${activeSubject.description}</p></div><span class="subject-header-tag">${icons.checkCircle}<span>Conteúdo técnico</span></span></section><nav class="tabs subject-tabs" id="tabs" aria-label="Conteúdo da matéria"></nav><section class="panel lesson-panel" id="lesson-content"><div class="skeleton">Carregando material…</div></section>`);
+  shell(`<button class="back-button" id="back">${icons.arrowLeft} <span>Voltar ao painel</span></button><section class="subject-header"><div class="subject-icon-large">${icons[activeSubject.id]||''}</div><div class="subject-heading-copy"><div class="eyebrow">TRILHA DE APRENDIZAGEM · MÓDULO ${String(subjects.findIndex(s=>s.id===id)+1).padStart(2,'0')}</div><h1>${activeSubject.name}</h1><p>${activeSubject.description}</p></div><span class="subject-header-tag">${icons.checkCircle}<span>Conteúdo técnico</span></span></section><section class="learning-path-card" id="learning-path"><div class="learning-path-loading">Montando sua jornada…</div></section><nav class="tabs subject-tabs" id="tabs" aria-label="Conteúdo da matéria"></nav><section class="panel lesson-panel" id="lesson-content"><div class="skeleton">Carregando material…</div></section>`);
   document.querySelector('#back').addEventListener('click',dashboard);
-  renderSubjectTabs(); await renderSubjectTab();
+  renderSubjectTabs(); await renderLearningPath(); await renderSubjectTab();
+}
+function learningPathKey(stage){return 'academia-path-'+session.user.id+'-'+activeSubject.id+'-'+stage;}
+function learningPathFlag(stage){try{return localStorage.getItem(learningPathKey(stage))==='1'}catch{return false}}
+function setLearningPathFlag(stage){try{localStorage.setItem(learningPathKey(stage),'1')}catch{}}
+async function renderLearningPath(){
+  const panel=document.querySelector('#learning-path');if(!panel||!activeSubject)return;
+  const results=await Promise.all([
+    supabase.from('materials').select('id').eq('subject_id',activeSubject.id).eq('is_published',true),
+    supabase.from('videos').select('id').eq('subject_id',activeSubject.id).eq('is_published',true),
+    supabase.from('quiz_attempts').select('id').eq('user_id',session.user.id).eq('subject_id',activeSubject.id)
+  ]);
+  const materials=results[0].data||[],videos=results[1].data||[],attempts=results[2].data||[];
+  const videoIds=videos.map(v=>v.id);let videosDone=false,videoAvailable=videoIds.length>0;
+  if(videoAvailable){const {data:progress,error}=await supabase.from('video_progress').select('video_id,completed_at').eq('user_id',session.user.id).in('video_id',videoIds);videosDone=!error&&videoIds.every(id=>(progress||[]).some(p=>p.video_id===id&&p.completed_at));}
+  const stages=[
+    {key:'summary',label:'Resumo',icon:icons.tabSummary,done:learningPathFlag('summary'),available:true,tab:'resumo',hint:'Revise os conceitos'},
+    {key:'apostila',label:'Apostila',icon:icons.tabPdf,done:learningPathFlag('apostila'),available:materials.length>0,tab:'apostila',hint:'Consulte o material oficial'},
+    {key:'video',label:'Vídeos',icon:icons.tabVideo,done:videosDone,available:videoAvailable,tab:'video',hint:videoAvailable?'Assista às aulas':'Aulas ainda não publicadas'},
+    {key:'quiz',label:'Quiz',icon:icons.tabQuiz,done:attempts.length>0,available:true,tab:'quiz',hint:'Teste seus conhecimentos'}
+  ];
+  const eligible=stages.filter(s=>s.available),completed=eligible.filter(s=>s.done).length,percent=eligible.length?Math.round(completed/eligible.length*100):0;
+  panel.innerHTML='<div class="learning-path-head"><div><span class="learning-path-kicker">JORNADA DA MATÉRIA</span><h2>Seu caminho de aprendizagem</h2><p>Avance pelas etapas e acompanhe seu progresso.</p></div><div class="learning-path-percent">'+percent+'%</div></div><div class="learning-path-track"><span style="width:'+percent+'%"></span></div><div class="learning-path-steps">'+stages.map(s=>'<button type="button" class="learning-path-step '+(s.done?'is-done':'')+(s.available?'':' is-unavailable')+'" data-path-tab="'+s.tab+'" '+(!s.available?'disabled':'')+'><span class="learning-path-step-icon">'+s.icon+'</span><span class="learning-path-step-copy"><strong>'+s.label+'</strong><small>'+(s.done?'Concluído':s.available?s.hint:'Indisponível')+'</small></span><span class="learning-path-step-status">'+(s.done?icons.checkCircle:'')+'</span></button>').join('')+'</div><small class="learning-path-note">Resumo e apostila são marcados ao abrir. Vídeos exigem conclusão e o quiz é registrado após uma tentativa. O progresso de leitura é salvo neste dispositivo.</small>';
+  panel.querySelectorAll('[data-path-tab]').forEach(btn=>btn.addEventListener('click',async()=>{activeTab=btn.dataset.pathTab;renderSubjectTabs();await renderSubjectTab()}));
 }
 function renderSubjectTabs() {
   const tabs=[['resumo','Resumo',icons.tabSummary,'Visão geral'],['apostila','Apostila',icons.tabPdf,'PDF oficial'],['video','Vídeos',icons.tabVideo,'Aulas'],['quiz','Quizzes',icons.tabQuiz,'Avaliações']];
@@ -776,7 +799,9 @@ function renderSummaryView(markup) {
 }
 async function renderSubjectTab() {
   const box=document.querySelector('#lesson-content'); if(!box)return;
-  if(activeTab==='resumo'){box.innerHTML=renderSummaryView(summaries[activeSubject.id]||'');return;}
+  if(activeTab==='resumo'){setLearningPathFlag('summary');box.innerHTML=renderSummaryView(summaries[activeSubject.id]||'');await renderLearningPath();return;}
+  if(activeTab==='apostila'){setLearningPathFlag('apostila');await renderLearningPath();}
+  if(activeTab==='video'||activeTab==='quiz')await renderLearningPath();
   if(activeTab==='apostila'){
     box.innerHTML=resourceHeading('MATERIAL DE APOIO','Apostila oficial','Consulte os documentos disponibilizados para aprofundar o conteúdo desta matéria.',icons.tabPdf)+'<div class="resource-loading skeleton">Buscando arquivos…</div>';
     const {data,error}=await supabase.from('materials').select('id,title,storage_path,created_at').eq('subject_id',activeSubject.id).eq('is_published',true).order('created_at',{ascending:false});
